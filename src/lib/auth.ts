@@ -12,22 +12,31 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: "Mot de passe", type: "password" },
       },
       async authorize(credentials) {
+        console.log("=== AUTH DEBUG ===");
+        console.log("Email reçu:", credentials?.email);
+        
         if (!credentials?.email || !credentials?.password) {
+          console.log("Credentials manquants");
           return null;
         }
 
         const user = await userRepository.findByEmail(credentials.email as string);
+        console.log("Utilisateur trouvé:", user ? { id: user.id, email: user.email, role: user.role } : "null");
 
         if (!user) {
+          console.log("Utilisateur non trouvé dans la DB");
           return null;
         }
 
+        console.log("Hash stocké:", user.password?.substring(0, 20) + "...");
         const isPasswordValid = await bcrypt.compare(
           credentials.password as string,
           user.password
         );
+        console.log("Mot de passe valide:", isPasswordValid);
 
         if (!isPasswordValid) {
+          console.log("Mot de passe incorrect");
           return null;
         }
 
