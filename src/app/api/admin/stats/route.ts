@@ -18,6 +18,9 @@ export async function GET() {
   try {
     const session = await auth();
     
+    console.log("=== STATS DEBUG ===");
+    console.log("Session:", session?.user ? { id: session.user.id, role: session.user.role } : "null");
+    
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: "Non autorisé" },
@@ -26,6 +29,7 @@ export async function GET() {
     }
 
     const user = await userRepository.findById(session.user.id);
+    console.log("User from DB:", user ? { id: user.id, role: user.role } : "null");
 
     if (user?.role !== "ADMIN" && user?.role !== "SUPER_ADMIN") {
       return NextResponse.json(
@@ -78,14 +82,19 @@ export async function GET() {
         count: parseInt(s.count),
       })),
       recentRegistrations: recentResult.rows.map((s) => ({
-        ...s,
+        id: s.id,
+        firstName: s.first_name,
+        lastName: s.last_name,
+        studyLevel: s.study_level,
+        currentStep: s.current_step,
+        createdAt: s.created_at,
         user: { email: s.email },
       })),
     });
   } catch (error) {
     console.error("Erreur stats:", error);
     return NextResponse.json(
-      { error: "Erreur serveur" },
+      { error: "Erreur serveur", details: String(error) },
       { status: 500 }
     );
   }

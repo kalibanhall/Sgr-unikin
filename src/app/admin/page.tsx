@@ -79,36 +79,42 @@ export default function AdminDashboardPage() {
     );
   }
 
-  if (!stats) {
-    return null;
-  }
+  // Valeurs par défaut si stats est null
+  const safeStats = stats || {
+    totalStudents: 0,
+    pendingValidations: 0,
+    completedRegistrations: 0,
+    studentsPerLevel: [],
+    studentsPerStep: [],
+    recentRegistrations: [],
+  };
 
   const statCards = [
     {
       title: "Total étudiants",
-      value: stats.totalStudents,
+      value: safeStats.totalStudents,
       icon: Users,
       color: "text-blue-600",
       bg: "bg-blue-100",
     },
     {
       title: "En attente de validation",
-      value: stats.pendingValidations,
+      value: safeStats.pendingValidations,
       icon: Clock,
       color: "text-orange-600",
       bg: "bg-orange-100",
     },
     {
       title: "Inscriptions complètes",
-      value: stats.completedRegistrations,
+      value: safeStats.completedRegistrations,
       icon: CheckCircle,
       color: "text-green-600",
       bg: "bg-green-100",
     },
     {
       title: "Taux de complétion",
-      value: stats.totalStudents > 0 
-        ? `${Math.round((stats.completedRegistrations / stats.totalStudents) * 100)}%`
+      value: safeStats.totalStudents > 0 
+        ? `${Math.round((safeStats.completedRegistrations / safeStats.totalStudents) * 100)}%`
         : "0%",
       icon: TrendingUp,
       color: "text-purple-600",
@@ -199,7 +205,7 @@ export default function AdminDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {stats.studentsPerLevel.map((item) => (
+                {safeStats.studentsPerLevel.length > 0 ? safeStats.studentsPerLevel.map((item) => (
                   <div key={item.level} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="w-3 h-3 rounded-full bg-blue-500" />
@@ -210,14 +216,14 @@ export default function AdminDashboardPage() {
                         <div
                           className="h-full bg-blue-500 rounded-full"
                           style={{
-                            width: `${(item.count / stats.totalStudents) * 100}%`,
+                            width: `${safeStats.totalStudents > 0 ? (item.count / safeStats.totalStudents) * 100 : 0}%`,
                           }}
                         />
                       </div>
                       <span className="text-sm text-gray-900 font-medium w-8">{item.count}</span>
                     </div>
                   </div>
-                ))}
+                )) : <p className="text-gray-500 text-center py-4">Aucun étudiant inscrit</p>}
               </div>
             </CardContent>
           </Card>
@@ -232,7 +238,7 @@ export default function AdminDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {stats.studentsPerStep.sort((a, b) => a.step - b.step).map((item) => (
+                {safeStats.studentsPerStep.length > 0 ? safeStats.studentsPerStep.sort((a, b) => a.step - b.step).map((item) => (
                   <div key={item.step} className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div 
@@ -252,14 +258,14 @@ export default function AdminDashboardPage() {
                             item.step === 4 ? "bg-green-500" : "bg-orange-500"
                           }`}
                           style={{
-                            width: `${(item.count / stats.totalStudents) * 100}%`,
+                            width: `${safeStats.totalStudents > 0 ? (item.count / safeStats.totalStudents) * 100 : 0}%`,
                           }}
                         />
                       </div>
                       <span className="text-sm text-gray-900 font-medium w-8">{item.count}</span>
                     </div>
                   </div>
-                ))}
+                )) : <p className="text-gray-500 text-center py-4">Aucune donnée</p>}
               </div>
             </CardContent>
           </Card>
@@ -288,7 +294,7 @@ export default function AdminDashboardPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {stats.recentRegistrations.map((student) => (
+                  {safeStats.recentRegistrations.length > 0 ? safeStats.recentRegistrations.map((student) => (
                     <tr key={student.id} className="border-b last:border-b-0 hover:bg-gray-50">
                       <td className="py-3 px-4">
                         <Link 
@@ -315,7 +321,13 @@ export default function AdminDashboardPage() {
                         {formatDate(student.createdAt)}
                       </td>
                     </tr>
-                  ))}
+                  )) : (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-gray-500">
+                        Aucune inscription récente
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </table>
             </div>
