@@ -1,0 +1,29 @@
+# Configuration Render.com pour SGR-UNIKIN
+# https://render.com/docs/blueprint-spec
+
+databases:
+  - name: sgr-unikin-db
+    databaseName: sgr_unikin
+    plan: free
+    region: frankfurt
+
+services:
+  - type: web
+    name: sgr-unikin
+    runtime: node
+    region: frankfurt
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: sgr-unikin-db
+          property: connectionString
+      - key: NEXTAUTH_SECRET
+        generateValue: true
+      - key: NEXTAUTH_URL
+        sync: false
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /

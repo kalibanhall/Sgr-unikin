@@ -1,12 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "npx prisma generate && npm run build",
+  "buildCommand": "npm run build",
   "installCommand": "npm install",
   "regions": ["cdg1"],
-  "env": {
-    "NEXTAUTH_URL": "https://sgr-unikin.vercel.app"
-  },
   "headers": [
     {
       "source": "/api/(.*)",
