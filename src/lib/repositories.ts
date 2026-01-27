@@ -731,6 +731,41 @@ export const facultyRepository = {
 // =====================================================
 
 export const adminReviewRepository = {
+  async findAll(studentId?: string): Promise<(AdminReview & { admin: User })[]> {
+    let sql = `SELECT ar.*, u.name as admin_name, u.email as admin_email
+       FROM admin_reviews ar
+       JOIN users u ON ar.admin_id = u.id`;
+    const params: string[] = [];
+    
+    if (studentId) {
+      sql += ` WHERE ar.student_id = $1`;
+      params.push(studentId);
+    }
+    
+    sql += ` ORDER BY ar.created_at DESC`;
+    
+    const result = await query(sql, params);
+    return result.rows as (AdminReview & { admin: User })[];
+  },
+
+  async findByAdminId(adminId: string, studentId?: string): Promise<(AdminReview & { admin: User })[]> {
+    let sql = `SELECT ar.*, u.name as admin_name, u.email as admin_email
+       FROM admin_reviews ar
+       JOIN users u ON ar.admin_id = u.id
+       WHERE ar.admin_id = $1`;
+    const params: string[] = [adminId];
+    
+    if (studentId) {
+      sql += ` AND ar.student_id = $2`;
+      params.push(studentId);
+    }
+    
+    sql += ` ORDER BY ar.created_at DESC`;
+    
+    const result = await query(sql, params);
+    return result.rows as (AdminReview & { admin: User })[];
+  },
+
   async findByStudentId(studentId: string): Promise<(AdminReview & { admin: User })[]> {
     const result = await query(
       `SELECT ar.*, u.name as admin_name, u.email as admin_email
