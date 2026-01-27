@@ -3,6 +3,37 @@ import { auth } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { userRepository, studentRepository, documentRepository } from "@/lib/repositories";
 
+interface StudentRow {
+  id: string;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  user_name: string;
+  user_created_at: Date;
+  email_verified: boolean;
+  phone: string | null;
+  date_of_birth: Date | null;
+  place_of_birth: string | null;
+  nationality: string | null;
+  gender: string | null;
+  address: string | null;
+  matricule: string | null;
+  faculty: string | null;
+  department: string | null;
+  study_level: string;
+  specialization: string | null;
+  thesis_title: string | null;
+  supervisor: string | null;
+  co_supervisor: string | null;
+  current_step: number;
+  max_steps: number;
+  dossier_status: string;
+  is_complete: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
 // GET - Récupérer un étudiant par ID
 export async function GET(
   request: NextRequest,
@@ -22,7 +53,7 @@ export async function GET(
     const { id } = await params;
 
     // Récupérer l'étudiant avec toutes ses infos
-    const result = await query(
+    const result = await query<StudentRow>(
       `SELECT s.*, u.email, u.name as user_name, u.created_at as user_created_at, u.email_verified
        FROM students s
        JOIN users u ON s.user_id = u.id

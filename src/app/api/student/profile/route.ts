@@ -1,7 +1,36 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { query } from "@/lib/db";
-import { userRepository, studentRepository } from "@/lib/repositories";
+import { studentRepository, userRepository } from "@/lib/repositories";
+
+interface StudentProfile {
+  id: string;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  user_name: string;
+  user_created_at: Date;
+  phone: string | null;
+  date_of_birth: Date | null;
+  place_of_birth: string | null;
+  nationality: string | null;
+  gender: string | null;
+  address: string | null;
+  matricule: string | null;
+  faculty: string | null;
+  department: string | null;
+  study_level: string;
+  specialization: string | null;
+  thesis_title: string | null;
+  supervisor: string | null;
+  co_supervisor: string | null;
+  current_step: number;
+  max_steps: number;
+  dossier_status: string;
+  is_complete: boolean;
+  created_at: Date;
+}
 
 // GET - Récupérer le profil de l'étudiant connecté
 export async function GET() {
@@ -16,7 +45,7 @@ export async function GET() {
     }
 
     // Récupérer l'étudiant avec ses documents et validations
-    const result = await query(
+    const result = await query<StudentProfile>(
       `SELECT 
         s.*,
         u.email,

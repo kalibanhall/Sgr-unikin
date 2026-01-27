@@ -1,8 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { query } from "@/lib/db";
-import { userRepository, studentRepository, documentRepository } from "@/lib/repositories";
+import { userRepository, documentRepository } from "@/lib/repositories";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+
+interface StudentWithEmail {
+  id: string;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string | null;
+  date_of_birth: Date | null;
+  place_of_birth: string | null;
+  nationality: string | null;
+  gender: string | null;
+  address: string | null;
+  matricule: string | null;
+  faculty: string | null;
+  department: string | null;
+  study_level: string;
+  specialization: string | null;
+  thesis_title: string | null;
+  supervisor: string | null;
+  co_supervisor: string | null;
+  current_step: number;
+  max_steps: number;
+  dossier_status: string;
+  is_complete: boolean;
+  created_at: Date;
+}
 
 // GET - Générer et télécharger le PDF du dossier
 export async function GET(
@@ -23,7 +50,7 @@ export async function GET(
     const { id } = await params;
 
     // Récupérer l'étudiant complet
-    const result = await query(
+    const result = await query<StudentWithEmail>(
       `SELECT s.*, u.email
        FROM students s
        JOIN users u ON s.user_id = u.id
@@ -157,7 +184,7 @@ export async function GET(
 
     const pdfBytes = await pdfDoc.save();
 
-    return new NextResponse(pdfBytes, {
+    return new NextResponse(Buffer.from(pdfBytes), {
       headers: {
         "Content-Type": "application/pdf",
         "Content-Disposition": `attachment; filename="dossier_${student.last_name}_${student.first_name}.pdf"`,

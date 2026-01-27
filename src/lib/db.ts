@@ -1,4 +1,4 @@
-import { Pool, PoolClient, QueryResult } from 'pg';
+import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
 
 // Configuration du pool de connexions PostgreSQL
 const pool = new Pool({
@@ -19,7 +19,7 @@ pool.on('error', (err) => {
 });
 
 // Fonction pour exécuter une requête simple
-export async function query<T = unknown>(
+export async function query<T extends QueryResultRow = QueryResultRow>(
   text: string,
   params?: unknown[]
 ): Promise<QueryResult<T>> {

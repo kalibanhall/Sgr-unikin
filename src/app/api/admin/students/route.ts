@@ -3,6 +3,24 @@ import { auth } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { userRepository } from "@/lib/repositories";
 
+interface StudentListRow {
+  id: string;
+  user_id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  user_created_at: Date;
+  documents_count: string;
+  faculty: string | null;
+  department: string | null;
+  study_level: string;
+  current_step: number;
+  max_steps: number;
+  is_complete: boolean;
+  dossier_status: string;
+  created_at: Date;
+}
+
 // GET - Récupérer tous les étudiants (admin seulement)
 export async function GET(request: NextRequest) {
   try {
@@ -68,7 +86,7 @@ export async function GET(request: NextRequest) {
     sql += ` GROUP BY s.id, u.email, u.created_at ORDER BY s.created_at DESC`;
     sql += ` LIMIT ${limit} OFFSET ${(page - 1) * limit}`;
 
-    const studentsResult = await query(sql, params);
+    const studentsResult = await query<StudentListRow>(sql, params);
 
     // Compter le total
     let countSql = 'SELECT COUNT(DISTINCT s.id) as count FROM students s JOIN users u ON s.user_id = u.id WHERE 1=1';
@@ -101,7 +119,7 @@ export async function GET(request: NextRequest) {
 
     // Récupérer les validations pour chaque étudiant
     const students = await Promise.all(
-      studentsResult.rows.map(async (student: Record<string, unknown>) => {
+      studentsResult.rows.map(async (student) => {
         const validationsResult = await query(
           'SELECT * FROM validations WHERE student_id = $1 ORDER BY step ASC',
           [student.id]

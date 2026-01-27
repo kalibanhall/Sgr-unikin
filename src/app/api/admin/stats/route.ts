@@ -3,6 +3,17 @@ import { auth } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { userRepository } from "@/lib/repositories";
 
+interface RecentStudent {
+  id: string;
+  first_name: string;
+  last_name: string;
+  study_level: string;
+  faculty: string;
+  current_step: number;
+  created_at: Date;
+  email: string;
+}
+
 export async function GET() {
   try {
     const session = await auth();
@@ -45,8 +56,8 @@ export async function GET() {
       query<{ current_step: number; count: string }>(
         'SELECT current_step, COUNT(*) as count FROM students GROUP BY current_step ORDER BY current_step'
       ),
-      query(
-        `SELECT s.*, u.email 
+      query<RecentStudent>(
+        `SELECT s.id, s.first_name, s.last_name, s.study_level, s.faculty, s.current_step, s.created_at, u.email 
          FROM students s 
          JOIN users u ON s.user_id = u.id 
          ORDER BY s.created_at DESC 

@@ -163,6 +163,15 @@ export const userRepository = {
 // STUDENT REPOSITORY
 // =====================================================
 
+// Interface pour les résultats de jointure student + user
+interface StudentWithUserRow extends Student {
+  email: string;
+  user_name: string;
+  role: string;
+  email_verified: boolean;
+  user_created_at: Date;
+}
+
 export const studentRepository = {
   async findById(id: string): Promise<Student | null> {
     const result = await query<Student>('SELECT * FROM students WHERE id = $1', [id]);
@@ -175,7 +184,7 @@ export const studentRepository = {
   },
 
   async findWithUser(studentId: string): Promise<(Student & { user: User }) | null> {
-    const result = await query<Student & User>(
+    const result = await query<StudentWithUserRow>(
       `SELECT s.*, u.email, u.name as user_name, u.role, u.email_verified, u.created_at as user_created_at
        FROM students s
        JOIN users u ON s.user_id = u.id

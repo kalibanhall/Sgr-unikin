@@ -4,6 +4,17 @@ import { query } from "@/lib/db";
 import { studentRepository, validationRepository } from "@/lib/repositories";
 import { sendEmail, getDossierReceivedEmailTemplate } from "@/lib/email";
 
+interface DossierStudent {
+  id: string;
+  dossier_status: string;
+  submitted_at: Date | null;
+  draft_expires_at: Date | null;
+  current_step: number;
+  is_complete: boolean;
+  documents_count: string;
+  first_name: string;
+}
+
 // GET - Récupérer le statut du dossier
 export async function GET() {
   try {
@@ -13,7 +24,7 @@ export async function GET() {
     }
 
     // Récupérer l'étudiant avec ses documents
-    const result = await query(
+    const result = await query<DossierStudent>(
       `SELECT s.*, COUNT(d.id) as documents_count
        FROM students s
        JOIN users u ON s.user_id = u.id
@@ -58,7 +69,7 @@ export async function POST(request: NextRequest) {
     const { action } = body; // "save_draft" ou "submit"
 
     // Récupérer l'étudiant avec ses documents
-    const result = await query(
+    const result = await query<DossierStudent>(
       `SELECT s.*, COUNT(d.id) as documents_count
        FROM students s
        JOIN users u ON s.user_id = u.id

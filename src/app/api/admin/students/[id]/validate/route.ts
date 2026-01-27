@@ -72,7 +72,7 @@ export async function POST(
     const dashboardUrl = `${baseUrl}/dashboard`;
     const emailTemplate = getValidationEmailTemplate(
       student.first_name,
-      status === "APPROVED",
+      status === "APPROVED" ? "approved" : "rejected",
       comment || "",
       dashboardUrl
     );
