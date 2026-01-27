@@ -1,0 +1,41 @@
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import { userRepository, appointmentRepository } from "@/lib/repositories";
+
+// PUT - Mettre à jour un rendez-vous (approuver/rejeter)
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
+    const user = await userRepository.findById(session.user.id);
+    if (user?.role !== "ADMIN" && user?.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
+    }
+
+    const { id } = await params;
+    const body = await request.json();
+    const { status, approvedDate, adminNote } = body;
+
+    const appointment = await appointmentRepository.findById(id);
+    if (!appointment) {
+      return NextResponse.json({ error: "Rendez-vous non trouvé" }, { status: 404 });
+    }
+
+    const updatedAppointment = await appointmentRepository.update(id, {
+      status: status as 'PENDING' | 'APPROVED' | 'REJECTED',
+      approvedDate: approvedDate ? new Date(approvedDate) : null,
+      adminNote: adminNote || null,
+    });
+
+    return NextResponse.json(updatedAppointment);
+  } catch (error) {
+    console.error("Erreur:", error);
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+  }
+}

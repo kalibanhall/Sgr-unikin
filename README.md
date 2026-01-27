@@ -1,36 +1,151 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SGR-UNIKIN - Plateforme d'inscription au 3ème cycle
+## Université de Kinshasa - Secrétariat Général à la Recherche
 
-## Getting Started
+## 🎓 Description
 
-First, run the development server:
+Plateforme complète de gestion des inscriptions au troisième cycle pour l'Université de Kinshasa (UNIKIN). Elle permet aux étudiants de soumettre leurs dossiers en ligne et aux administrateurs de gérer le processus de validation.
+
+## 🛠️ Technologies
+
+- **Frontend**: Next.js 16, React 19, TypeScript
+- **Styling**: Tailwind CSS v4
+- **Base de données**: PostgreSQL (client `pg` natif)
+- **Authentication**: NextAuth.js v5 (beta)
+- **PDF**: pdf-lib
+- **Déploiement**: Vercel / Render / Railway
+
+## 📋 Prérequis
+
+- Node.js 18+
+- npm ou yarn
+- PostgreSQL (local ou cloud: Supabase, Neon, Railway, etc.)
+
+## 🚀 Installation locale
+
+### 1. Cloner le projet
+
+```bash
+git clone https://github.com/kalibanhall/Sgr-unikin.git
+cd sgr-unikin
+```
+
+### 2. Installer les dépendances
+
+```bash
+npm install
+```
+
+### 3. Configurer les variables d'environnement
+
+Copiez le fichier `.env.example` en `.env` et configurez votre connexion PostgreSQL :
+
+```bash
+cp .env.example .env
+```
+
+Exemple de configuration :
+```env
+DATABASE_URL="postgresql://postgres:password@localhost:5432/sgr_unikin"
+NEXTAUTH_SECRET="votre-secret-genere-avec-openssl"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+### 4. Créer la base de données PostgreSQL
+
+Créez d'abord la base de données :
+```bash
+createdb sgr_unikin
+```
+
+Puis initialisez le schéma et les données :
+```bash
+psql -d sgr_unikin -f scripts/init-db.sql
+```
+
+### 5. Lancer le serveur de développement
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+L'application sera accessible sur http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🌐 Déploiement en Production
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Étape 1 : Créer une base PostgreSQL
 
-## Learn More
+Utilisez un service cloud comme :
+- [Supabase](https://supabase.com)
+- [Neon](https://neon.tech)
+- [Railway](https://railway.app)
+- [Render](https://render.com)
 
-To learn more about Next.js, take a look at the following resources:
+### Étape 2 : Initialiser la base de données
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Exécutez le script SQL sur votre base de données :
+```bash
+psql $DATABASE_URL -f scripts/init-db.sql
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Étape 3 : Déployer sur Vercel
 
-## Deploy on Vercel
+1. Connectez votre dépôt GitHub à [Vercel](https://vercel.com)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Configurez les variables d'environnement :
+   - `DATABASE_URL` : Connection string PostgreSQL
+   - `NEXTAUTH_SECRET` : Générez avec `openssl rand -base64 32`
+   - `NEXTAUTH_URL` : URL de votre app (ex: https://sgr-unikin.vercel.app)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Déployez !
+
+## 🔑 Comptes par défaut
+
+Après l'initialisation de la base de données, vous pouvez vous connecter avec :
+
+| Rôle | Email | Mot de passe |
+|------|-------|--------------|
+| Super Admin | sg.recherche@unikin.ac.cd | superadmin123 |
+| Admin | admin@unikin.ac.cd | admin123 |
+
+⚠️ **Important** : Changez ces mots de passe en production !
+
+## 📁 Structure du projet
+
+```
+sgr-unikin/
+├── scripts/
+│   └── init-db.sql            # Schéma PostgreSQL et données initiales
+├── src/
+│   ├── app/
+│   │   ├── api/               # Routes API
+│   │   ├── admin/             # Pages admin
+│   │   ├── dashboard/         # Pages étudiant
+│   │   └── ...
+│   ├── components/            # Composants UI
+│   ├── lib/
+│   │   ├── db.ts              # Connexion PostgreSQL
+│   │   ├── repositories.ts    # Opérations CRUD
+│   │   └── auth.ts            # Configuration NextAuth
+│   └── types/                 # Types TypeScript
+├── vercel.json                # Config Vercel
+└── ...
+```
+
+## 🔧 Scripts disponibles
+
+```bash
+npm run dev       # Serveur de développement
+npm run build     # Build de production
+npm run start     # Serveur de production
+npm run lint      # Linting ESLint
+```
+
+## 📞 Contact
+
+**Secrétariat Général à la Recherche - UNIKIN**
+- Email : sg.recherche@unikin.ac.cd
+- Site : https://sgr-unikin.com
+
+## 📄 Licence
+
+Ce projet est propriété de l'Université de Kinshasa.

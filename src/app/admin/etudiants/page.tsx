@@ -1,0 +1,303 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { STUDY_LEVELS } from "@/lib/constants";
+import { 
+  Search, 
+  Loader2, 
+  ChevronLeft, 
+  ChevronRight,
+  Eye,
+  FileText
+} from "lucide-react";
+import Link from "next/link";
+import { getStudyLevelLabel, formatDate } from "@/lib/utils";
+
+interface Student {
+  id: string;
+  firstName: string;
+  lastName: string;
+  studyLevel: string;
+  faculty: string;
+  currentStep: number;
+  isComplete: boolean;
+  createdAt: string;
+  user: {
+    email: string;
+  };
+  documents: Array<{ id: string }>;
+}
+
+interface Pagination {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
+export default function AdminStudentsPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  
+  const [students, setStudents] = useState<Student[]>([]);
+  const [pagination, setPagination] = useState<Pagination>({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+  const [stepFilter, setStepFilter] = useState(searchParams.get("step") || "");
+  const [levelFilter, setLevelFilter] = useState(searchParams.get("level") || "");
+
+  const fetchStudents = useCallback(async () => {
+    setLoading(true);
+    const params = new URLSearchParams();
+    params.set("page", pagination.page.toString());
+    params.set("limit", "20");
+    if (search) params.set("search", search);
+    if (stepFilter) params.set("step", stepFilter);
+    if (levelFilter) params.set("studyLevel", levelFilter);
+
+    try {
+      const res = await fetch(`/api/admin/students?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setStudents(data.students);
+        setPagination(data.pagination);
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, [pagination.page, search, stepFilter, levelFilter]);
+
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push("/login");
+    } else if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPER_ADMIN") {
+      router.push("/dashboard");
+    }
+  }, [status, session, router]);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setPagination((prev) => ({ ...prev, page: 1 }));
+    // fetchStudents sera appelé automatiquement grâce au useEffect
+  };
+
+  const resetFilters = () => {
+    setSearch("");
+    setStepFilter("");
+    setLevelFilter("");
+    setPagination((prev) => ({ ...prev, page: 1 }));
+  };
+
+  // Ajouter un useEffect pour relancer la recherche quand les filtres changent
+  useEffect(() => {
+    if (session?.user) {
+      const timer = setTimeout(() => {
+        fetchStudents();
+      }, 300); // Debounce de 300ms
+      return () => clearTimeout(timer);
+    }
+  }, [search, stepFilter, levelFilter, pagination.page, session, fetchStudents]);
+
+  if (status === "loading") {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900">Gestion des candidats</h1>
+          <p className="text-gray-900 mt-1">
+            {pagination.total} candidat(s) inscrit(s)
+          </p>
+        </div>
+
+        {/* Filters */}
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
+              <div className="flex-1">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Rechercher par nom ou email..."
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              
+              <Select value={stepFilter} onValueChange={setStepFilter}>
+                <SelectTrigger className="w-full md:w-40">
+                  <SelectValue placeholder="Étape" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Toutes les étapes</SelectItem>
+                  <SelectItem value="0">Étape 0</SelectItem>
+                  <SelectItem value="1">Étape 1</SelectItem>
+                  <SelectItem value="2">Étape 2</SelectItem>
+                  <SelectItem value="3">Étape 3</SelectItem>
+                  <SelectItem value="4">Complet</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select value={levelFilter} onValueChange={setLevelFilter}>
+                <SelectTrigger className="w-full md:w-40">
+                  <SelectValue placeholder="Niveau" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les niveaux</SelectItem>
+                  {STUDY_LEVELS.map((level) => (
+                    <SelectItem key={level.value} value={level.value}>
+                      {level.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+
+              <Button type="submit">Rechercher</Button>
+              <Button type="button" variant="outline" onClick={resetFilters}>
+                Réinitialiser
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+
+        {/* Table */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Liste des candidats</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {loading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+              </div>
+            ) : students.length === 0 ? (
+              <div className="text-center py-8 text-gray-900">
+                Aucun candidat trouvé
+              </div>
+            ) : (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b bg-gray-50">
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Nom</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Email</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Niveau</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Faculté</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Documents</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Étape</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Date</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {students.map((student) => (
+                        <tr key={student.id} className="border-b last:border-b-0 hover:bg-gray-50">
+                          <td className="py-3 px-4 font-medium text-gray-900">
+                            {student.firstName} {student.lastName}
+                          </td>
+                          <td className="py-3 px-4 text-gray-900 text-sm">
+                            {student.user.email}
+                          </td>
+                          <td className="py-3 px-4">
+                            <Badge variant="secondary">
+                              {getStudyLevelLabel(student.studyLevel)}
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-4 text-gray-900">
+                            {student.faculty || "—"}
+                          </td>
+                          <td className="py-3 px-4">
+                            {student.documents.length > 0 ? (
+                              <span className="flex items-center gap-1 text-blue-600">
+                                <FileText className="h-4 w-4" />
+                                {student.documents.length}
+                              </span>
+                            ) : (
+                              <span className="text-gray-500">—</span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4">
+                            <Badge
+                              variant={student.isComplete ? "success" : "pending"}
+                            >
+                              {student.currentStep}/4
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-4 text-gray-900 text-sm">
+                            {formatDate(student.createdAt)}
+                          </td>
+                          <td className="py-3 px-4">
+                            <Link href={`/admin/etudiants/${student.id}`}>
+                              <Button size="sm" variant="outline">
+                                <Eye className="h-4 w-4 mr-1" />
+                                Voir
+                              </Button>
+                            </Link>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Pagination */}
+                {pagination.totalPages > 1 && (
+                  <div className="flex items-center justify-between mt-6 pt-4 border-t">
+                    <p className="text-sm text-gray-900">
+                      Page {pagination.page} sur {pagination.totalPages}
+                    </p>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={pagination.page === 1}
+                        onClick={() => setPagination((prev) => ({ ...prev, page: prev.page - 1 }))}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        Précédent
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        disabled={pagination.page === pagination.totalPages}
+                        onClick={() => setPagination((prev) => ({ ...prev, page: prev.page + 1 }))}
+                      >
+                        Suivant
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

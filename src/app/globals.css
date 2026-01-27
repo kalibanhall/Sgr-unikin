@@ -1,26 +1,350 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafbfc;
+  --foreground: #1e293b;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ============================================
+   BASE STYLES
+   ============================================ */
 
 body {
-  background: var(--background);
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* ============================================
+   TYPOGRAPHY - TOUT EN NOIR/GRIS FONCÉ
+   ============================================ */
+
+h1, h2, h3, h4, h5, h6 {
+  color: #0f172a !important;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+p {
+  color: #334155 !important;
+  line-height: 1.7;
+}
+
+/* Exception pour le modal de déconnexion */
+.logout-modal h3,
+.logout-modal p,
+.logout-modal span {
+  color: inherit !important;
+}
+
+label {
+  color: #475569 !important;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.text-sm { color: #475569 !important; }
+.text-xs { color: #64748b !important; }
+
+/* Textes gris Tailwind -> Slate foncé */
+.text-gray-100, .text-gray-200, .text-gray-300,
+.text-gray-400, .text-gray-500, .text-gray-600,
+.text-gray-700, .text-gray-800, .text-gray-900,
+.text-slate-400, .text-slate-500, .text-slate-600 {
+  color: #475569 !important;
+}
+
+/* ============================================
+   FORMULAIRES
+   ============================================ */
+
+input, textarea, select {
+  color: #1e293b !important;
+  background-color: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15) !important;
+  outline: none !important;
+}
+
+input::placeholder, textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Select Radix */
+button[role="combobox"],
+[data-radix-select-trigger] {
+  color: #1e293b !important;
+  background-color: #ffffff !important;
+  border-radius: 0.75rem;
+}
+
+[role="listbox"] { background-color: #ffffff; border-radius: 0.75rem; }
+[role="option"] { color: #1e293b !important; }
+[role="option"]:hover, [role="option"][data-highlighted] {
+  background-color: #f1f5f9 !important;
+  color: #1e293b !important;
+}
+
+/* ============================================
+   NAVIGATION - BLEU PROFESSIONNEL
+   ============================================ */
+
+nav.bg-blue-900, header.bg-blue-900, .bg-blue-900 {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 100%) !important;
+}
+
+nav.bg-blue-900 *, header.bg-blue-900 *, .bg-blue-900 * {
+  color: #ffffff !important;
+}
+
+nav.bg-blue-900 a:hover, header.bg-blue-900 a:hover {
+  color: #bfdbfe !important;
+}
+
+/* ============================================
+   FOOTER - GRIS ÉLÉGANT
+   ============================================ */
+
+footer {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+}
+
+footer * { color: #cbd5e1 !important; }
+footer h1, footer h2, footer h3, footer h4, footer h5, footer h6 { color: #ffffff !important; }
+footer a:hover { color: #ffffff !important; }
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
+section.bg-linear-to-br,
+section[class*="from-blue-"],
+.from-blue-900, .via-blue-800,
+.bg-linear-to-br.from-blue-900 {
+  background: linear-gradient(135deg, #1e3a5f 0%, #1e40af 50%, #1e3a5f 100%) !important;
+}
+
+/* Texte blanc pour le hero, sauf les boutons avec classe spécifique */
+section.bg-linear-to-br > div > div > *:not(.hero-buttons):not(.hero-buttons *),
+section[class*="from-blue-"] h1,
+section[class*="from-blue-"] h2,
+section[class*="from-blue-"] p {
+  color: #ffffff !important;
+}
+
+/* Bouton blanc avec texte noir dans le hero */
+.hero-btn-white {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+.hero-btn-white * {
+  color: #000000 !important;
+}
+
+/* ============================================
+   BOUTONS
+   ============================================ */
+
+.bg-blue-600 {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+  transition: all 0.2s ease;
+}
+
+.bg-blue-600:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+}
+
+.bg-green-600 {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(22, 163, 74, 0.25);
+}
+
+.bg-red-500, .bg-red-600 {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.25);
+}
+
+.bg-amber-500 {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.25);
+}
+
+button.bg-white, button.border {
+  color: #334155 !important;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+button.bg-white:hover, button.border:hover {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1;
+}
+
+/* ============================================
+   CARTES
+   ============================================ */
+
+.bg-white {
+  background-color: #ffffff !important;
+  border-radius: 1rem;
+}
+
+.bg-gray-50, .bg-slate-50 {
+  background-color: #f8fafc !important;
+}
+
+/* ============================================
+   BADGES COLORÉS
+   ============================================ */
+
+.bg-blue-100 { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%) !important; color: #1e40af !important; }
+.bg-green-100 { background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%) !important; color: #166534 !important; }
+.bg-red-100 { background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%) !important; color: #991b1b !important; }
+.bg-amber-100 { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%) !important; color: #92400e !important; }
+.bg-emerald-50 { background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important; }
+
+/* ============================================
+   COULEURS SÉMANTIQUES
+   ============================================ */
+
+.text-green-600 { color: #16a34a !important; }
+.text-red-500, .text-red-600 { color: #dc2626 !important; }
+.text-amber-600 { color: #d97706 !important; }
+.text-blue-600 { color: #2563eb !important; }
+.text-emerald-500 { color: #10b981 !important; }
+
+/* ============================================
+   BORDURES POINTILLÉES
+   ============================================ */
+
+.border-dashed {
+  border-style: dashed !important;
+}
+
+.border-slate-300 { border-color: #cbd5e1 !important; }
+.border-emerald-400 { border-color: #34d399 !important; }
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.animate-in { animation: fadeIn 0.3s ease-out; }
+.animate-pulse { animation: pulse-soft 2s ease-in-out infinite; }
+
+/* ============================================
+   EFFETS DE SURVOL
+   ============================================ */
+
+.hover\:scale-\[1\.02\]:hover { transform: scale(1.02); }
+.hover\:scale-105:hover { transform: scale(1.05); }
+.active\:scale-95:active { transform: scale(0.95); }
+.active\:scale-\[0\.98\]:active { transform: scale(0.98); }
+
+/* ============================================
+   OMBRES
+   ============================================ */
+
+.shadow-sm { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
+.shadow { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06); }
+.shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+.shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+.shadow-xl { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
+.shadow-2xl { box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15); }
+
+/* ============================================
+   BACKDROP BLUR
+   ============================================ */
+
+.backdrop-blur-sm { backdrop-filter: blur(4px); }
+.backdrop-blur { backdrop-filter: blur(8px); }
+.backdrop-blur-xl { backdrop-filter: blur(24px); }
+
+/* ============================================
+   SCROLLBARS MODERNES
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+}
+
+/* ============================================
+   UTILITAIRES
+   ============================================ */
+
+.rounded-2xl { border-radius: 1rem; }
+.rounded-3xl { border-radius: 1.5rem; }
+.rounded-xl { border-radius: 0.75rem; }
+.rounded-full { border-radius: 9999px; }
+
+/* Transitions douces */
+* {
+  transition-property: color, background-color, border-color, transform, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+/* Désactiver transitions sur certains éléments */
+input, textarea, select, button, a {
+  transition-duration: 200ms;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 640px) {
+  h1 { font-size: 1.75rem !important; }
+  h2 { font-size: 1.5rem !important; }
+}
+
