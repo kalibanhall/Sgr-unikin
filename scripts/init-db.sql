@@ -231,13 +231,12 @@ CREATE TRIGGER update_admin_reviews_updated_at BEFORE UPDATE ON admin_reviews
 -- =====================================================
 
 -- Insertion des utilisateurs par défaut (mots de passe hashés avec bcrypt)
--- superadmin123 -> $2a$10$...
--- admin123 -> $2a$10$...
--- etudiant123 -> $2a$10$...
+-- superadmin123 -> $2b$10$mdGjPr.twFN49pVh/jqqM.DECDLXt.JTwiDpHhP1zRnWU4Vbe33k2
+-- admin123 -> $2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m
 
 INSERT INTO users (email, password, name, role, email_verified) VALUES
-('sg.recherche@unikin.ac.cd', '$2a$10$8KvD5FqkjP8x7y3q8Z1u5eYz9wKmN3rT6vB4xC2nM1pQ8sL7jH5iO', 'Super Admin SGR', 'SUPER_ADMIN', TRUE),
-('admin@unikin.ac.cd', '$2a$10$8KvD5FqkjP8x7y3q8Z1u5eYz9wKmN3rT6vB4xC2nM1pQ8sL7jH5iO', 'Administrateur', 'ADMIN', TRUE);
+('sg.recherche@unikin.ac.cd', '$2b$10$mdGjPr.twFN49pVh/jqqM.DECDLXt.JTwiDpHhP1zRnWU4Vbe33k2', 'Super Admin SGR', 'SUPER_ADMIN', TRUE),
+('admin@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Administrateur', 'ADMIN', TRUE);
 
 -- Insertion des facultés
 INSERT INTO faculties (name, code) VALUES
