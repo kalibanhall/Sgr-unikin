@@ -78,15 +78,58 @@ export async function GET() {
       [student.id]
     );
 
+    // Transformer les données en camelCase pour le frontend
     return NextResponse.json({
-      ...student,
+      id: student.id,
+      userId: student.user_id,
+      firstName: student.first_name,
+      lastName: student.last_name,
+      phone: student.phone,
+      dateOfBirth: student.date_of_birth,
+      placeOfBirth: student.place_of_birth,
+      nationality: student.nationality,
+      gender: student.gender,
+      address: student.address,
+      matricule: student.matricule,
+      faculty: student.faculty,
+      department: student.department,
+      studyLevel: student.study_level,
+      specialization: student.specialization,
+      thesisTitle: student.thesis_title,
+      supervisor: student.supervisor,
+      coSupervisor: student.co_supervisor,
+      currentStep: student.current_step,
+      maxSteps: student.max_steps,
+      dossierStatus: student.dossier_status,
+      isComplete: student.is_complete,
+      createdAt: student.created_at,
       user: {
         email: student.email,
         name: student.user_name,
         createdAt: student.user_created_at,
       },
-      documents: docsResult.rows,
-      validations: valsResult.rows,
+      documents: docsResult.rows.map((doc: Record<string, unknown>) => ({
+        id: doc.id,
+        studentId: doc.student_id,
+        type: doc.type,
+        filename: doc.filename,
+        originalName: doc.original_name,
+        mimeType: doc.mime_type,
+        size: doc.size,
+        path: doc.path,
+        status: doc.status,
+        uploadedAt: doc.uploaded_at,
+      })),
+      validations: valsResult.rows.map((val: Record<string, unknown>) => ({
+        id: val.id,
+        studentId: val.student_id,
+        step: val.step,
+        status: val.status,
+        comment: val.comment,
+        validatedBy: val.validated_by,
+        validatedAt: val.validated_at,
+        createdAt: val.created_at,
+      })),
     });
   } catch (error) {
     console.error("Erreur:", error);

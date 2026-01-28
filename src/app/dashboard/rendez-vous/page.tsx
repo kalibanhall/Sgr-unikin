@@ -18,7 +18,8 @@ import {
   CheckCircle,
   XCircle,
   AlertCircle,
-  User
+  User,
+  Users
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
@@ -34,12 +35,42 @@ interface Appointment {
   createdAt: string;
 }
 
-const targetRoles = [
-  { value: "SECRETAIRE_ACADEMIQUE", label: "Secrétaire Académique" },
-  { value: "CHEF_DEPARTEMENT", label: "Chef de Département" },
-  { value: "DIRECTEUR_RECHERCHE", label: "Directeur de la Recherche" },
-  { value: "SECRETAIRE_GENERAL", label: "Secrétaire Général" },
+// Destinataires des rendez-vous avec leurs informations
+const destinataires = [
+  { 
+    id: "SGR", 
+    nom: "Prof. MBAYA KALUBI", 
+    fonction: "SGR", 
+    description: "Gestion & validation",
+    initiales: "MK"
+  },
+  { 
+    id: "ASSISTANT_SGR", 
+    nom: "Prof. LUKUSA TSHIMANGA", 
+    fonction: "Assistant Principal du SGR", 
+    description: "Direction générale",
+    initiales: "LT"
+  },
+  { 
+    id: "CHARGE_OIPR", 
+    nom: "Prof. KASONGO MULENDA", 
+    fonction: "Chargé de l'OIPR", 
+    description: "Encadrement académique",
+    initiales: "KM"
+  },
+  { 
+    id: "CHARGE_PROJET", 
+    nom: "Prof. MBUYI KABANGE", 
+    fonction: "Chargé de Projet", 
+    description: "Affaires institutionnelles",
+    initiales: "MK"
+  },
 ];
+
+const targetRoles = destinataires.map(d => ({
+  value: d.id,
+  label: d.nom
+}));
 
 export default function AppointmentsPage() {
   const { data: session, status } = useSession();
@@ -125,7 +156,12 @@ export default function AppointmentsPage() {
   };
 
   const getTargetRoleLabel = (value: string) => {
-    return targetRoles.find(r => r.value === value)?.label || value;
+    const dest = destinataires.find(d => d.id === value);
+    return dest ? `${dest.nom} - ${dest.fonction}` : value;
+  };
+
+  const getDestinataire = (value: string) => {
+    return destinataires.find(d => d.id === value);
   };
 
   if (status === "loading" || loading) {
@@ -138,7 +174,7 @@ export default function AppointmentsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -152,6 +188,36 @@ export default function AppointmentsPage() {
             Nouveau rendez-vous
           </Button>
         </div>
+
+        {/* Tableau des destinataires */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              Responsables disponibles pour rendez-vous
+            </CardTitle>
+            <CardDescription>
+              Sélectionnez l&apos;un de ces responsables lors de votre demande de rendez-vous
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {destinataires.map((dest) => (
+                <div 
+                  key={dest.id} 
+                  className="bg-slate-800 rounded-xl p-4 text-center hover:bg-slate-700 transition-colors"
+                >
+                  {/* Avatar avec initiales */}
+                  <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mb-3 border-4 border-blue-300/30">
+                    <span className="text-2xl font-bold text-white">{dest.initiales}</span>
+                  </div>
+                  <h3 className="font-semibold text-white text-sm">{dest.fonction}</h3>
+                  <p className="text-red-400 text-xs italic mt-1">{dest.description}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Formulaire de demande */}
         {showForm && (
@@ -172,9 +238,9 @@ export default function AppointmentsPage() {
                         <SelectValue placeholder="Sélectionnez le destinataire" />
                       </SelectTrigger>
                       <SelectContent>
-                        {targetRoles.map((role) => (
-                          <SelectItem key={role.value} value={role.value}>
-                            {role.label}
+                        {destinataires.map((dest) => (
+                          <SelectItem key={dest.id} value={dest.id}>
+                            {dest.nom}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -244,18 +310,24 @@ export default function AppointmentsPage() {
               </CardContent>
             </Card>
           ) : (
-            appointments.map((appointment) => (
+            appointments.map((appointment) => {
+              const dest = getDestinataire(appointment.targetRole);
+              return (
               <Card key={appointment.id}>
                 <CardContent className="py-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start gap-4">
-                      <div className="p-2 bg-blue-100 rounded-lg">
-                        <User className="h-6 w-6 text-blue-600" />
+                      {/* Avatar du destinataire */}
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center border-2 border-blue-300/30">
+                        <span className="text-sm font-bold text-white">{dest?.initiales || "?"}</span>
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">{appointment.subject}</h3>
-                        <p className="text-sm text-gray-700">
-                          {getTargetRoleLabel(appointment.targetRole)}
+                        <p className="text-sm text-gray-700 font-medium">
+                          {dest?.nom || appointment.targetRole}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {dest?.fonction}
                         </p>
                         <div className="flex items-center gap-4 mt-2 text-sm text-gray-700">
                           <span className="flex items-center">
@@ -291,7 +363,8 @@ export default function AppointmentsPage() {
                   </div>
                 </CardContent>
               </Card>
-            ))
+            );
+            })
           )}
         </div>
 

@@ -14,7 +14,7 @@ export const APP_CONFIG = {
   // Contact
   contact: {
     email: process.env.NEXT_PUBLIC_CONTACT_EMAIL || "sg.recherche@unikin.ac.cd",
-    phone: process.env.NEXT_PUBLIC_CONTACT_PHONE || "+243 81 234 5678",
+    phone: process.env.NEXT_PUBLIC_CONTACT_PHONE || "+243 852024984",
     address: process.env.NEXT_PUBLIC_CONTACT_ADDRESS || "Université de Kinshasa, Mont Amba, Kinshasa, RDC",
     website: process.env.NEXT_PUBLIC_WEBSITE || "https://sgr-unikin.com",
   },

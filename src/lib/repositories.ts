@@ -598,12 +598,24 @@ export const appointmentRepository = {
     return result.rows[0] || null;
   },
 
-  async findByStudentId(studentId: string): Promise<Appointment[]> {
+  async findByStudentId(studentId: string): Promise<Record<string, unknown>[]> {
     const result = await query<Appointment>(
       'SELECT * FROM appointments WHERE student_id = $1 ORDER BY created_at DESC',
       [studentId]
     );
-    return result.rows;
+    // Transformer en camelCase pour le frontend
+    return result.rows.map(row => ({
+      id: row.id,
+      studentId: row.student_id,
+      targetRole: row.target_role,
+      subject: row.subject,
+      message: row.message,
+      requestedDate: row.requested_date,
+      approvedDate: row.approved_date,
+      adminNote: row.admin_note,
+      status: row.status,
+      createdAt: row.created_at,
+    }));
   },
 
   async findMany(options?: {
@@ -645,7 +657,7 @@ export const appointmentRepository = {
     subject: string;
     message?: string;
     requestedDate: Date;
-  }): Promise<Appointment> {
+  }): Promise<Record<string, unknown>> {
     const id = generateId();
     const result = await query<Appointment>(
       `INSERT INTO appointments (id, student_id, target_role, subject, message, requested_date)
@@ -653,7 +665,20 @@ export const appointmentRepository = {
        RETURNING *`,
       [id, data.studentId, data.targetRole, data.subject, data.message || null, data.requestedDate]
     );
-    return result.rows[0];
+    const row = result.rows[0];
+    // Transformer en camelCase pour le frontend
+    return {
+      id: row.id,
+      studentId: row.student_id,
+      targetRole: row.target_role,
+      subject: row.subject,
+      message: row.message,
+      requestedDate: row.requested_date,
+      approvedDate: row.approved_date,
+      adminNote: row.admin_note,
+      status: row.status,
+      createdAt: row.created_at,
+    };
   },
 
   async update(id: string, data: Partial<{
