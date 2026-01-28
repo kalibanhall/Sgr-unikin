@@ -15,6 +15,7 @@ services:
     plan: free
     buildCommand: npm install && npm run build
     startCommand: npm start
+    healthCheckPath: /api/health
     envVars:
       - key: DATABASE_URL
         fromDatabase:
@@ -26,4 +27,3 @@ services:
         sync: false
       - key: NODE_ENV
         value: production
-    healthCheckPath: /

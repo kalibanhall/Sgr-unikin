@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/providers";
@@ -9,15 +9,80 @@ import Script from "next/script";
 
 const inter = Inter({
   subsets: ["latin"],
+  display: "swap", // Optimisation du chargement des fonts
 });
+
+// Viewport configuration pour mobile
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#1e3a8a" },
+    { media: "(prefers-color-scheme: dark)", color: "#1e3a8a" },
+  ],
+};
 
 export const metadata: Metadata = {
   title: "SGR-UNIKIN | Secrétariat Général à la Recherche",
   description: "Plateforme d'inscription et de gestion des étudiants du troisième cycle de l'Université de Kinshasa",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "SGR-UNIKIN",
+    startupImage: [
+      {
+        url: "/icons/icon-512x512.png",
+        media: "(device-width: 320px) and (device-height: 568px)",
+      },
+    ],
+  },
+  formatDetection: {
+    telephone: true,
+    email: true,
+    address: false,
+  },
   icons: {
-    icon: "/logo-unikin.png",
+    icon: [
+      { url: "/icons/icon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
+    ],
     shortcut: "/logo-unikin.png",
-    apple: "/logo-unikin.png",
+    apple: [
+      { url: "/icons/icon-180x180.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
+  openGraph: {
+    type: "website",
+    locale: "fr_CD",
+    url: "https://sgr-unikin.onrender.com",
+    siteName: "SGR-UNIKIN",
+    title: "SGR-UNIKIN | Secrétariat Général à la Recherche",
+    description: "Plateforme d'inscription et de gestion des étudiants du troisième cycle de l'Université de Kinshasa",
+    images: [
+      {
+        url: "/logo-unikin.png",
+        width: 512,
+        height: 512,
+        alt: "Logo SGR-UNIKIN",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "SGR-UNIKIN | Secrétariat Général à la Recherche",
+    description: "Plateforme d'inscription et de gestion des étudiants du troisième cycle de l'Université de Kinshasa",
+    images: ["/logo-unikin.png"],
+  },
+  other: {
+    "mobile-web-app-capable": "yes",
+    "apple-mobile-web-app-capable": "yes",
+    "application-name": "SGR-UNIKIN",
+    "apple-mobile-web-app-title": "SGR-UNIKIN",
+    "msapplication-TileColor": "#1e3a8a",
+    "msapplication-config": "/browserconfig.xml",
   },
 };
 
@@ -96,6 +161,38 @@ export default function RootLayout({
               e.preventDefault();
               return false;
             });
+          `}
+        </Script>
+        {/* Service Worker Registration */}
+        <Script id="sw-registration" strategy="afterInteractive">
+          {`
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js')
+                  .then(function(registration) {
+                    console.log('SW registered: ', registration.scope);
+                    
+                    // Vérifier les mises à jour
+                    registration.addEventListener('updatefound', () => {
+                      const newWorker = registration.installing;
+                      if (newWorker) {
+                        newWorker.addEventListener('statechange', () => {
+                          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            // Nouvelle version disponible
+                            if (confirm('Une nouvelle version est disponible. Actualiser?')) {
+                              newWorker.postMessage({ type: 'SKIP_WAITING' });
+                              window.location.reload();
+                            }
+                          }
+                        });
+                      }
+                    });
+                  })
+                  .catch(function(error) {
+                    console.log('SW registration failed: ', error);
+                  });
+              });
+            }
           `}
         </Script>
       </body>

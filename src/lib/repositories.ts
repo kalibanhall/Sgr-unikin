@@ -694,9 +694,13 @@ export const appointmentRepository = {
 // =====================================================
 
 export const facultyRepository = {
-  async findAll(): Promise<Faculty[]> {
+  async findAll(): Promise<(Faculty & { _count: { departments: number } })[]> {
     const result = await query<Faculty>('SELECT * FROM faculties ORDER BY name ASC');
-    return result.rows;
+    // Retourner avec un count de 0 par défaut (pas de table departments)
+    return result.rows.map(faculty => ({
+      ...faculty,
+      _count: { departments: 0 }
+    }));
   },
 
   async findById(id: string): Promise<Faculty | null> {
