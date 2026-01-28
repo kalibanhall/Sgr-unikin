@@ -41,9 +41,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }
 
         // Vérifier si l'email est vérifié (sauf pour les admins)
-        if (!user.email_verified && user.role === "STUDENT") {
-          throw new Error("EMAIL_NOT_VERIFIED");
-        }
+        // TEMPORAIREMENT DÉSACTIVÉ - à réactiver quand SMTP configuré
+        // if (!user.email_verified && user.role === "STUDENT") {
+        //   throw new Error("EMAIL_NOT_VERIFIED");
+        // }
 
         // Récupérer l'ID étudiant si applicable
         let studentId: string | undefined;
@@ -85,6 +86,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   session: {
     strategy: "jwt",
+    maxAge: 24 * 60 * 60, // 24 heures en secondes
   },
   trustHost: true,
 });

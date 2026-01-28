@@ -3,7 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Home, ArrowLeft } from "lucide-react";
+import { BackButton } from "@/components/ui/back-button";
+import { Home } from "lucide-react";
 
 export default function NotFound() {
   return (
@@ -26,10 +27,9 @@ export default function NotFound() {
               Retour à l&apos;accueil
             </Button>
           </Link>
-          <Button variant="outline" onClick={() => window.history.back()}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
+          <BackButton fallbackUrl="/">
             Page précédente
-          </Button>
+          </BackButton>
         </div>
       </div>
     </div>

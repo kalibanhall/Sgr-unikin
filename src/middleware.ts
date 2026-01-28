@@ -8,6 +8,21 @@ export function middleware(request: NextRequest) {
   const sessionToken = request.cookies.get("authjs.session-token") 
     || request.cookies.get("__Secure-authjs.session-token");
 
+  // Si l'utilisateur est connecté et essaie d'accéder aux pages de connexion/inscription
+  if (sessionToken) {
+    // Rediriger vers le dashboard approprié si déjà connecté
+    if (path === "/login" || path === "/register") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+    if (path === "/admin/login") {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+    // Empêcher l'accès à la page d'accueil pour les utilisateurs connectés
+    if (path === "/") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+  }
+
   // Pages protégées pour les étudiants
   if (path.startsWith("/dashboard")) {
     if (!sessionToken) {
@@ -27,5 +42,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*"],
+  matcher: ["/", "/login", "/register", "/admin/login", "/dashboard/:path*", "/admin/:path*"],
 };

@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -357,9 +358,9 @@ export default function RegisterPage() {
               Se connecter
             </Link>
           </div>
-          <Link href="/" className="text-sm text-gray-700 hover:text-gray-900 font-medium">
+          <BackButton variant="ghost" fallbackUrl="/" showIcon={false} className="text-sm text-gray-700 hover:text-gray-900 font-medium">
             ← Retour à l&apos;accueil
-          </Link>
+          </BackButton>
         </CardFooter>
       </Card>
     </div>

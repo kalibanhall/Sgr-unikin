@@ -5,13 +5,13 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { ValidationSteps } from "@/components/student/validation-steps";
 import { DocumentPreview } from "@/components/student/document-preview";
 import { 
   Loader2, 
-  ArrowLeft, 
   CheckCircle, 
   XCircle, 
   FileText,
@@ -27,7 +27,6 @@ import {
   Shield,
   Clock
 } from "lucide-react";
-import Link from "next/link";
 import { getStudyLevelLabel, formatDate } from "@/lib/utils";
 
 interface StudentDetail {
@@ -224,9 +223,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center">
             <h2 className="text-xl font-semibold mb-2">Candidat non trouvé</h2>
-            <Link href="/admin/etudiants">
-              <Button variant="outline">Retour à la liste</Button>
-            </Link>
+            <BackButton fallbackUrl="/admin/etudiants">Retour à la liste</BackButton>
           </CardContent>
         </Card>
       </div>
@@ -238,10 +235,9 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/admin/etudiants" className="text-blue-600 hover:underline flex items-center gap-1 mb-4">
-            <ArrowLeft className="h-4 w-4" />
+          <BackButton fallbackUrl="/admin/etudiants" variant="ghost" className="text-blue-600 hover:underline mb-4">
             Retour à la liste
-          </Link>
+          </BackButton>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">

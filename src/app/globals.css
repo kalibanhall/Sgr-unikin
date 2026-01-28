@@ -348,3 +348,28 @@ input, textarea, select, button, a {
   h2 { font-size: 1.5rem !important; }
 }
 
+/* ============================================
+   PROTECTION ANTI-COPIE
+   ============================================ */
+
+/* Désactiver la sélection de texte sur tout le site */
+body {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Permettre la sélection uniquement dans les champs de formulaire */
+input, textarea, [contenteditable="true"] {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
+/* Désactiver le menu contextuel (clic droit) */
+body {
+  -webkit-touch-callout: none;
+}
+

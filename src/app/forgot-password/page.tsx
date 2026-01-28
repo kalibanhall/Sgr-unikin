@@ -1,14 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { KeyRound, Mail, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 
 export default function ForgotPasswordPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
+
+  const handleBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push('/login');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,13 +68,13 @@ export default function ForgotPasswordPage() {
               Vérifiez également votre dossier spam si vous ne voyez pas l&apos;email dans quelques minutes.
             </p>
             
-            <Link
-              href="/login"
+            <button
+              onClick={handleBack}
               className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
               Retour à la connexion
-            </Link>
+            </button>
           </div>
         </div>
       </div>
@@ -141,13 +150,13 @@ export default function ForgotPasswordPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <Link
-              href="/login"
+            <button
+              onClick={handleBack}
               className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
               Retour à la connexion
-            </Link>
+            </button>
           </div>
         </div>
 

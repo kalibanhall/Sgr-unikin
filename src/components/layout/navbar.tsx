@@ -15,7 +15,6 @@ import {
   Users
 } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { LogoutButton } from "@/components/ui/logout-dialog";
 
 export function Navbar() {
@@ -24,6 +23,10 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPER_ADMIN";
+  const isAdminPage = pathname.startsWith("/admin");
+
+  // Déterminer l'URL du logo en fonction de l'état de connexion
+  const logoHref = session ? (isAdmin ? "/admin" : "/dashboard") : "/";
 
   const publicLinks = [
     { href: "/", label: "Accueil" },
@@ -53,7 +56,7 @@ export function Navbar() {
         <div className="flex justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link href={logoHref} className="flex items-center space-x-2">
               <Image src="/logo-unikin.png" alt="Logo UNIKIN" width={40} height={40} className="h-10 w-10" />
               <div className="hidden sm:block">
                 <div className="font-bold text-lg">SGR-UNIKIN</div>
@@ -66,7 +69,8 @@ export function Navbar() {
           <div className="hidden md:flex items-center space-x-4">
             {!session ? (
               <>
-                {publicLinks.map((link) => (
+                {/* Ne pas afficher les liens publics sur les pages admin */}
+                {!isAdminPage && publicLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
@@ -79,18 +83,22 @@ export function Navbar() {
                     {link.label}
                   </Link>
                 ))}
-                <Link 
-                  href="/login"
-                  className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-white text-white hover:bg-white hover:text-blue-900 transition-all duration-200 cursor-pointer"
-                >
-                  Connexion
-                </Link>
-                <Link 
-                  href="/register"
-                  className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-500 transition-all duration-200 cursor-pointer"
-                >
-                  S&apos;inscrire
-                </Link>
+                {!isAdminPage && (
+                  <>
+                    <Link 
+                      href="/login"
+                      className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium border border-white text-white hover:bg-white hover:text-blue-900 transition-all duration-200 cursor-pointer"
+                    >
+                      Connexion
+                    </Link>
+                    <Link 
+                      href="/register"
+                      className="inline-flex items-center justify-center h-9 px-3 rounded-md text-sm font-medium bg-green-600 text-white hover:bg-green-500 transition-all duration-200 cursor-pointer"
+                    >
+                      S&apos;inscrire
+                    </Link>
+                  </>
+                )}
               </>
             ) : (
               <>
@@ -134,7 +142,8 @@ export function Navbar() {
           <div className="px-2 pt-2 pb-3 space-y-1">
             {!session ? (
               <>
-                {publicLinks.map((link) => (
+                {/* Ne pas afficher les liens publics sur les pages admin */}
+                {!isAdminPage && publicLinks.map((link) => (
                   <Link
                     key={link.href}
                     href={link.href}
@@ -144,20 +153,24 @@ export function Navbar() {
                     {link.label}
                   </Link>
                 ))}
-                <Link
-                  href="/login"
-                  className="block px-3 py-2 rounded-md text-base font-medium text-blue-100 hover:bg-blue-700 hover:text-white"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Connexion
-                </Link>
-                <Link
-                  href="/register"
-                  className="block px-3 py-2 rounded-md text-base font-medium bg-green-600 text-white hover:bg-green-700"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  S&apos;inscrire
-                </Link>
+                {!isAdminPage && (
+                  <>
+                    <Link
+                      href="/login"
+                      className="block px-3 py-2 rounded-md text-base font-medium text-blue-100 hover:bg-blue-700 hover:text-white"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Connexion
+                    </Link>
+                    <Link
+                      href="/register"
+                      className="block px-3 py-2 rounded-md text-base font-medium bg-green-600 text-white hover:bg-green-700"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      S&apos;inscrire
+                    </Link>
+                  </>
+                )}
               </>
             ) : (
               <>

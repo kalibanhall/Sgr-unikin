@@ -387,7 +387,7 @@ function DocumentCategory({
         <div className={`w-10 h-10 rounded-xl bg-linear-to-br ${colorClasses[category.color] || colorClasses.amber} flex items-center justify-center shadow-lg`}>
           <FolderOpen className="h-5 w-5 text-white" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900">{category.icon} {category.title}</h2>
+        <h2 className="text-xl font-bold text-slate-900">{category.title}</h2>
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

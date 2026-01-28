@@ -7,6 +7,7 @@ import { signIn } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
+import { BackButton } from "@/components/ui/back-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -49,9 +50,9 @@ export default function AdminLoginPage() {
           router.push("/admin");
           router.refresh();
         } else {
-          // Déconnecter si pas admin
-          await signIn("credentials", { redirect: false });
-          setError("Accès réservé aux administrateurs");
+          // Déconnecter immédiatement si pas admin
+          await fetch("/api/auth/signout", { method: "POST" });
+          setError("Accès réservé aux administrateurs. Veuillez utiliser la connexion candidat.");
         }
       }
     } catch {
@@ -137,9 +138,9 @@ export default function AdminLoginPage() {
               Connexion candidat
             </Link>
           </div>
-          <Link href="/" className="text-sm text-gray-600 hover:text-gray-900 font-medium">
+          <BackButton variant="ghost" fallbackUrl="/" showIcon={false} className="text-sm text-gray-600 hover:text-gray-900 font-medium">
             ← Retour à l&apos;accueil
-          </Link>
+          </BackButton>
         </CardFooter>
       </Card>
     </div>
