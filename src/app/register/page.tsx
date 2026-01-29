@@ -290,8 +290,8 @@ export default function RegisterPage() {
                 <div className="space-y-2">
                   <Label>Niveau d&apos;études *</Label>
                   <Select
+                    value={watch("studyLevel")}
                     onValueChange={(value) => setValue("studyLevel", value as "LICENCE" | "MASTER" | "DOCTORAT")}
-                    defaultValue="DOCTORAT"
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Sélectionnez le niveau" />

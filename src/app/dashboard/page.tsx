@@ -152,12 +152,12 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-8">
+    <div className="min-h-screen bg-linear-to-b from-gray-50 to-gray-100 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Bienvenue, {profile.firstName} {profile.lastName}
+            Bienvenue{profile.firstName || profile.lastName ? `, ${profile.firstName || ""} ${profile.lastName || ""}` : " !"}
           </h1>
           <p className="text-gray-900 mt-1">
             Gérez votre dossier d&apos;inscription au troisième cycle
@@ -171,7 +171,7 @@ export default function DashboardPage() {
               <div>
                 <CardTitle>État de votre dossier</CardTitle>
                 <CardDescription>
-                  Inscrit depuis le {formatDate(profile.createdAt)}
+                  Inscrit depuis {formatDate(profile.createdAt)}
                 </CardDescription>
               </div>
               {getStatusBadge()}
