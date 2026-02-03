@@ -118,7 +118,7 @@ export async function GET() {
         size: doc.size,
         path: doc.path,
         status: doc.status,
-        uploadedAt: doc.uploaded_at ? new Date(doc.uploaded_at).toISOString() : null,
+        uploadedAt: doc.uploaded_at ? new Date(doc.uploaded_at as string | number | Date).toISOString() : null,
       })),
       validations: valsResult.rows.map((val: Record<string, unknown>) => ({
         id: val.id,
@@ -127,8 +127,8 @@ export async function GET() {
         status: val.status,
         comment: val.comment,
         validatedBy: val.validated_by,
-        validatedAt: val.validated_at ? new Date(val.validated_at).toISOString() : null,
-        createdAt: val.created_at ? new Date(val.created_at).toISOString() : null,
+        validatedAt: val.validated_at ? new Date(val.validated_at as string | number | Date).toISOString() : null,
+        createdAt: val.created_at ? new Date(val.created_at as string | number | Date).toISOString() : null,
       })),
     });
   } catch (error) {

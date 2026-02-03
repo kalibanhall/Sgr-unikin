@@ -1,8 +1,20 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// Domaine principal de production
+const PRODUCTION_DOMAIN = "sgr.unikin.ac.cd";
+
 export function middleware(request: NextRequest) {
+  const hostname = request.headers.get("host") || "";
   const path = request.nextUrl.pathname;
+
+  // Rediriger le domaine Render vers le domaine principal
+  if (hostname.includes("onrender.com") && process.env.NODE_ENV === "production") {
+    const newUrl = new URL(request.url);
+    newUrl.host = PRODUCTION_DOMAIN;
+    newUrl.protocol = "https";
+    return NextResponse.redirect(newUrl, 301);
+  }
   
   // Vérifier le cookie de session NextAuth
   const sessionToken = request.cookies.get("authjs.session-token") 

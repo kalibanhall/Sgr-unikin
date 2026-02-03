@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { 
   X, 
@@ -39,6 +39,20 @@ export function DocumentPreview({ documents, onClose, initialIndex = 0 }: Docume
   const isPDF = currentDoc?.mimeType === "application/pdf";
   const isImage = currentDoc?.mimeType?.startsWith("image/");
 
+  const goToPrevious = useCallback(() => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      setZoom(100);
+    }
+  }, [currentIndex]);
+
+  const goToNext = useCallback(() => {
+    if (currentIndex < documents.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+      setZoom(100);
+    }
+  }, [currentIndex, documents.length]);
+
   useEffect(() => {
     setLoading(true);
   }, [currentIndex]);
@@ -51,21 +65,7 @@ export function DocumentPreview({ documents, onClose, initialIndex = 0 }: Docume
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentIndex, documents.length]);
-
-  const goToPrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      setZoom(100);
-    }
-  };
-
-  const goToNext = () => {
-    if (currentIndex < documents.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-      setZoom(100);
-    }
-  };
+  }, [onClose, goToPrevious, goToNext]);
 
   const handleZoomIn = () => setZoom(Math.min(zoom + 25, 200));
   const handleZoomOut = () => setZoom(Math.max(zoom - 25, 50));
