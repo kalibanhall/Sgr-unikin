@@ -4,12 +4,15 @@ import type { NextRequest } from "next/server";
 // Domaine principal de production
 const PRODUCTION_DOMAIN = "sgr.unikin.ac.cd";
 
+// Activer la redirection vers le domaine personnalisé une fois configuré
+const ENABLE_DOMAIN_REDIRECT = false;
+
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
   const path = request.nextUrl.pathname;
 
-  // Rediriger le domaine Render vers le domaine principal
-  if (hostname.includes("onrender.com") && process.env.NODE_ENV === "production") {
+  // Rediriger le domaine Render vers le domaine principal (désactivé tant que le DNS n'est pas configuré)
+  if (ENABLE_DOMAIN_REDIRECT && hostname.includes("onrender.com") && process.env.NODE_ENV === "production") {
     const newUrl = new URL(request.url);
     newUrl.host = PRODUCTION_DOMAIN;
     newUrl.protocol = "https";
