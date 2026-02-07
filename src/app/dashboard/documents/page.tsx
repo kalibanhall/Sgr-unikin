@@ -365,7 +365,7 @@ function DocumentCategory({
   uploading,
   canEdit,
 }: {
-  category: { id: string; title: string; icon: string; color: string };
+  category: { id: string; title: string; color: string };
   documents: Document[];
   onUpload: (file: File, type: string) => void;
   onDelete: (id: string) => void;
