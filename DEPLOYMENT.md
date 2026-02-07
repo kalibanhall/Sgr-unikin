@@ -96,7 +96,7 @@ Dans le service web, ajoutez :
 |----------|--------|
 | `DATABASE_URL` | (copié depuis PostgreSQL > Connect > Internal URL) |
 | `NEXTAUTH_SECRET` | `openssl rand -base64 32` |
-| `NEXTAUTH_URL` | `https://sgr-unikin.onrender.com` |
+| `NEXTAUTH_URL` | `https://sgr.unikin.ac.cd` |
 | `NODE_ENV` | `production` |
 
 #### 4. Initialiser la base

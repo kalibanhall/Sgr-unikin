@@ -4,8 +4,8 @@ import type { NextRequest } from "next/server";
 // Domaine principal de production
 const PRODUCTION_DOMAIN = "sgr.unikin.ac.cd";
 
-// Activer la redirection vers le domaine personnalisé une fois configuré
-const ENABLE_DOMAIN_REDIRECT = false;
+// Activer la redirection vers le domaine personnalisé
+const ENABLE_DOMAIN_REDIRECT = true;
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";

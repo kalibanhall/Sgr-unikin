@@ -57,7 +57,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "fr_CD",
-    url: "https://sgr-unikin.onrender.com",
+    url: "https://sgr.unikin.ac.cd",
     siteName: "SGR-UNIKIN",
     title: "SGR-UNIKIN | Secrétariat Général à la Recherche",
     description: "Plateforme d'inscription et de gestion des étudiants du troisième cycle de l'Université de Kinshasa",

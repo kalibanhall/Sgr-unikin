@@ -144,7 +144,7 @@ npm run lint      # Linting ESLint
 
 **Secrétariat Général à la Recherche - UNIKIN**
 - Email : sg.recherche@unikin.ac.cd
-- Site : https://sgr-unikin.com
+- Site : https://sgr.unikin.ac.cd
 
 ## 📄 Licence
 
