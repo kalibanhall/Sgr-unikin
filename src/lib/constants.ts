@@ -14,6 +14,52 @@ export const FACULTIES = [
   { code: "ODONTO", name: "Faculté d'Odontostomatologie" },
 ];
 
+// Types d'inscription/demande disponibles
+export const REGISTRATION_TYPES = [
+  { 
+    value: "INSCRIPTION_THESE", 
+    label: "Inscription en Thèse de Doctorat", 
+    shortLabel: "Inscription Thèse",
+    description: "Pour s'inscrire au programme de Doctorat (PhD)",
+    studyLevel: "DOCTORAT",
+    category: "inscription",
+    color: "blue",
+    icon: "🎓"
+  },
+  { 
+    value: "SOUTENANCE_THESE", 
+    label: "Demande de Soutenance de Thèse", 
+    shortLabel: "Soutenance Thèse",
+    description: "Pour solliciter la soutenance de votre thèse de Doctorat",
+    studyLevel: "DOCTORAT",
+    category: "soutenance",
+    color: "emerald",
+    icon: "🏆"
+  },
+  { 
+    value: "INSCRIPTION_MASTER", 
+    label: "Inscription en Master/DES/DEA", 
+    shortLabel: "Inscription Master",
+    description: "Pour s'inscrire au programme de Master (DES/DEA)",
+    studyLevel: "MASTER",
+    category: "inscription",
+    suspended: true, // Inscriptions suspendues
+    color: "violet",
+    icon: "📜"
+  },
+  { 
+    value: "SOUTENANCE_MASTER", 
+    label: "Demande de Soutenance de Master", 
+    shortLabel: "Soutenance Master",
+    description: "Pour solliciter la soutenance de votre mémoire de Master",
+    studyLevel: "MASTER",
+    category: "soutenance",
+    color: "amber",
+    icon: "✍️"
+  },
+];
+
+// Anciens niveaux d'études (pour compatibilité)
 export const STUDY_LEVELS = [
   { value: "MASTER", label: "Master / DEA / DES" },
   { value: "DOCTORAT", label: "Doctorat (PhD)" },
