@@ -11,8 +11,10 @@ import {
   ArrowRight,
   CheckCircle,
   GraduationCap,
-  Shield,
-  Clock
+  Clock,
+  MessageCircle,
+  ScrollText,
+  PenTool
 } from "lucide-react";
 import { APP_CONFIG } from "@/lib/config";
 
@@ -79,6 +81,42 @@ export default function HomePage() {
     { value: "24/7", label: "Accès en ligne", icon: Clock },
   ];
 
+  // Services d'inscription et soutenance
+  const services = [
+    {
+      title: "Inscription Thèse",
+      description: "Inscrivez-vous au programme de Doctorat (Thèse)",
+      icon: GraduationCap,
+      href: "/register?type=these",
+      color: "from-blue-600 to-blue-700",
+      bgColor: "bg-blue-50",
+    },
+    {
+      title: "Soutenance Thèse",
+      description: "Sollicitez votre soutenance de thèse de Doctorat",
+      icon: Award,
+      href: "/register?type=soutenance-these",
+      color: "from-emerald-600 to-emerald-700",
+      bgColor: "bg-emerald-50",
+    },
+    {
+      title: "Inscription Master",
+      description: "Inscrivez-vous au programme de Master/DES/DEA",
+      icon: ScrollText,
+      href: "/register?type=master",
+      color: "from-violet-600 to-violet-700",
+      bgColor: "bg-violet-50",
+    },
+    {
+      title: "Soutenance Master",
+      description: "Sollicitez votre soutenance de mémoire de Master",
+      icon: PenTool,
+      href: "/register?type=soutenance-master",
+      color: "from-amber-600 to-amber-700",
+      bgColor: "bg-amber-50",
+    },
+  ];
+
   return (
     <div className="min-h-screen">
       {/* Hero Section - Design moderne avec dégradé subtil */}
@@ -118,14 +156,21 @@ export default function HomePage() {
                 className="hero-btn-white inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105"
               >
                 <BookOpen className="mr-2 h-5 w-5" />
-                Comment s&apos;inscrire
+                Comment s&apos;inscrire en 3ème cycle
               </a>
               <a 
-                href="/register"
-                className="inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl border-2 border-blue-400 shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105 bg-blue-600"
+                href="/contact"
+                className="inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl border-2 border-white/30 shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105 hover:bg-white/10"
               >
-                Créer un compte
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <MessageCircle className="mr-2 h-5 w-5" />
+                Contactez-nous
+              </a>
+              <a 
+                href="/guide-soutenance"
+                className="inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl border-2 border-emerald-400 shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105 bg-emerald-600 hover:bg-emerald-700"
+              >
+                <Award className="mr-2 h-5 w-5" />
+                Comment solliciter une soutenance
               </a>
             </div>
           </div>
@@ -182,6 +227,56 @@ export default function HomePage() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section Services d'inscription */}
+      <section className="py-20 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Nos Services
+            </h2>
+            <p className="text-slate-600 max-w-2xl mx-auto">
+              Choisissez le type d&apos;inscription ou de soutenance qui correspond à votre situation
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {services.map((service, index) => (
+              <Link key={index} href={service.href} className="group">
+                <Card className="h-full border-0 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 overflow-hidden">
+                  <div className={`h-2 bg-linear-to-r ${service.color}`} />
+                  <CardHeader className="text-center pt-8">
+                    <div className={`w-16 h-16 mx-auto rounded-2xl ${service.bgColor} flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                      <service.icon className={`h-8 w-8 bg-linear-to-br ${service.color} bg-clip-text text-transparent`} style={{ color: service.color.includes('blue') ? '#2563eb' : service.color.includes('emerald') ? '#059669' : service.color.includes('violet') ? '#7c3aed' : '#d97706' }} />
+                    </div>
+                    <CardTitle className="text-xl text-slate-900">{service.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center pb-8">
+                    <CardDescription className="text-slate-600 mb-4">{service.description}</CardDescription>
+                    <span className={`inline-flex items-center text-sm font-semibold bg-linear-to-r ${service.color} bg-clip-text`} style={{ color: service.color.includes('blue') ? '#2563eb' : service.color.includes('emerald') ? '#059669' : service.color.includes('violet') ? '#7c3aed' : '#d97706' }}>
+                      Commencer
+                      <ArrowRight className="ml-1 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </CardContent>
+                </Card>
+              </Link>
+            ))}
+          </div>
+
+          {/* Bouton WhatsApp */}
+          <div className="mt-12 text-center">
+            <a 
+              href="https://wa.me/243852024984" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
+            >
+              <MessageCircle className="h-6 w-6" />
+              Contactez-nous sur WhatsApp
+            </a>
           </div>
         </div>
       </section>
