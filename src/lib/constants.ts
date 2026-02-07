@@ -24,7 +24,7 @@ export const REGISTRATION_TYPES = [
     studyLevel: "DOCTORAT",
     category: "inscription",
     color: "blue",
-    icon: "🎓"
+    iconName: "GraduationCap"
   },
   { 
     value: "SOUTENANCE_THESE", 
@@ -34,7 +34,7 @@ export const REGISTRATION_TYPES = [
     studyLevel: "DOCTORAT",
     category: "soutenance",
     color: "emerald",
-    icon: "🏆"
+    iconName: "Award"
   },
   { 
     value: "INSCRIPTION_MASTER", 
@@ -45,7 +45,7 @@ export const REGISTRATION_TYPES = [
     category: "inscription",
     suspended: true, // Inscriptions suspendues
     color: "violet",
-    icon: "📜"
+    iconName: "ScrollText"
   },
   { 
     value: "SOUTENANCE_MASTER", 
@@ -55,7 +55,7 @@ export const REGISTRATION_TYPES = [
     studyLevel: "MASTER",
     category: "soutenance",
     color: "amber",
-    icon: "✍️"
+    iconName: "PenTool"
   },
 ];
 
@@ -190,14 +190,12 @@ export const DOCUMENT_CATEGORIES_DOCTORAT = [
   {
     id: "inscription_these",
     title: "INSCRIPTION À LA THÈSE",
-    icon: "📁",
     color: "amber",
     documents: DOCTORAT_INSCRIPTION_DOCS,
   },
   {
     id: "soutenance_these",
     title: "SOUTENANCE DE LA THÈSE",
-    icon: "📁",
     color: "emerald",
     documents: DOCTORAT_SOUTENANCE_DOCS,
   },
@@ -207,7 +205,6 @@ export const DOCUMENT_CATEGORIES_MASTER = [
   {
     id: "inscription_master",
     title: "SOUTENANCE MASTER/ED",
-    icon: "📁",
     color: "amber",
     suspended: false,
     documents: MASTER_INSCRIPTION_DOCS,

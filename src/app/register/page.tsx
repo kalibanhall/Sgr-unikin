@@ -15,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { registerSchema, RegisterInput } from "@/lib/validations";
 import { FACULTIES, REGISTRATION_TYPES, MASTER_SUSPENSION_ALERT } from "@/lib/constants";
 import Image from "next/image";
-import { Loader2, AlertCircle, CheckCircle, ShieldAlert, FileCheck, ArrowLeft, Info } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle, ShieldAlert, FileCheck, ArrowLeft, Info, GraduationCap, Award, ScrollText, PenTool } from "lucide-react";
 
 function RegisterContent() {
   const { data: session, status } = useSession();
@@ -255,21 +255,29 @@ function RegisterContent() {
 
   // ÉTAPE 1 : Sélection du type d'inscription si pas encore choisi
   if (!selectedType) {
+    // Map des icônes
+    const iconMap: Record<string, React.ReactNode> = {
+      GraduationCap: <GraduationCap className="h-6 w-6" />,
+      Award: <Award className="h-6 w-6" />,
+      ScrollText: <ScrollText className="h-6 w-6" />,
+      PenTool: <PenTool className="h-6 w-6" />,
+    };
+
     return (
-      <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 py-12 px-4">
-        <div className="max-w-4xl mx-auto">
-          <Card className="mb-8">
-            <CardHeader className="text-center">
-              <div className="flex justify-center mb-4">
-                <Image src="/logo-unikin.png" alt="Logo UNIKIN" width={80} height={80} className="h-20 w-20" />
+      <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 py-8 px-4">
+        <div className="max-w-3xl mx-auto">
+          <Card>
+            <CardHeader className="text-center pb-4">
+              <div className="flex justify-center mb-3">
+                <Image src="/logo-unikin.png" alt="Logo UNIKIN" width={64} height={64} className="h-16 w-16" />
               </div>
-              <CardTitle className="text-2xl">Créer un compte</CardTitle>
-              <CardDescription className="text-base">
-                Choisissez le type de demande pour lequel vous souhaitez vous inscrire
+              <CardTitle className="text-xl">Créer un compte</CardTitle>
+              <CardDescription>
+                Choisissez le type de demande
               </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="pt-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {REGISTRATION_TYPES.map((regType) => (
                   <button
                     key={regType.value}
@@ -280,9 +288,9 @@ function RegisterContent() {
                         setSelectedType(regType.value);
                       }
                     }}
-                    className={`relative p-6 rounded-xl border-2 text-left transition-all duration-200 hover:shadow-lg ${
+                    className={`relative p-4 rounded-lg border-2 text-left transition-all duration-200 hover:shadow-md ${
                       regType.suspended 
-                        ? "border-gray-200 bg-gray-50 opacity-60" 
+                        ? "border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed" 
                         : regType.color === "blue" 
                           ? "border-blue-200 hover:border-blue-400 hover:bg-blue-50"
                           : regType.color === "emerald"
@@ -293,51 +301,50 @@ function RegisterContent() {
                     }`}
                   >
                     {regType.suspended && (
-                      <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                      <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">
                         Suspendu
                       </span>
                     )}
-                    <div className="flex items-start gap-4">
-                      <span className="text-3xl">{regType.icon}</span>
-                      <div className="flex-1">
-                        <h3 className={`font-semibold text-lg mb-1 ${regType.suspended ? "text-gray-500" : "text-gray-900"}`}>
+                    <div className="flex items-start gap-3">
+                      <div className={`p-2 rounded-lg ${
+                        regType.color === "blue" ? "bg-blue-100 text-blue-600" :
+                        regType.color === "emerald" ? "bg-emerald-100 text-emerald-600" :
+                        regType.color === "violet" ? "bg-violet-100 text-violet-600" :
+                        "bg-amber-100 text-amber-600"
+                      }`}>
+                        {iconMap[regType.iconName]}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className={`font-semibold text-sm mb-0.5 ${regType.suspended ? "text-gray-500" : "text-gray-900"}`}>
                           {regType.shortLabel}
                         </h3>
-                        <p className={`text-sm ${regType.suspended ? "text-gray-400" : "text-gray-600"}`}>
+                        <p className={`text-xs ${regType.suspended ? "text-gray-400" : "text-gray-500"}`}>
                           {regType.description}
                         </p>
-                        <span className={`inline-block mt-2 text-xs font-medium px-2 py-1 rounded ${
-                          regType.studyLevel === "DOCTORAT" 
-                            ? "bg-blue-100 text-blue-700" 
-                            : "bg-purple-100 text-purple-700"
-                        }`}>
-                          {regType.studyLevel === "DOCTORAT" ? "Niveau Doctorat" : "Niveau Master"}
-                        </span>
                       </div>
                     </div>
                   </button>
                 ))}
               </div>
 
-              <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                <div className="flex items-start gap-3">
-                  <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
-                  <div className="text-sm text-blue-800">
-                    <strong>Important :</strong> Choisissez le type correspondant à votre demande. 
-                    L&apos;inscription concerne l&apos;entrée dans un programme, tandis que la soutenance 
-                    concerne la finalisation de votre parcours.
-                  </div>
+              <div className="mt-4 p-3 bg-slate-50 rounded-lg border border-slate-200">
+                <div className="flex items-start gap-2">
+                  <Info className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
+                  <p className="text-xs text-slate-600">
+                    <strong>Note :</strong> L&apos;inscription concerne l&apos;entrée dans un programme. 
+                    La soutenance concerne la finalisation de votre parcours.
+                  </p>
                 </div>
               </div>
             </CardContent>
-            <CardFooter className="flex flex-col space-y-4">
-              <div className="text-sm text-center text-gray-900">
+            <CardFooter className="flex flex-col space-y-3 pt-2">
+              <div className="text-sm text-center text-gray-700">
                 Vous avez déjà un compte ?{" "}
                 <Link href="/login" className="text-blue-600 hover:underline font-medium">
                   Se connecter
                 </Link>
               </div>
-              <BackButton variant="ghost" fallbackUrl="/" showIcon={false} className="text-sm text-gray-700 hover:text-gray-900 font-medium">
+              <BackButton variant="ghost" fallbackUrl="/" showIcon={false} className="text-xs text-gray-500 hover:text-gray-700">
                 ← Retour à l&apos;accueil
               </BackButton>
             </CardFooter>
@@ -347,21 +354,29 @@ function RegisterContent() {
     );
   }
 
+  // Map des icônes pour le formulaire
+  const formIconMap: Record<string, React.ReactNode> = {
+    GraduationCap: <GraduationCap className="h-4 w-4" />,
+    Award: <Award className="h-4 w-4" />,
+    ScrollText: <ScrollText className="h-4 w-4" />,
+    PenTool: <PenTool className="h-4 w-4" />,
+  };
+
   // ÉTAPE 2 : Formulaire d'inscription
   return (
-    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-blue-100 py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-blue-100 py-8 px-4">
       <Card className="w-full max-w-2xl">
-        <CardHeader className="text-center">
-          <div className="flex justify-center mb-4">
-            <Image src="/logo-unikin.png" alt="Logo UNIKIN" width={80} height={80} className="h-20 w-20" />
+        <CardHeader className="text-center pb-4">
+          <div className="flex justify-center mb-3">
+            <Image src="/logo-unikin.png" alt="Logo UNIKIN" width={64} height={64} className="h-16 w-16" />
           </div>
-          <CardTitle className="text-2xl">Inscription</CardTitle>
+          <CardTitle className="text-xl">Inscription</CardTitle>
           <CardDescription>
             {currentRegType?.label}
           </CardDescription>
           {/* Badge du type sélectionné */}
-          <div className="flex justify-center mt-3">
-            <span className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${
+          <div className="flex justify-center mt-2">
+            <span className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium ${
               currentRegType?.color === "blue" 
                 ? "bg-blue-100 text-blue-700"
                 : currentRegType?.color === "emerald"
@@ -370,13 +385,13 @@ function RegisterContent() {
                     ? "bg-amber-100 text-amber-700"
                     : "bg-violet-100 text-violet-700"
             }`}>
-              <span>{currentRegType?.icon}</span>
+              {currentRegType?.iconName && formIconMap[currentRegType.iconName]}
               {currentRegType?.shortLabel}
             </span>
           </div>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             {error && (
               <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md flex items-center gap-2">
                 <AlertCircle className="h-5 w-5 shrink-0" />
@@ -386,7 +401,7 @@ function RegisterContent() {
 
             {/* Informations personnelles */}
             <div className="space-y-4">
-              <h3 className="font-medium text-gray-900">Informations personnelles</h3>
+              <h3 className="font-medium text-gray-900 text-sm">Informations personnelles</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">Prénom *</Label>

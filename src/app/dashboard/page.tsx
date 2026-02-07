@@ -117,7 +117,7 @@ export default function DashboardPage() {
     if (profile.dossierStatus === "SUBMITTED" || profile.validations.length > 0) {
       return (
         <Badge className="bg-amber-500 text-white text-base px-4 py-2 font-bold shadow-md border-2 border-amber-600">
-          🔄 En cours de validation
+          En cours de validation
         </Badge>
       );
     }

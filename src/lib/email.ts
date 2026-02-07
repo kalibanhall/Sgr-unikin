@@ -219,8 +219,8 @@ export function getValidationEmailTemplate(
           </div>
           <div style="padding: 32px;">
             <div style="text-align: center; margin-bottom: 24px;">
-              <div style="display: inline-block; background: ${isApproved ? '#dcfce7' : '#fee2e2'}; border-radius: 50%; padding: 16px;">
-                <span style="font-size: 32px;">${isApproved ? '🎉' : '⚠️'}</span>
+              <div style="display: inline-block; background: ${isApproved ? '#dcfce7' : '#fee2e2'}; border-radius: 50%; padding: 16px; width: 64px; height: 64px;">
+                <span style="font-size: 32px; line-height: 32px;">${isApproved ? '✓' : '!'}</span>
               </div>
             </div>
             <h2 style="color: #1e293b; margin: 0 0 16px 0; text-align: center;">
@@ -315,7 +315,7 @@ export function getPasswordResetEmailTemplate(name: string, resetUrl: string) {
           <tr>
             <td style="background: linear-gradient(135deg, #1e3a5f 0%, #2d5a87 100%); padding: 30px; text-align: center;">
               <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: bold;">
-                🔐 Réinitialisation de mot de passe
+                Réinitialisation de mot de passe
               </h1>
               <p style="color: #93c5fd; margin: 10px 0 0 0; font-size: 14px;">
                 SGR UNIKIN - Secrétariat Général à la Recherche
