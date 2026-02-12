@@ -117,7 +117,7 @@ export async function GET(request: NextRequest) {
     const countResult = await query<{ count: string }>(countSql, countParams);
     const total = parseInt(countResult.rows[0].count);
 
-    // Récupérer les validations pour chaque étudiant
+    // Récupérer les validations pour chaque étudiant et transformer en camelCase
     const students = await Promise.all(
       studentsResult.rows.map(async (student) => {
         const validationsResult = await query(
@@ -125,13 +125,29 @@ export async function GET(request: NextRequest) {
           [student.id]
         );
         return {
-          ...student,
+          id: student.id,
+          firstName: student.first_name,
+          lastName: student.last_name,
+          studyLevel: student.study_level,
+          faculty: student.faculty,
+          department: student.department,
+          currentStep: student.current_step,
+          maxSteps: student.max_steps,
+          isComplete: student.is_complete,
+          dossierStatus: student.dossier_status,
+          createdAt: student.created_at,
           user: {
             email: student.email,
             createdAt: student.user_created_at,
           },
           documents: [],
-          validations: validationsResult.rows,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          validations: validationsResult.rows.map((v: any) => ({
+            step: v.step,
+            status: v.status,
+            comment: v.comment,
+            validatedAt: v.validated_at,
+          })),
         };
       })
     );

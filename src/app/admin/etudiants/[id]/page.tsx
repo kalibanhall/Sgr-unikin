@@ -190,7 +190,11 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
       const res = await fetch(`/api/admin/students/${student.id}/validate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action, comment }),
+        body: JSON.stringify({
+          step: student.currentStep,
+          status: action === "approve" ? "APPROVED" : "REJECTED",
+          comment,
+        }),
       });
 
       if (res.ok) {

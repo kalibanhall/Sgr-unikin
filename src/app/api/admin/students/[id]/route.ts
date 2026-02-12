@@ -30,6 +30,7 @@ interface StudentRow {
   max_steps: number;
   dossier_status: string;
   is_complete: boolean;
+  submitted_at: Date | null;
   created_at: Date;
   updated_at: Date;
 }
@@ -76,16 +77,54 @@ export async function GET(
       [id]
     );
 
+    // Transformer en camelCase pour le frontend
     return NextResponse.json({
-      ...student,
+      id: student.id,
+      userId: student.user_id,
+      firstName: student.first_name,
+      lastName: student.last_name,
+      dateOfBirth: student.date_of_birth,
+      placeOfBirth: student.place_of_birth,
+      nationality: student.nationality,
+      gender: student.gender,
+      phone: student.phone,
+      address: student.address,
+      matricule: student.matricule,
+      faculty: student.faculty,
+      department: student.department,
+      studyLevel: student.study_level,
+      specialization: student.specialization,
+      thesisTitle: student.thesis_title,
+      supervisor: student.supervisor,
+      coSupervisor: student.co_supervisor,
+      currentStep: student.current_step,
+      maxSteps: student.max_steps,
+      isComplete: student.is_complete,
+      dossierStatus: student.dossier_status,
+      submittedAt: student.submitted_at,
+      createdAt: student.created_at,
       user: {
         email: student.email,
         name: student.user_name,
         createdAt: student.user_created_at,
         emailVerified: student.email_verified,
       },
-      documents,
-      validations: validationsResult.rows,
+      documents: documents.map((doc) => ({
+        id: doc.id,
+        name: doc.name,
+        type: doc.type,
+        url: doc.url,
+        size: doc.size,
+        mimeType: doc.mime_type,
+        uploadedAt: doc.uploaded_at,
+      })),
+      validations: validationsResult.rows.map((v) => ({
+        step: v.step,
+        status: v.status,
+        comment: v.comment,
+        validatedAt: v.validated_at,
+        validatedBy: v.validated_by,
+      })),
     });
   } catch (error) {
     console.error("Erreur:", error);

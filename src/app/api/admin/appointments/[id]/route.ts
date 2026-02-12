@@ -27,11 +27,24 @@ export async function PUT(
       return NextResponse.json({ error: "Rendez-vous non trouvé" }, { status: 404 });
     }
 
-    const updatedAppointment = await appointmentRepository.update(id, {
+    const updated = await appointmentRepository.update(id, {
       status: status as 'PENDING' | 'APPROVED' | 'REJECTED',
       approvedDate: approvedDate ? new Date(approvedDate) : null,
       adminNote: adminNote || null,
     });
+
+    // Transformer en camelCase pour le frontend
+    const updatedAppointment = updated ? {
+      id: updated.id,
+      targetRole: updated.target_role,
+      subject: updated.subject,
+      message: updated.message,
+      requestedDate: updated.requested_date,
+      approvedDate: updated.approved_date,
+      adminNote: updated.admin_note,
+      status: updated.status,
+      createdAt: updated.created_at,
+    } : null;
 
     return NextResponse.json(updatedAppointment);
   } catch (error) {

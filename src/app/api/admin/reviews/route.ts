@@ -28,7 +28,22 @@ export async function GET(request: NextRequest) {
       reviews = await adminReviewRepository.findByAdminId(user.id, studentId || undefined);
     }
 
-    return NextResponse.json(reviews);
+    // Transformer en camelCase pour le frontend
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const formattedReviews = (reviews as any[]).map((r) => ({
+      id: r.id,
+      step: r.step,
+      decision: r.decision,
+      comment: r.comment,
+      createdAt: r.created_at,
+      admin: {
+        name: r.admin_name || null,
+        email: r.admin_email,
+        role: r.role || 'ADMIN',
+      },
+    }));
+
+    return NextResponse.json(formattedReviews);
   } catch (error) {
     console.error("Erreur GET reviews:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
@@ -95,7 +110,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(review);
+    // Transformer en camelCase
+    const formattedReview = {
+      id: review.id,
+      step: review.step,
+      decision: review.decision,
+      comment: review.comment,
+      createdAt: review.created_at,
+    };
+
+    return NextResponse.json(formattedReview);
   } catch (error) {
     console.error("Erreur POST reviews:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

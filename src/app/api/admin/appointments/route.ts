@@ -17,7 +17,29 @@ export async function GET() {
 
     const appointments = await appointmentRepository.findMany();
 
-    return NextResponse.json(appointments);
+    // Transformer en camelCase pour le frontend
+    const formattedAppointments = appointments.map((a: Record<string, unknown>) => ({
+      id: a.id,
+      targetRole: a.target_role,
+      subject: a.subject,
+      message: a.message,
+      requestedDate: a.requested_date,
+      approvedDate: a.approved_date,
+      adminNote: a.admin_note,
+      status: a.status,
+      createdAt: a.created_at,
+      student: {
+        firstName: a.first_name,
+        lastName: a.last_name,
+        studyLevel: a.study_level,
+        faculty: a.faculty,
+        user: {
+          email: a.email,
+        },
+      },
+    }));
+
+    return NextResponse.json(formattedAppointments);
   } catch (error) {
     console.error("Erreur:", error);
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });

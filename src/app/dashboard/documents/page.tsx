@@ -11,7 +11,8 @@ import {
   DOCTORAT_INSCRIPTION_DOCS,
   DOCTORAT_SOUTENANCE_DOCS,
   MASTER_INSCRIPTION_DOCS,
-  MASTER_SOUTENANCE_DOCS
+  MASTER_SOUTENANCE_DOCS,
+  CHECKLIST_PDFS
 } from "@/lib/constants";
 import { 
   Loader2,
@@ -24,7 +25,8 @@ import {
   User,
   AlertTriangle,
   Upload,
-  FolderOpen
+  FolderOpen,
+  Download
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -355,6 +357,17 @@ function getDocsByCategory(categoryId: string): DocType[] {
   }
 }
 
+// Obtenir le lien de la checklist pour une catégorie
+function getChecklistForCategory(categoryId: string, studyLevel: string): { label: string; url: string } | null {
+  if (categoryId === "soutenance_these" && studyLevel === "DOCTORAT") {
+    return CHECKLIST_PDFS.DOCTORAT.soutenance;
+  }
+  if (categoryId === "soutenance_master" && studyLevel === "MASTER") {
+    return CHECKLIST_PDFS.MASTER.soutenance;
+  }
+  return null;
+}
+
 // Section de catégorie de documents
 function DocumentCategory({
   category,
@@ -364,6 +377,7 @@ function DocumentCategory({
   onPreview,
   uploading,
   canEdit,
+  studyLevel,
 }: {
   category: { id: string; title: string; color: string };
   documents: Document[];
@@ -372,8 +386,10 @@ function DocumentCategory({
   onPreview: (doc: Document) => void;
   uploading: string | null;
   canEdit: boolean;
+  studyLevel: string;
 }) {
   const categoryDocs = getDocsByCategory(category.id);
+  const checklist = getChecklistForCategory(category.id, studyLevel);
 
   const colorClasses: Record<string, string> = {
     amber: "from-amber-500 to-orange-500",
@@ -383,11 +399,28 @@ function DocumentCategory({
 
   return (
     <div className="mb-10">
-      <div className="flex items-center gap-3 mb-5">
-        <div className={`w-10 h-10 rounded-xl bg-linear-to-br ${colorClasses[category.color] || colorClasses.amber} flex items-center justify-center shadow-lg`}>
-          <FolderOpen className="h-5 w-5 text-white" />
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-5">
+        <div className="flex items-center gap-3">
+          <div className={`w-10 h-10 rounded-xl bg-linear-to-br ${colorClasses[category.color] || colorClasses.amber} flex items-center justify-center shadow-lg`}>
+            <FolderOpen className="h-5 w-5 text-white" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900">{category.title}</h2>
         </div>
-        <h2 className="text-xl font-bold text-slate-900">{category.title}</h2>
+        {checklist && (
+          <a
+            href={checklist.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl 
+              bg-blue-50 text-blue-700 border border-blue-200 
+              hover:bg-blue-100 hover:border-blue-300 transition-all duration-200
+              shadow-sm hover:shadow"
+          >
+            <Download className="h-4 w-4" />
+            {checklist.label}
+          </a>
+        )}
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -556,7 +589,7 @@ export default function DocumentsPage() {
   // Compter les documents requis
   const allDocs = isDoctorat 
     ? [...DOCTORAT_INSCRIPTION_DOCS, ...DOCTORAT_SOUTENANCE_DOCS]
-    : [...MASTER_INSCRIPTION_DOCS];
+    : [...MASTER_SOUTENANCE_DOCS];
   const requiredCount = allDocs.filter((d) => d.required).length;
   const uploadedRequiredCount = allDocs.filter((d) => 
     d.required && documents.some(doc => doc.type === d.type)
@@ -596,6 +629,7 @@ export default function DocumentsPage() {
             onPreview={setPreviewDoc}
             uploading={uploading}
             canEdit={canEdit}
+            studyLevel={profile?.studyLevel || ""}
           />
         ))}
 

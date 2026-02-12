@@ -159,27 +159,27 @@ export const MASTER_INSCRIPTION_DOCS = [
 ];
 
 export const MASTER_SOUTENANCE_DOCS = [
-  { type: "mas_sout_lettre_transmission", label: "Lettre de transmission du dossier adressée au SGR par le décanat", required: true, accept: ".pdf" },
-  { type: "mas_sout_notification", label: "Notification ou décision rectorale d'inscription au DES/DEA", required: true, accept: ".pdf" },
-  { type: "mas_sout_pv_adoption", label: "PV de la réunion d'adoption du projet et d'approbation du comité d'encadrement par le conseil de Faculté", required: true, accept: ".pdf" },
-  { type: "mas_sout_pv_presentation", label: "PV de la presentation du projet et constitution du comité d'encadrement par le Département", required: true, accept: ".pdf" },
-  { type: "mas_sout_avis_favorable", label: "Avis favorable d'autorisation du dépôt du travail par les Membres du Comité d'encadrement", required: true, accept: ".pdf" },
-  { type: "mas_sout_lettre_promoteur", label: "Lettre de transmission du dossier par le Promoteur, adressée au Chef de Département", required: true, accept: ".pdf" },
-  { type: "mas_sout_bordereaux", label: "Les bordereaux de paiement des frais académiques", required: true, accept: ".pdf" },
+  { type: "mas_sout_lettre_transmission", label: "Lettre de transmission du dossier adressée au SGR par le Doyen", required: true, accept: ".pdf" },
+  { type: "mas_sout_notification_inscription", label: "La notification ou la décision rectorale de l'inscription en thèse", required: true, accept: ".pdf" },
+  { type: "mas_sout_pv_approbation_jury", label: "PV d'approbation du jury de thèse par le Conseil de Faculté", required: true, accept: ".pdf" },
+  { type: "mas_sout_pv_constitution_jury", label: "PV de constitution du jury validé par le Conseil de Département", required: true, accept: ".pdf" },
+  { type: "mas_sout_pv_approbation_comite", label: "PV d'approbation du comité d'encadrement par la Faculté", required: true, accept: ".pdf" },
+  { type: "mas_sout_pv_constitution_comite", label: "PV de constitution du comité d'encadrement par le Conseil de Département", required: true, accept: ".pdf" },
+  { type: "mas_sout_avis_favorable", label: "Avis favorable d'autorisation du dépôt du travail par les Membres du Comité d'encadrement adressée au Chef de Département", required: true, accept: ".pdf" },
+  { type: "mas_sout_lettre_proposition_jury", label: "Lettre de proposition du jury et transmission du dossier par le Promoteur, adressée au Chef de Département", required: true, accept: ".pdf" },
+  { type: "mas_sout_bordereaux_paiement", label: "Les bordereaux de paiement des frais académiques", required: true, accept: ".pdf" },
   { type: "mas_sout_preuve_analyse", label: "Preuves de payement frais d'analyse du dossier", required: true, accept: ".pdf,.jpg,.jpeg,.png" },
-  { type: "mas_sout_publication", label: "Au moins une publication dans une Revue indexée du domaine de recherche", required: true, accept: ".pdf" },
-  { type: "mas_sout_dissertation", label: "Deux volumes de dissertation avec synthèse en français, anglais et langue nationale", required: true, accept: ".pdf" },
-  { type: "mas_sout_paiement_antiplagiat", label: "Bordereau de paiement de frais pour analyse anti plagiat", required: true, accept: ".pdf,.jpg,.jpeg,.png" },
-  { type: "mas_sout_certificat_antiplagiat", label: "Certificat d'analyse anti plagiat (maximum 15% de similitude)", required: true, accept: ".pdf" },
+  { type: "mas_sout_publication", label: "Au moins une publication dans une Revue indexée du domaine de recherche en rapport avec le travail (comme premier auteur)", required: true, accept: ".pdf" },
+  { type: "mas_sout_dissertation", label: "Deux volumes de dissertation avec synthèse en français, anglais et une des langues nationales", required: true, accept: ".pdf" },
+  { type: "mas_sout_paiement_antiplagiat", label: "Bordereau de paiement de frais pour analyse anti-plagiat", required: true, accept: ".pdf,.jpg,.jpeg,.png" },
+  { type: "mas_sout_certificat_antiplagiat", label: "Certificat d'analyse anti-plagiat (maximum 15% de similitude)", required: true, accept: ".pdf" },
   { type: "mas_sout_arrete_ministeriel", label: "Le dernier arrêté ministériel de nomination de chaque membre du jury", required: true, accept: ".pdf" },
-  { type: "mas_sout_specialite_jury", label: "Indication de la spécialité de chaque membre avec max 2 du même Département dans le Jury", required: true, accept: ".pdf" },
-  { type: "mas_sout_pv_seminaires", label: "Procès-verbaux des séminaires (exposés) sur l'avancement de la recherche", required: true, accept: ".pdf" },
+  { type: "mas_sout_specialite_jury", label: "Indication de la spécialité de chaque membre avec un maximum de 2 Membres du même Département dans le Jury (Et l'établissement d'origine)", required: true, accept: ".pdf" },
   { type: "mas_sout_cv", label: "Curriculum vitae", required: true, accept: ".pdf" },
-  { type: "mas_sout_piece_identite", label: "Copie de la pièce identité", required: true, accept: ".pdf,.jpg,.jpeg,.png" },
   { type: "mas_sout_releve_cycles", label: "Les relevés des côtes du 1er et 2ème cycle", required: true, accept: ".pdf" },
   { type: "mas_sout_diplome_licence", label: "Copie certifiée conforme de diplôme de Licence", required: true, accept: ".pdf" },
-  { type: "mas_sout_attestation_nationalite", label: "Attestation de nationalité", required: true, accept: ".pdf" },
   { type: "mas_sout_attestation_bonne_vie", label: "Attestations de bonne vie et mœurs", required: true, accept: ".pdf" },
+  { type: "mas_sout_certificat_nationalite", label: "Certificat de nationalité / Passeport ou Copie de la pièce identité valide", required: true, accept: ".pdf,.jpg,.jpeg,.png" },
 ];
 
 // Photo commune
@@ -203,13 +203,30 @@ export const DOCUMENT_CATEGORIES_DOCTORAT = [
 
 export const DOCUMENT_CATEGORIES_MASTER = [
   {
-    id: "inscription_master",
-    title: "SOUTENANCE MASTER/ED",
+    id: "soutenance_master",
+    title: "SOUTENANCE DEA/DES/MASTER",
     color: "amber",
-    suspended: false,
-    documents: MASTER_INSCRIPTION_DOCS,
+    documents: MASTER_SOUTENANCE_DOCS,
   },
 ];
+
+// Liens vers les checklists PDF téléchargeables
+export const CHECKLIST_PDFS = {
+  DOCTORAT: {
+    soutenance: {
+      label: "Checklist Soutenance de Thèse 2026",
+      url: "/checklists/Checklist-Soutenance-These-2026.pdf",
+      filename: "Checklist-Soutenance-These-2026.pdf",
+    },
+  },
+  MASTER: {
+    soutenance: {
+      label: "Checklist Soutenance DEA/DES 2026",
+      url: "/checklists/Checklist-Soutenance-DEA-DES-2026.pdf",
+      filename: "Checklist-Soutenance-DEA-DES-2026.pdf",
+    },
+  },
+};
 
 // Alerte pour Master
 export const MASTER_SUSPENSION_ALERT = {
