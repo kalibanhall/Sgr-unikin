@@ -18,7 +18,7 @@ export async function GET() {
     const appointments = await appointmentRepository.findMany();
 
     // Transformer en camelCase pour le frontend
-    const formattedAppointments = appointments.map((a: Record<string, unknown>) => ({
+    const formattedAppointments = (appointments as any[]).map((a: any) => ({
       id: a.id,
       targetRole: a.target_role,
       subject: a.subject,
