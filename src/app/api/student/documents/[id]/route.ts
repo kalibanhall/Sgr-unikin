@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { studentRepository, documentRepository } from "@/lib/repositories";
+import { getUploadDir } from "@/lib/config";
 import { unlink } from "fs/promises";
-import path from "path";
 
 // DELETE - Supprimer un document par ID
 export async function DELETE(
@@ -51,7 +51,7 @@ export async function DELETE(
     try {
       const fileName = document.url.split("/").pop();
       if (fileName) {
-        const filePath = path.join(process.cwd(), "uploads", student.id, fileName);
+        const filePath = getUploadDir(student.id, fileName);
         await unlink(filePath);
       }
     } catch (fileError) {

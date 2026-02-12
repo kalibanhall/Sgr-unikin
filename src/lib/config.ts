@@ -1,6 +1,16 @@
 // Configuration centralisée de l'application
 // Modifiez ces valeurs selon vos besoins
 
+import path from "path";
+
+// Répertoire de stockage des fichiers uploadés
+// Sur Render avec Disk: /opt/render/project/src/uploads (persistant)
+// En local: <cwd>/uploads
+export function getUploadDir(...subPaths: string[]): string {
+  const base = process.env.UPLOAD_DIR || path.join(process.cwd(), "uploads");
+  return subPaths.length > 0 ? path.join(base, ...subPaths) : base;
+}
+
 export const APP_CONFIG = {
   // Informations de l'organisation
   organization: {

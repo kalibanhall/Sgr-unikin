@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { studentRepository, documentRepository } from "@/lib/repositories";
+import { getUploadDir } from "@/lib/config";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 
@@ -121,7 +122,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    const uploadDir = path.join(process.cwd(), "uploads", student.id);
+    const uploadDir = getUploadDir(student.id);
     await mkdir(uploadDir, { recursive: true });
 
     const uploadedDocuments = [];

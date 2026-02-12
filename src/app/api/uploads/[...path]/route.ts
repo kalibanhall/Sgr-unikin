@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
+import { getUploadDir } from "@/lib/config";
 
 export async function GET(
   request: NextRequest,
@@ -9,7 +10,7 @@ export async function GET(
 ) {
   try {
     const { path: pathSegments } = await params;
-    const filePath = path.join(process.cwd(), "uploads", ...pathSegments);
+    const filePath = getUploadDir(...pathSegments);
     
     // Vérifier que le fichier existe
     if (!existsSync(filePath)) {
