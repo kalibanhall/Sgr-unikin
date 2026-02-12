@@ -27,7 +27,19 @@ export async function GET() {
 
     const documents = await documentRepository.findByStudentId(student.id);
 
-    return NextResponse.json(documents);
+    // Mapper en camelCase pour le frontend
+    const formatted = (documents as any[]).map((doc: any) => ({
+      id: doc.id,
+      studentId: doc.student_id,
+      name: doc.name,
+      type: doc.type,
+      url: doc.url,
+      size: doc.size,
+      mimeType: doc.mime_type,
+      uploadedAt: doc.uploaded_at,
+    }));
+
+    return NextResponse.json(formatted);
   } catch (error) {
     console.error("Erreur:", error);
     return NextResponse.json(
@@ -136,12 +148,24 @@ export async function POST(request: NextRequest) {
     }
 
     // Retourner un seul document si un seul fichier, sinon la liste
-    if (uploadedDocuments.length === 1) {
-      return NextResponse.json(uploadedDocuments[0], { status: 201 });
+    // Mapper en camelCase
+    const formatted = (uploadedDocuments as any[]).map((doc: any) => ({
+      id: doc.id,
+      studentId: doc.student_id,
+      name: doc.name,
+      type: doc.type,
+      url: doc.url,
+      size: doc.size,
+      mimeType: doc.mime_type,
+      uploadedAt: doc.uploaded_at,
+    }));
+
+    if (formatted.length === 1) {
+      return NextResponse.json(formatted[0], { status: 201 });
     }
 
     return NextResponse.json(
-      { message: "Documents téléversés avec succès", documents: uploadedDocuments },
+      { message: "Documents téléversés avec succès", documents: formatted },
       { status: 201 }
     );
   } catch (error) {

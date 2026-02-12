@@ -29,6 +29,7 @@ import {
   Download
 } from "lucide-react";
 import { toast } from "sonner";
+import { DocumentPreview } from "@/components/student/document-preview";
 
 interface Document {
   id: string;
@@ -455,6 +456,7 @@ export default function DocumentsPage() {
   const [saving, setSaving] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [previewDoc, setPreviewDoc] = useState<Document | null>(null);
+  const [showFullPreview, setShowFullPreview] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -615,6 +617,19 @@ export default function DocumentsPage() {
           uploading={uploading === "photo"}
         />
 
+        {/* Bouton prévisualiser le dossier complet */}
+        {documents.length > 0 && (
+          <div className="flex justify-end mb-6">
+            <Button
+              onClick={() => setShowFullPreview(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+            >
+              <Eye className="h-5 w-5" />
+              Prévisualiser le dossier complet
+            </Button>
+          </div>
+        )}
+
         {/* Alerte suspension pour Master */}
         {!isDoctorat && <SuspensionAlert />}
 
@@ -668,8 +683,16 @@ export default function DocumentsPage() {
           </div>
         </div>
 
-        {/* Modal de prévisualisation */}
+        {/* Modal de prévisualisation individuelle */}
         <PreviewModal document={previewDoc} onClose={() => setPreviewDoc(null)} />
+
+        {/* Galerie de prévisualisation du dossier complet */}
+        {showFullPreview && documents.length > 0 && (
+          <DocumentPreview
+            documents={documents}
+            onClose={() => setShowFullPreview(false)}
+          />
+        )}
       </div>
     </div>
   );

@@ -41,6 +41,7 @@ export async function GET(
         "Content-Type": contentType,
         "Content-Disposition": `inline; filename="${pathSegments[pathSegments.length - 1]}"`,
         "Cache-Control": "public, max-age=31536000",
+        "X-Frame-Options": "SAMEORIGIN",
       },
     });
   } catch (error) {
