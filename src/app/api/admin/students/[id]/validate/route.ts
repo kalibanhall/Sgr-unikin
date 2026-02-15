@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { userRepository, studentRepository, validationRepository, adminReviewRepository } from "@/lib/repositories";
-import { sendEmail, getValidationEmailTemplate } from "@/lib/email";
+import { sendEmail, getValidationEmailTemplate, getValidationCertificateEmailTemplate } from "@/lib/email";
+import { ADMIN_LEVELS, FACULTIES } from "@/lib/constants";
+import { readFile } from "fs/promises";
+import { join } from "path";
 
 // POST - Valider ou rejeter une étape
 export async function POST(
@@ -25,6 +28,20 @@ export async function POST(
 
     if (!step || !status) {
       return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
+    }
+
+    const stepNumber = parseInt(step);
+
+    // Vérifier que l'admin a le niveau requis pour cette étape
+    if (user.role !== "SUPER_ADMIN") {
+      const adminLevel = user.admin_level || 1;
+      const levelConfig = ADMIN_LEVELS.find(l => l.level === adminLevel);
+      if (!levelConfig || !levelConfig.allowedSteps.includes(stepNumber)) {
+        return NextResponse.json(
+          { error: `Vous n'avez pas les droits pour intervenir sur l'étape ${stepNumber}. Votre niveau : ${adminLevel}` },
+          { status: 403 }
+        );
+      }
     }
 
     // Récupérer l'étudiant
@@ -65,6 +82,53 @@ export async function POST(
         isComplete: isComplete,
         dossierStatus: isComplete ? "VALIDATED" : student.dossier_status,
       });
+
+      // Si dossier complet, envoyer le certificat de validation
+      if (isComplete) {
+        const facultyEntry = FACULTIES.find(f => f.code === student.faculty);
+        const facultyName = facultyEntry?.name || student.faculty || "Non spécifiée";
+        const studentName = `${(student.last_name || "").toUpperCase()} ${student.first_name}`;
+        const department = student.department || "Non spécifié";
+        const thesisTitle = student.thesis_title || "Non spécifié";
+
+        const now = new Date();
+        const year = now.getFullYear();
+        const idPart = student.id.replace(/-/g, "").substring(0, 7).toUpperCase();
+        const referenceNumber = `SGR/${idPart}/${year}`;
+
+        const submissionDate = student.submitted_at
+          ? new Date(student.submitted_at).toLocaleDateString("fr-CD", { day: "2-digit", month: "2-digit", year: "numeric" })
+          : "N/A";
+        const validationDate = now.toLocaleDateString("fr-CD", { day: "2-digit", month: "2-digit", year: "numeric" });
+
+        // Lire le cachet SGR en base64
+        let cachetBase64: string | undefined;
+        try {
+          const cachetPath = join(process.cwd(), "public", "cachet-sgr.png");
+          const cachetBuffer = await readFile(cachetPath);
+          cachetBase64 = cachetBuffer.toString("base64");
+        } catch {
+          console.warn("Cachet SGR non trouvé dans public/cachet-sgr.png");
+        }
+
+        const certTemplate = getValidationCertificateEmailTemplate(
+          studentName,
+          facultyName,
+          department,
+          thesisTitle,
+          referenceNumber,
+          submissionDate,
+          validationDate,
+          cachetBase64
+        );
+
+        await sendEmail({
+          to: student.user.email,
+          subject: certTemplate.subject,
+          html: certTemplate.html,
+          text: certTemplate.text,
+        });
+      }
     }
 
     // Envoyer un email de notification

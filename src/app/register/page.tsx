@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { registerSchema, RegisterInput } from "@/lib/validations";
-import { FACULTIES, REGISTRATION_TYPES, MASTER_SUSPENSION_ALERT } from "@/lib/constants";
+import { FACULTIES, REGISTRATION_TYPES, MASTER_SUSPENSION_ALERT, DEPARTMENTS } from "@/lib/constants";
 import Image from "next/image";
 import { Loader2, AlertCircle, CheckCircle, ShieldAlert, FileCheck, ArrowLeft, Info, GraduationCap, Award, ScrollText, PenTool } from "lucide-react";
 
@@ -30,6 +30,7 @@ function RegisterContent() {
   // Type d'inscription sélectionné
   const typeFromUrl = searchParams.get("type");
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [selectedFaculty, setSelectedFaculty] = useState<string | null>(null);
 
   // Mapper les types d'URL aux types internes
   useEffect(() => {
@@ -509,7 +510,11 @@ function RegisterContent() {
 
               <div className="space-y-2">
                 <Label>Faculté *</Label>
-                <Select onValueChange={(value) => setValue("faculty", value)}>
+                <Select onValueChange={(value) => {
+                  setValue("faculty", value);
+                  setSelectedFaculty(value);
+                  setValue("department", ""); // Réinitialiser le département
+                }}>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionnez la faculté" />
                   </SelectTrigger>
@@ -527,12 +532,22 @@ function RegisterContent() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="department">Département (optionnel)</Label>
-                <Input
-                  id="department"
-                  placeholder="Votre département"
-                  {...register("department")}
-                />
+                <Label>Département</Label>
+                <Select 
+                  onValueChange={(value) => setValue("department", value)}
+                  disabled={!selectedFaculty}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={selectedFaculty ? "Sélectionnez le département" : "Choisissez d'abord la faculté"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {selectedFaculty && DEPARTMENTS[selectedFaculty]?.map((dept) => (
+                      <SelectItem key={dept} value={dept}>
+                        {dept}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

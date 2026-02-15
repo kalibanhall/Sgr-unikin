@@ -57,7 +57,7 @@ export default function HomePage() {
       ],
     },
     {
-      title: "Direction de Suivi et d'Encadrement",
+      title: "Direction de Suivi et de l'Encadrement du Personnel Académique et Scientifique",
       icon: Users,
       items: [
         "Division du Suivi du Personnel Académique",
@@ -65,7 +65,7 @@ export default function HomePage() {
       ],
     },
     {
-      title: "Direction Universitaire",
+      title: "Direction des Bibliothèques et du Musée Universitaire",
       icon: GraduationCap,
       items: [
         "Division de la Bibliothèque Centrale",
@@ -75,9 +75,9 @@ export default function HomePage() {
   ];
 
   const stats = [
-    { value: "15+", label: "Facultés", icon: BookOpen },
-    { value: "1000+", label: "Doctorants", icon: GraduationCap },
-    { value: "100+", label: "Soutenances/an", icon: Award },
+    { value: "13", label: "Facultés", icon: BookOpen },
+    { value: "5", label: "Écoles", icon: GraduationCap },
+    { value: "89", label: "Départements", icon: Award },
     { value: "24/7", label: "Accès en ligne", icon: Clock },
   ];
 

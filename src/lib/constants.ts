@@ -1,18 +1,129 @@
 export const FACULTIES = [
-  { code: "DROIT", name: "Faculté de Droit" },
-  { code: "MEDECINE", name: "Faculté de Médecine" },
-  { code: "PHARMA", name: "Faculté des Sciences Pharmaceutiques" },
-  { code: "POLYTECH", name: "Faculté Polytechnique" },
-  { code: "SCIENCES", name: "Faculté des Sciences" },
-  { code: "LETTRES", name: "Faculté des Lettres et Sciences Humaines" },
-  { code: "PSYCHO", name: "Faculté de Psychologie et Sciences de l'Éducation" },
   { code: "ECOGEST", name: "Faculté des Sciences Économiques et de Gestion" },
-  { code: "SOCIO", name: "Faculté des Sciences Sociales, Administratives et Politiques" },
-  { code: "AGRO", name: "Faculté des Sciences Agronomiques" },
+  { code: "MEDDENT", name: "Faculté de Médecine Dentaire" },
+  { code: "SSAP", name: "Faculté des Sciences Sociales, Administratives et Politiques" },
+  { code: "SCITECH", name: "Faculté des Sciences et Technologies" },
+  { code: "AGROENV", name: "Faculté des Sciences Agronomiques et Environnement" },
   { code: "PETRO", name: "Faculté du Pétrole, Gaz et Énergies Renouvelables" },
   { code: "VETERINAIRE", name: "Faculté de Médecine Vétérinaire" },
-  { code: "ODONTO", name: "Faculté d'Odontostomatologie" },
+  { code: "PHARMA", name: "Faculté des Sciences Pharmaceutiques" },
+  { code: "LETTRES", name: "Faculté des Lettres et Sciences Humaines" },
+  { code: "POLYTECH", name: "Faculté Polytechnique" },
+  { code: "PSYCHO", name: "Faculté de Psychologie et Sciences de l'Éducation" },
+  { code: "DROIT", name: "Faculté de Droit" },
+  { code: "MEDECINE", name: "Faculté de Médecine" },
 ];
+
+// Départements par faculté (89 départements au total)
+export const DEPARTMENTS: Record<string, string[]> = {
+  ECOGEST: [
+    "Sciences Économiques",
+    "Sciences de gestion",
+    "Informatique de gestion et anglais des affaires",
+  ],
+  MEDDENT: [
+    "Prothèse et maxillo-faciale",
+    "Dentisterie opératoire",
+    "Pédodontie",
+    "Chirurgie orale et maxillo-faciale",
+    "Paradontologie",
+    "Orthopédie Dento-faciale",
+    "Santé publique",
+    "Sciences de base",
+  ],
+  SSAP: [
+    "Sciences politiques",
+    "Relations internationales",
+    "Anthropologie",
+    "Sociologie",
+    "Sciences du travail",
+  ],
+  SCITECH: [
+    "Chimie et Industrie",
+    "Géo Sciences",
+    "Sciences et gestion de l'environnement",
+    "Mathématique, Statistiques et Informatique",
+    "Physique et Technologies",
+    "Sciences de la vie",
+  ],
+  AGROENV: [
+    "Production animale",
+    "Production végétale",
+    "Technologies agroindustrielle",
+    "Agro-économie",
+    "Gestion des ressources naturelles",
+  ],
+  PETRO: [
+    "Gestion et économie pétrolière et gazière",
+    "Exploitation et production pétrolière et Forage",
+    "Raffinage et pétrochimie",
+    "Génie des énergies renouvelables et environnement",
+  ],
+  VETERINAIRE: [
+    "Sciences de base",
+    "Zootechnie",
+    "Sciences précliniques",
+    "Clinique",
+  ],
+  PHARMA: [
+    "Galénique et analyse des médicaments",
+    "Sciences de base",
+    "Sciences Biopharmaceutiques et Alimentaires",
+    "Pharmacologie et thérapeutique",
+    "Chimie Médicale et Pharmacognosie",
+  ],
+  LETTRES: [
+    "Lettres et Civilisations Françaises",
+    "Philosophie",
+    "Sciences techniques et documentaires",
+    "Sciences de l'Information et de la communication",
+    "Sciences historiques, de gestion et du patrimoine et développement",
+    "Lettres et Civilisations Anglaises",
+    "Lettres et Civilisations Africaines",
+    "Langues et informatique appliquée aux affaires et commerce",
+    "Traduction et interprétariat",
+    "Lettres-Arts de spectacle Africain et patrimoine culturels",
+    "École des langues vivantes",
+  ],
+  POLYTECH: [
+    "Génie civil",
+    "Génie mécanique",
+    "Génie électrique et informatique",
+    "Sciences de base (L1 + Préparatoire)",
+  ],
+  PSYCHO: [
+    "Sciences de l'éducation",
+    "Psychologie",
+    "Gestion des entreprises",
+    "Agrégation",
+  ],
+  DROIT: [
+    "Droit public interne",
+    "Droit international public et Relations internationales",
+    "Droit économique et social",
+    "Droit de l'Homme",
+    "Droit Pénal et Criminologie",
+    "Droit privé et judiciaire",
+    "Droit de l'environnement et Développement Durable",
+  ],
+  MEDECINE: [
+    "Chirurgie",
+    "Médecine interne",
+    "Gynécologie et Obstétrique",
+    "Pédiatrie",
+    "Anesthésie et réanimation",
+    "Psychiatrie",
+    "Neurologie",
+    "Épidémiologie et biostatistique",
+    "Nutrition",
+    "Santé et environnement",
+    "Santé communautaire",
+    "Management et politique de santé",
+    "Spécialités",
+    "Médecine physique et réadaptation",
+    "Médecine tropicale",
+  ],
+};
 
 // Types d'inscription/demande disponibles
 export const REGISTRATION_TYPES = [
@@ -66,12 +177,67 @@ export const STUDY_LEVELS = [
 ];
 
 export const VALIDATION_STEPS = [
-  { step: 0, title: "Inscription initiale", description: "Création du compte et informations de base" },
-  { step: 1, title: "Documents requis", description: "Téléversement des documents académiques et administratifs" },
-  { step: 2, title: "Validation académique", description: "Vérification par le service académique" },
-  { step: 3, title: "Validation administrative", description: "Validation finale par l'administration" },
-  { step: 4, title: "Inscription complète", description: "Dossier validé et inscription finalisée" },
+  { step: 0, title: "Soumission du dossier en ligne", description: "Création du compte, téléversement des documents et soumission du dossier" },
+  { step: 1, title: "Réception du dossier physique", description: "Réception et vérification du dossier physique déposé à la faculté" },
+  { step: 2, title: "Analyse technique du dossier", description: "Examen technique et vérification de la conformité du dossier" },
+  { step: 3, title: "Validation du dossier", description: "Validation du dossier par les responsables compétents" },
+  { step: 4, title: "Décision finale", description: "Décision finale et notification au candidat" },
 ];
+
+// ============================================
+// NIVEAUX D'ADMINISTRATION (5 niveaux)
+// ============================================
+export const ADMIN_LEVELS = [
+  {
+    level: 1,
+    label: "Administrateur Niveau 1",
+    shortLabel: "Admin 1",
+    description: "Soumission du dossier en ligne et Réception du dossier physique",
+    allowedSteps: [0, 1],
+    color: "blue",
+    canManageAppointments: true,
+  },
+  {
+    level: 2,
+    label: "Administrateur Niveau 2",
+    shortLabel: "Admin 2",
+    description: "Analyse technique du dossier",
+    allowedSteps: [2],
+    color: "amber",
+    canManageAppointments: false,
+  },
+  {
+    level: 3,
+    label: "Administrateur Niveau 3",
+    shortLabel: "Admin 3",
+    description: "Décision finale",
+    allowedSteps: [4],
+    color: "purple",
+    canManageAppointments: false,
+  },
+  {
+    level: 4,
+    label: "Administrateur Niveau 4",
+    shortLabel: "Admin 4",
+    description: "Validation du dossier & Décision finale",
+    allowedSteps: [3, 4],
+    color: "emerald",
+    canManageAppointments: false,
+  },
+  {
+    level: 5,
+    label: "Administrateur Niveau 5",
+    shortLabel: "Admin 5",
+    description: "Accès complet à toutes les fonctionnalités",
+    allowedSteps: [0, 1, 2, 3, 4],
+    color: "red",
+    canManageAppointments: true,
+  },
+];
+
+// Taille maximale des fichiers à téléverser
+export const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 Mo
+export const MAX_FILE_SIZE_LABEL = "10 Mo";
 
 // ============================================
 // DOCUMENTS POUR DOCTORAT

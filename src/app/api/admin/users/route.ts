@@ -24,6 +24,7 @@ export async function GET() {
       email: user.email,
       name: user.name,
       role: user.role,
+      adminLevel: user.admin_level,
       emailVerified: user.email_verified,
       createdAt: user.created_at,
     }));
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { email, password, name, role } = body;
+    const { email, password, name, role, adminLevel } = body;
 
     if (!email || !password || !name || !role) {
       return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
@@ -68,6 +69,7 @@ export async function POST(request: NextRequest) {
       password: hashedPassword,
       name,
       role: role as 'STUDENT' | 'ADMIN' | 'SUPER_ADMIN',
+      adminLevel: adminLevel ? parseInt(adminLevel) : null,
       emailVerified: true,
     });
 
@@ -76,6 +78,7 @@ export async function POST(request: NextRequest) {
       email: user.email,
       name: user.name,
       role: user.role,
+      adminLevel: user.admin_level,
     }, { status: 201 });
   } catch (error) {
     console.error("Erreur:", error);

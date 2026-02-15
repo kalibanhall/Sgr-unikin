@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, FileText, Upload, UserCheck, Award } from "lucide-react";
+import { CheckCircle, FileText, Upload, UserCheck, Award, AlertCircle, Clock, Printer } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -14,59 +14,57 @@ export default function GuideInscriptionPage() {
       details: [
         "Renseignez votre nom, prénom et email",
         "Choisissez un mot de passe sécurisé",
-        "Sélectionnez votre niveau d'études (Licence, Master, Doctorat)",
+        "Sélectionnez votre niveau d'études (Master, Doctorat)",
         "Indiquez votre faculté et département",
       ],
     },
     {
       number: 2,
       icon: Upload,
-      title: "Téléversement des documents",
-      description: "Téléversez tous les documents requis pour votre dossier d'inscription.",
+      title: "Téléverser les documents de la checklist",
+      description: "Téléversez tous les documents requis selon la checklist disponible en PDF sur la plateforme.",
       details: [
-        "Photo d'identité récente (format passeport)",
-        "Copie du diplôme ou attestation de réussite",
-        "Relevés de notes des années précédentes",
-        "Acte de naissance ou attestation de naissance",
-        "CV et lettre de motivation (pour le Doctorat)",
-        "Projet de recherche (pour le Doctorat)",
+        "Consultez la checklist des documents requis (PDF disponible en téléchargement)",
+        "Préparez tous vos documents au format PDF (taille max : 10 Mo par fichier)",
+        "Téléversez chaque document dans le champ correspondant",
+        "Vérifiez que tous les documents obligatoires sont bien téléversés",
       ],
     },
     {
       number: 3,
       icon: FileText,
-      title: "Validation académique",
-      description: "Votre dossier est examiné par le service académique de votre faculté.",
+      title: "Soumettre son dossier en ligne",
+      description: "Soumettez votre dossier en ligne et réceptionnez le certificat de soumission du dossier.",
       details: [
-        "Vérification de l'authenticité des documents",
-        "Contrôle des conditions d'admission",
-        "Validation par le chef de département",
-        "Approbation par le doyen de la faculté",
+        "Vérifiez l'ensemble des informations et documents téléversés",
+        "Cliquez sur « Soumettre le dossier »",
+        "Réceptionnez votre certificat de soumission avec numéro de référence",
+        "Conservez ce certificat précieusement (téléchargez-le ou imprimez-le)",
       ],
     },
     {
       number: 4,
-      icon: Award,
-      title: "Validation administrative",
-      description: "Validation finale par le Secrétariat Général à la Recherche.",
+      icon: Printer,
+      title: "Imprimer et déposer à la faculté",
+      description: "Imprimez le certificat de soumission obtenu et déposez-le à la faculté avec votre dossier physique.",
       details: [
-        "Vérification du dossier complet",
-        "Attribution du matricule",
-        "Génération de l'attestation d'inscription",
-        "Notification de l'inscription complète",
+        "Imprimez le certificat de soumission obtenu en ligne",
+        "Constituez votre dossier physique avec tous les originaux",
+        "Déposez le certificat de soumission avec votre dossier physique à votre faculté",
+        "La faculté transmettra votre dossier au Secrétariat Général à la Recherche",
       ],
     },
   ];
 
   const requiredDocuments = [
-    { name: "Photo d'identité", format: "JPG, PNG", required: true },
-    { name: "Diplôme ou attestation de réussite", format: "PDF", required: true },
-    { name: "Relevés de notes", format: "PDF", required: true },
-    { name: "Acte de naissance", format: "PDF", required: true },
-    { name: "Attestation d'inscription précédente", format: "PDF", required: false },
-    { name: "Curriculum Vitae", format: "PDF", required: false },
-    { name: "Lettre de motivation", format: "PDF", required: false },
-    { name: "Projet de recherche (Doctorat)", format: "PDF", required: false },
+    { name: "Photo d'identité", format: "JPG, PNG (max 10 Mo)", required: true },
+    { name: "Diplôme ou attestation de réussite", format: "PDF (max 10 Mo)", required: true },
+    { name: "Relevés de notes", format: "PDF (max 10 Mo)", required: true },
+    { name: "Acte de naissance", format: "PDF (max 10 Mo)", required: true },
+    { name: "Attestation d'inscription précédente", format: "PDF (max 10 Mo)", required: false },
+    { name: "Curriculum Vitae", format: "PDF (max 10 Mo)", required: false },
+    { name: "Lettre de motivation", format: "PDF (max 10 Mo)", required: false },
+    { name: "Projet de recherche (Doctorat)", format: "PDF (max 10 Mo)", required: false },
   ];
 
   return (
@@ -156,6 +154,32 @@ export default function GuideInscriptionPage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Note importante */}
+        <Card className="mb-12 border-2 border-amber-200 bg-amber-50">
+          <CardContent className="pt-6">
+            <div className="flex gap-4">
+              <div className="shrink-0">
+                <AlertCircle className="h-6 w-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-amber-900 mb-2">NB : Information importante</h3>
+                <p className="text-amber-800 leading-relaxed mb-3">
+                  La faculté transmettra votre dossier physique au Secrétariat Général à la Recherche 
+                  pour traitement. Le candidat est invité de suivre l&apos;évolution en ligne via le compte 
+                  créé pour la soumission de son dossier en ligne.
+                </p>
+                <div className="flex items-center gap-2 text-amber-900 font-semibold">
+                  <Clock className="h-5 w-5" />
+                  <span>
+                    Délai moyen pour le traitement du dossier : 5 jours ouvrables à partir de la 
+                    réception du dossier physique au Secrétariat Général à la Recherche
+                  </span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

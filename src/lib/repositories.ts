@@ -55,14 +55,15 @@ export const userRepository = {
     password: string;
     name?: string;
     role?: 'STUDENT' | 'ADMIN' | 'SUPER_ADMIN';
+    adminLevel?: number | null;
     emailVerified?: boolean;
     verifyToken?: string;
     verifyExpires?: Date;
   }): Promise<User> {
     const id = generateId();
     const result = await query<User>(
-      `INSERT INTO users (id, email, password, name, role, email_verified, verify_token, verify_expires)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `INSERT INTO users (id, email, password, name, role, admin_level, email_verified, verify_token, verify_expires)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING *`,
       [
         id,
@@ -70,6 +71,7 @@ export const userRepository = {
         data.password,
         data.name || null,
         data.role || 'STUDENT',
+        data.adminLevel || null,
         data.emailVerified || false,
         data.verifyToken || null,
         data.verifyExpires || null
@@ -83,6 +85,7 @@ export const userRepository = {
     password: string;
     name: string;
     role: 'STUDENT' | 'ADMIN' | 'SUPER_ADMIN';
+    adminLevel: number | null;
     emailVerified: boolean;
     verifyToken: string | null;
     verifyExpires: Date | null;
@@ -108,6 +111,10 @@ export const userRepository = {
     if (data.role !== undefined) {
       setClauses.push(`role = $${paramIndex++}`);
       values.push(data.role);
+    }
+    if (data.adminLevel !== undefined) {
+      setClauses.push(`admin_level = $${paramIndex++}`);
+      values.push(data.adminLevel);
     }
     if (data.emailVerified !== undefined) {
       setClauses.push(`email_verified = $${paramIndex++}`);

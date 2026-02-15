@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { userRepository, adminReviewRepository, studentRepository, validationRepository } from "@/lib/repositories";
+import { ADMIN_LEVELS } from "@/lib/constants";
 
 // GET - Récupérer les avis (Super Admin voit tout, Admin voit les siens)
 export async function GET(request: NextRequest) {
@@ -71,6 +72,20 @@ export async function POST(request: NextRequest) {
         { error: "Données manquantes" },
         { status: 400 }
       );
+    }
+
+    const stepNumber = parseInt(step);
+
+    // Vérifier que l'admin a le niveau requis pour cette étape
+    if (user.role !== "SUPER_ADMIN") {
+      const adminLevel = user.admin_level || 1;
+      const levelConfig = ADMIN_LEVELS.find(l => l.level === adminLevel);
+      if (!levelConfig || !levelConfig.allowedSteps.includes(stepNumber)) {
+        return NextResponse.json(
+          { error: `Vous n'avez pas les droits pour donner un avis sur l'étape ${stepNumber}. Votre niveau : ${adminLevel}` },
+          { status: 403 }
+        );
+      }
     }
 
     // Créer l'avis

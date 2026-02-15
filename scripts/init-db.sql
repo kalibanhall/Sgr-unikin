@@ -25,6 +25,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     name VARCHAR(255),
     role user_role DEFAULT 'STUDENT' NOT NULL,
+    admin_level INTEGER,
     email_verified BOOLEAN DEFAULT FALSE NOT NULL,
     verify_token VARCHAR(255) UNIQUE,
     verify_expires TIMESTAMP WITH TIME ZONE,
@@ -69,7 +70,7 @@ CREATE TABLE students (
     
     -- Statut d'inscription
     current_step INTEGER DEFAULT 0 NOT NULL,
-    max_steps INTEGER DEFAULT 4 NOT NULL,
+    max_steps INTEGER DEFAULT 5 NOT NULL,
     is_complete BOOLEAN DEFAULT FALSE NOT NULL,
     
     -- Gestion du dossier
@@ -234,22 +235,216 @@ CREATE TRIGGER update_admin_reviews_updated_at BEFORE UPDATE ON admin_reviews
 -- superadmin123 -> $2b$10$mdGjPr.twFN49pVh/jqqM.DECDLXt.JTwiDpHhP1zRnWU4Vbe33k2
 -- admin123 -> $2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m
 
-INSERT INTO users (email, password, name, role, email_verified) VALUES
-('sg.recherche@unikin.ac.cd', '$2b$10$mdGjPr.twFN49pVh/jqqM.DECDLXt.JTwiDpHhP1zRnWU4Vbe33k2', 'Super Admin SGR', 'SUPER_ADMIN', TRUE),
-('admin@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Administrateur', 'ADMIN', TRUE);
+INSERT INTO users (email, password, name, role, admin_level, email_verified) VALUES
+-- Super Admin
+('sg.recherche@unikin.ac.cd', '$2b$10$mdGjPr.twFN49pVh/jqqM.DECDLXt.JTwiDpHhP1zRnWU4Vbe33k2', 'Super Admin SGR', 'SUPER_ADMIN', 5, TRUE),
+-- Niveau 5 : Direction
+('jonathanmukanya9@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Jonathan Mukanya', 'ADMIN', 5, TRUE),
+('garaphmutwal@yahoo.fr', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Paulin Mutwale', 'ADMIN', 5, TRUE),
+-- Niveau 4 : Validation finale
+('yvettepoungam@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Estelle Yvette Poungam', 'ADMIN', 4, TRUE),
+('michel.kapembo@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Michel Kapembo', 'ADMIN', 4, TRUE),
+-- Niveau 3 : Analyse technique
+('sebastienbayauli@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Sébastien Bayauli', 'ADMIN', 3, TRUE),
+('nancy.niemba@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Nancy Niemba', 'ADMIN', 3, TRUE),
+('osee@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Osée', 'ADMIN', 3, TRUE),
+-- Niveau 2 : Réception
+('hugotamina@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Hugo Tamina', 'ADMIN', 2, TRUE),
+('emmanuel.djamba@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Djamba Emmanuel', 'ADMIN', 2, TRUE),
+('harry.kayembe@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Harry Kayembe', 'ADMIN', 2, TRUE),
+('jimmykabeya@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Jimmy Kabeya', 'ADMIN', 2, TRUE),
+-- Niveau 1 : Soumission / Accueil / Rendez-vous
+('lisabokuma2@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Lisa Bokuma', 'ADMIN', 1, TRUE),
+('mosesmutamba52@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Moïse Mulumba', 'ADMIN', 1, TRUE),
+('bigohealex@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Alex Bigohe', 'ADMIN', 1, TRUE),
+('nathalie@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Nathalie', 'ADMIN', 1, TRUE),
+('ines@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Inès', 'ADMIN', 1, TRUE);
 
 -- Insertion des facultés
 INSERT INTO faculties (name, code) VALUES
-('Faculté des Sciences', 'FSC'),
-('Faculté de Médecine', 'FMED'),
-('Faculté de Droit', 'FDRT'),
-('Faculté des Lettres et Sciences Humaines', 'FLSH'),
-('Faculté des Sciences Économiques et de Gestion', 'FSEG'),
-('Faculté Polytechnique', 'FPOLY'),
-('Faculté des Sciences Agronomiques', 'FSA'),
-('Faculté de Psychologie et des Sciences de l''Éducation', 'FPSE'),
-('Faculté des Sciences Pharmaceutiques', 'FPHA'),
-('Faculté des Sciences Sociales, Administratives et Politiques', 'FSSAP'),
-('Faculté de Pétrole, Gaz et Énergies Nouvelles', 'FPGEN'),
-('Faculté d''Architecture et Urbanisme', 'FAU'),
-('Faculté de Médecine Vétérinaire', 'FMV');
+('Faculté des Sciences Économiques et de Gestion', 'ECOGEST'),
+('Faculté de Médecine Dentaire', 'MEDDENT'),
+('Faculté des Sciences Sociales, Administratives et Politiques', 'SSAP'),
+('Faculté des Sciences et Technologies', 'SCITECH'),
+('Faculté des Sciences Agronomiques et Environnement', 'AGROENV'),
+('Faculté du Pétrole, Gaz et Énergies Renouvelables', 'PETRO'),
+('Faculté de Médecine Vétérinaire', 'VETERINAIRE'),
+('Faculté des Sciences Pharmaceutiques', 'PHARMA'),
+('Faculté des Lettres et Sciences Humaines', 'LETTRES'),
+('Faculté Polytechnique', 'POLYTECH'),
+('Faculté de Psychologie et Sciences de l''Éducation', 'PSYCHO'),
+('Faculté de Droit', 'DROIT'),
+('Faculté de Médecine', 'MEDECINE');
+
+-- Insertion des départements
+-- ECOGEST
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Sciences Économiques', 'ECOGEST-DEP1'),
+  ('Sciences de gestion', 'ECOGEST-DEP2'),
+  ('Informatique de gestion et anglais des affaires', 'ECOGEST-DEP3')
+) AS d(name, code)
+WHERE f.code = 'ECOGEST';
+
+-- MEDDENT
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Prothèse et maxillo-faciale', 'MEDDENT-DEP1'),
+  ('Dentisterie opératoire', 'MEDDENT-DEP2'),
+  ('Pédodontie', 'MEDDENT-DEP3'),
+  ('Chirurgie orale et maxillo-faciale', 'MEDDENT-DEP4'),
+  ('Paradontologie', 'MEDDENT-DEP5'),
+  ('Orthopédie Dento-faciale', 'MEDDENT-DEP6'),
+  ('Santé publique', 'MEDDENT-DEP7'),
+  ('Sciences de base', 'MEDDENT-DEP8')
+) AS d(name, code)
+WHERE f.code = 'MEDDENT';
+
+-- SSAP
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Sciences politiques', 'SSAP-DEP1'),
+  ('Relations internationales', 'SSAP-DEP2'),
+  ('Anthropologie', 'SSAP-DEP3'),
+  ('Sociologie', 'SSAP-DEP4'),
+  ('Sciences du travail', 'SSAP-DEP5')
+) AS d(name, code)
+WHERE f.code = 'SSAP';
+
+-- SCITECH
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Chimie et Industrie', 'SCITECH-DEP1'),
+  ('Géo Sciences', 'SCITECH-DEP2'),
+  ('Sciences et gestion de l''environnement', 'SCITECH-DEP3'),
+  ('Mathématique, Statistiques et Informatique', 'SCITECH-DEP4'),
+  ('Physique et Technologies', 'SCITECH-DEP5'),
+  ('Sciences de la vie', 'SCITECH-DEP6')
+) AS d(name, code)
+WHERE f.code = 'SCITECH';
+
+-- AGROENV
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Production animale', 'AGROENV-DEP1'),
+  ('Production végétale', 'AGROENV-DEP2'),
+  ('Technologies agroindustrielle', 'AGROENV-DEP3'),
+  ('Agro-économie', 'AGROENV-DEP4'),
+  ('Gestion des ressources naturelles', 'AGROENV-DEP5')
+) AS d(name, code)
+WHERE f.code = 'AGROENV';
+
+-- PETRO
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Gestion et économie pétrolière et gazière', 'PETRO-DEP1'),
+  ('Exploitation et production pétrolière et Forage', 'PETRO-DEP2'),
+  ('Raffinage et pétrochimie', 'PETRO-DEP3'),
+  ('Génie des énergies renouvelables et environnement', 'PETRO-DEP4')
+) AS d(name, code)
+WHERE f.code = 'PETRO';
+
+-- VETERINAIRE
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Sciences de base', 'VETERINAIRE-DEP1'),
+  ('Zootechnie', 'VETERINAIRE-DEP2'),
+  ('Sciences précliniques', 'VETERINAIRE-DEP3'),
+  ('Clinique', 'VETERINAIRE-DEP4')
+) AS d(name, code)
+WHERE f.code = 'VETERINAIRE';
+
+-- PHARMA
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Galénique et analyse des médicaments', 'PHARMA-DEP1'),
+  ('Sciences de base', 'PHARMA-DEP2'),
+  ('Sciences Biopharmaceutiques et Alimentaires', 'PHARMA-DEP3'),
+  ('Pharmacologie et thérapeutique', 'PHARMA-DEP4'),
+  ('Chimie Médicale et Pharmacognosie', 'PHARMA-DEP5')
+) AS d(name, code)
+WHERE f.code = 'PHARMA';
+
+-- LETTRES
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Lettres et Civilisations Françaises', 'LETTRES-DEP1'),
+  ('Philosophie', 'LETTRES-DEP2'),
+  ('Sciences techniques et documentaires', 'LETTRES-DEP3'),
+  ('Sciences de l''Information et de la communication', 'LETTRES-DEP4'),
+  ('Sciences historiques, de gestion et du patrimoine et développement', 'LETTRES-DEP5'),
+  ('Lettres et Civilisations Anglaises', 'LETTRES-DEP6'),
+  ('Lettres et Civilisations Africaines', 'LETTRES-DEP7'),
+  ('Langues et informatique appliquée aux affaires et commerce', 'LETTRES-DEP8'),
+  ('Traduction et interprétariat', 'LETTRES-DEP9'),
+  ('Lettres-Arts de spectacle Africain et patrimoine culturels', 'LETTRES-DEP10'),
+  ('École des langues vivantes', 'LETTRES-DEP11')
+) AS d(name, code)
+WHERE f.code = 'LETTRES';
+
+-- POLYTECH
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Génie civil', 'POLYTECH-DEP1'),
+  ('Génie mécanique', 'POLYTECH-DEP2'),
+  ('Génie électrique et informatique', 'POLYTECH-DEP3'),
+  ('Sciences de base (L1 + Préparatoire)', 'POLYTECH-DEP4')
+) AS d(name, code)
+WHERE f.code = 'POLYTECH';
+
+-- PSYCHO
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Sciences de l''éducation', 'PSYCHO-DEP1'),
+  ('Psychologie', 'PSYCHO-DEP2'),
+  ('Gestion des entreprises', 'PSYCHO-DEP3'),
+  ('Agrégation', 'PSYCHO-DEP4')
+) AS d(name, code)
+WHERE f.code = 'PSYCHO';
+
+-- DROIT
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Droit public interne', 'DROIT-DEP1'),
+  ('Droit international public et Relations internationales', 'DROIT-DEP2'),
+  ('Droit économique et social', 'DROIT-DEP3'),
+  ('Droit de l''Homme', 'DROIT-DEP4'),
+  ('Droit Pénal et Criminologie', 'DROIT-DEP5'),
+  ('Droit privé et judiciaire', 'DROIT-DEP6'),
+  ('Droit de l''environnement et Développement Durable', 'DROIT-DEP7')
+) AS d(name, code)
+WHERE f.code = 'DROIT';
+
+-- MEDECINE
+INSERT INTO departments (name, code, faculty_id)
+SELECT d.name, d.code, f.id FROM faculties f,
+(VALUES
+  ('Chirurgie', 'MEDECINE-DEP1'),
+  ('Médecine interne', 'MEDECINE-DEP2'),
+  ('Gynécologie et Obstétrique', 'MEDECINE-DEP3'),
+  ('Pédiatrie', 'MEDECINE-DEP4'),
+  ('Anesthésie et réanimation', 'MEDECINE-DEP5'),
+  ('Psychiatrie', 'MEDECINE-DEP6'),
+  ('Neurologie', 'MEDECINE-DEP7'),
+  ('Épidémiologie et biostatistique', 'MEDECINE-DEP8'),
+  ('Nutrition', 'MEDECINE-DEP9'),
+  ('Santé et environnement', 'MEDECINE-DEP10'),
+  ('Santé communautaire', 'MEDECINE-DEP11'),
+  ('Management et politique de santé', 'MEDECINE-DEP12'),
+  ('Spécialités', 'MEDECINE-DEP13'),
+  ('Médecine physique et réadaptation', 'MEDECINE-DEP14'),
+  ('Médecine tropicale', 'MEDECINE-DEP15')
+) AS d(name, code)
+WHERE f.code = 'MEDECINE';

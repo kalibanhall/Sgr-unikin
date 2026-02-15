@@ -96,9 +96,9 @@ function ResetPasswordForm() {
   // Écran de chargement pendant la vérification
   if (isVerifying) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-primary-900 via-primary-800 to-primary-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-secondary-400 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-blue-300 animate-spin mx-auto mb-4" />
           <p className="text-white">Vérification du lien...</p>
         </div>
       </div>
@@ -108,7 +108,7 @@ function ResetPasswordForm() {
   // Lien invalide ou expiré
   if (!isValid) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-primary-900 via-primary-800 to-primary-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
             <div className="mx-auto w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6">
@@ -126,14 +126,14 @@ function ResetPasswordForm() {
             <div className="space-y-4">
               <Link
                 href="/forgot-password"
-                className="block w-full py-3 px-4 bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold rounded-lg text-center transition-all"
+                className="block w-full py-3 px-4 bg-linear-to-r from-blue-600 to-blue-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold rounded-lg text-center transition-all"
               >
                 Faire une nouvelle demande
               </Link>
               
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center gap-2 text-primary-600 hover:text-primary-700 font-medium"
+                className="inline-flex items-center justify-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
               >
                 <ArrowLeft className="w-4 h-4" />
                 Retour à la connexion
@@ -148,7 +148,7 @@ function ResetPasswordForm() {
   // Succès
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-primary-900 via-primary-800 to-primary-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
             <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
@@ -163,7 +163,7 @@ function ResetPasswordForm() {
               Votre mot de passe a été modifié avec succès. Vous allez être redirigé vers la page de connexion...
             </p>
             
-            <Loader2 className="w-6 h-6 text-primary-600 animate-spin mx-auto" />
+            <Loader2 className="w-6 h-6 text-blue-600 animate-spin mx-auto" />
           </div>
         </div>
       </div>
@@ -172,19 +172,19 @@ function ResetPasswordForm() {
 
   // Formulaire de réinitialisation
   return (
-    <div className="min-h-screen bg-linear-to-br from-primary-900 via-primary-800 to-primary-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo et titre */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-4">
-            <KeyRound className="w-10 h-10 text-secondary-400" />
+            <KeyRound className="w-10 h-10 text-blue-300" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">
             Nouveau mot de passe
           </h1>
           {userName && (
-            <p className="text-primary-200">
-              Bonjour <span className="font-semibold text-secondary-400">{userName}</span>
+            <p className="text-blue-200">
+              Bonjour <span className="font-semibold text-blue-300">{userName}</span>
             </p>
           )}
         </div>
@@ -217,7 +217,7 @@ function ResetPasswordForm() {
                   minLength={8}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   placeholder="Minimum 8 caractères"
                 />
                 <button
@@ -253,7 +253,7 @@ function ResetPasswordForm() {
                   minLength={8}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   placeholder="Répétez le mot de passe"
                 />
                 <button
@@ -287,7 +287,7 @@ function ResetPasswordForm() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-linear-to-r from-blue-600 to-blue-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
@@ -306,7 +306,7 @@ function ResetPasswordForm() {
           <div className="mt-6 text-center">
             <Link
               href="/login"
-              className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium text-sm"
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
               Retour à la connexion
@@ -315,7 +315,7 @@ function ResetPasswordForm() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-primary-300 text-sm mt-8">
+        <p className="text-center text-blue-300 text-sm mt-8">
           © 2025 Université de Kinshasa - SGR
         </p>
       </div>
@@ -326,9 +326,9 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-linear-to-br from-primary-900 via-primary-800 to-primary-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-secondary-400 animate-spin mx-auto mb-4" />
+          <Loader2 className="w-12 h-12 text-blue-300 animate-spin mx-auto mb-4" />
           <p className="text-white">Chargement...</p>
         </div>
       </div>

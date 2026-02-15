@@ -18,9 +18,9 @@ export function FileUpload({
   onUpload,
   accept = ".pdf,.jpg,.jpeg,.png",
   multiple = true,
-  maxSize = 5,
+  maxSize = 10,
   label = "Glissez vos fichiers ici",
-  description = "ou cliquez pour sélectionner",
+  description = "ou cliquez pour sélectionner (max 10 Mo par fichier)",
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
@@ -43,7 +43,7 @@ export function FileUpload({
 
     Array.from(fileList).forEach((file) => {
       if (file.size > maxBytes) {
-        setError(`Le fichier ${file.name} dépasse la taille maximale de ${maxSize}MB`);
+        setError(`Le fichier ${file.name} dépasse la taille maximale de ${maxSize} Mo`);
         return;
       }
       validFiles.push(file);

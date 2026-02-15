@@ -49,7 +49,7 @@ export default function ForgotPasswordPage() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-linear-to-br from-primary-900 via-primary-800 to-primary-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-2xl p-8 text-center">
             <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6">
@@ -70,7 +70,7 @@ export default function ForgotPasswordPage() {
             
             <button
               onClick={handleBack}
-              className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium"
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
               Retour à la connexion
@@ -82,17 +82,17 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-primary-900 via-primary-800 to-primary-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         {/* Logo et titre */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-20 h-20 bg-white/10 backdrop-blur-sm rounded-2xl mb-4">
-            <KeyRound className="w-10 h-10 text-secondary-400" />
+            <KeyRound className="w-10 h-10 text-blue-300" />
           </div>
           <h1 className="text-3xl font-bold text-white mb-2">
             Mot de passe oublié ?
           </h1>
-          <p className="text-primary-200">
+          <p className="text-blue-200">
             Entrez votre email pour recevoir un lien de réinitialisation
           </p>
         </div>
@@ -124,7 +124,7 @@ export default function ForgotPasswordPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                  className="block w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   placeholder="votre.email@example.com"
                 />
               </div>
@@ -133,7 +133,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-linear-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <>
@@ -152,7 +152,7 @@ export default function ForgotPasswordPage() {
           <div className="mt-6 text-center">
             <button
               onClick={handleBack}
-              className="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-medium text-sm"
+              className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-sm"
             >
               <ArrowLeft className="w-4 h-4" />
               Retour à la connexion
@@ -161,7 +161,7 @@ export default function ForgotPasswordPage() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-primary-300 text-sm mt-8">
+        <p className="text-center text-blue-300 text-sm mt-8">
           © 2025 Université de Kinshasa - SGR
         </p>
       </div>

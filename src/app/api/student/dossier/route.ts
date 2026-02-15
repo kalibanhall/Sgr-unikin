@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { studentRepository, validationRepository } from "@/lib/repositories";
-import { sendEmail, getDossierReceivedEmailTemplate } from "@/lib/email";
+import { sendEmail, getDossierReceivedEmailTemplate, getSubmissionCertificateEmailTemplate } from "@/lib/email";
 
 interface DossierStudent {
   id: string;
@@ -13,6 +13,10 @@ interface DossierStudent {
   is_complete: boolean;
   documents_count: string;
   first_name: string;
+  last_name: string;
+  faculty: string;
+  study_level: string;
+  registration_type: string;
 }
 
 // GET - Récupérer le statut du dossier
@@ -25,7 +29,10 @@ export async function GET() {
 
     // Récupérer l'étudiant avec ses documents
     const result = await query<DossierStudent>(
-      `SELECT s.*, COUNT(d.id) as documents_count
+      `SELECT s.id, s.dossier_status, s.submitted_at, s.draft_expires_at,
+              s.current_step, s.is_complete, s.first_name, s.last_name,
+              s.faculty, s.study_level,
+              COUNT(d.id) as documents_count
        FROM students s
        JOIN users u ON s.user_id = u.id
        LEFT JOIN documents d ON d.student_id = s.id
@@ -70,7 +77,10 @@ export async function POST(request: NextRequest) {
 
     // Récupérer l'étudiant avec ses documents
     const result = await query<DossierStudent>(
-      `SELECT s.*, COUNT(d.id) as documents_count
+      `SELECT s.id, s.dossier_status, s.submitted_at, s.draft_expires_at,
+              s.current_step, s.is_complete, s.first_name, s.last_name,
+              s.faculty, s.study_level,
+              COUNT(d.id) as documents_count
        FROM students s
        JOIN users u ON s.user_id = u.id
        LEFT JOIN documents d ON d.student_id = s.id
@@ -126,7 +136,38 @@ export async function POST(request: NextRequest) {
         status: "PENDING",
       });
 
-      // Envoyer l'email de confirmation de réception
+      // Générer un numéro de référence unique (SGR-AAAA-XXXXX)
+      const now = new Date();
+      const year = now.getFullYear();
+      const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
+      const referenceNumber = `SGR-${year}-${randomPart}`;
+      const submissionDate = now.toLocaleDateString("fr-CD", {
+        day: "2-digit",
+        month: "long",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      // Envoyer l'email de certificat de soumission
+      const facultyName = student.faculty || "Non spécifiée";
+      const registrationType = student.registration_type || student.study_level || "Doctorat";
+      const certificateTemplate = getSubmissionCertificateEmailTemplate(
+        `${student.first_name} ${student.last_name || ""}`.trim(),
+        referenceNumber,
+        submissionDate,
+        registrationType,
+        facultyName
+      );
+
+      await sendEmail({
+        to: session.user.email,
+        subject: certificateTemplate.subject,
+        html: certificateTemplate.html,
+        text: certificateTemplate.text,
+      });
+
+      // Envoyer aussi l'email de confirmation de réception
       const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
       const dashboardUrl = `${baseUrl}/dashboard`;
       const emailTemplate = getDossierReceivedEmailTemplate(
@@ -143,7 +184,8 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        message: "Dossier soumis avec succès. Un email de confirmation vous a été envoyé.",
+        message: "Dossier soumis avec succès. Un certificat de soumission vous a été envoyé par email.",
+        referenceNumber,
       });
     }
 

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, FileText, Calendar, ClipboardCheck, Award, BookOpen, Users, GraduationCap } from "lucide-react";
+import { CheckCircle, FileText, Calendar, ClipboardCheck, Award, BookOpen, Users, GraduationCap, LogIn, Upload, Printer, AlertCircle, Clock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -8,82 +8,54 @@ export default function GuideSoutenancePage() {
   const steps = [
     {
       number: 1,
-      icon: FileText,
-      title: "Dépôt du dossier de soutenance",
-      description: "Constituez et déposez votre dossier complet de demande de soutenance.",
+      icon: LogIn,
+      title: "Création du compte ou connexion",
+      description: "Créez votre compte, ou connectez-vous si vous avez déjà un compte.",
       details: [
-        "Formulaire de demande de soutenance dûment rempli",
-        "Exemplaires de la thèse/mémoire (nombre selon le règlement)",
-        "Avis favorable du directeur de thèse",
-        "Attestation de non-plagiat",
-        "Relevés de notes du parcours doctoral/master",
+        "Si vous n'avez pas de compte, créez-en un avec vos informations personnelles",
+        "Si vous avez déjà un compte (inscription), connectez-vous directement",
+        "Sélectionnez le type de demande « Soutenance »",
       ],
       color: "blue",
     },
     {
       number: 2,
-      icon: Users,
-      title: "Constitution du jury",
-      description: "Le jury de soutenance est constitué selon les normes académiques.",
+      icon: Upload,
+      title: "Remplir les champs et téléverser les documents",
+      description: "Remplissez les différents champs avec les fichiers PDF des éléments requis.",
       details: [
-        "Proposition du jury par le directeur de thèse",
-        "Validation par le conseil scientifique",
-        "Désignation des rapporteurs externes",
-        "Convocation officielle des membres du jury",
+        "Complétez tous les champs d'informations demandés",
+        "Téléversez les fichiers PDF de chaque document requis (max 10 Mo par fichier)",
+        "Consultez la checklist PDF disponible pour vérifier les documents nécessaires",
+        "Assurez-vous que tous les documents obligatoires sont bien fournis",
       ],
       color: "emerald",
     },
     {
       number: 3,
-      icon: BookOpen,
-      title: "Évaluation par les rapporteurs",
-      description: "Les rapporteurs examinent votre travail et rédigent leurs rapports.",
+      icon: FileText,
+      title: "Soumettre son dossier en ligne",
+      description: "Soumettez votre dossier de soutenance en ligne et obtenez un certificat de soumission.",
       details: [
-        "Envoi des exemplaires aux rapporteurs",
-        "Délai d'évaluation : 4 à 6 semaines",
-        "Rédaction des rapports de pré-soutenance",
-        "Décision d'autorisation de soutenance",
+        "Vérifiez l'ensemble de vos informations et documents",
+        "Cliquez sur « Soumettre le dossier »",
+        "Réceptionnez votre certificat de soumission avec numéro de référence",
+        "Conservez ce certificat précieusement",
       ],
       color: "amber",
     },
     {
       number: 4,
-      icon: Calendar,
-      title: "Programmation de la soutenance",
-      description: "Fixation de la date et organisation logistique de la soutenance.",
+      icon: Printer,
+      title: "Imprimer et déposer à la faculté",
+      description: "Imprimez le certificat de soumission obtenu et déposez-le à la faculté avec votre dossier physique.",
       details: [
-        "Accord sur la date avec tous les membres du jury",
-        "Réservation de la salle de soutenance",
-        "Envoi des convocations officielles",
-        "Affichage public de l'annonce de soutenance",
+        "Imprimez le certificat de soumission obtenu en ligne",
+        "Constituez votre dossier physique avec tous les originaux",
+        "Déposez le certificat de soumission avec votre dossier physique à votre faculté",
+        "La faculté transmettra votre dossier au Secrétariat Général à la Recherche",
       ],
       color: "purple",
-    },
-    {
-      number: 5,
-      icon: GraduationCap,
-      title: "Jour de la soutenance",
-      description: "Présentation et défense de votre travail devant le jury.",
-      details: [
-        "Présentation orale (30-45 minutes selon le niveau)",
-        "Questions et débat avec le jury",
-        "Délibération à huis clos",
-        "Proclamation des résultats et mention",
-      ],
-      color: "rose",
-    },
-    {
-      number: 6,
-      icon: Award,
-      title: "Formalités post-soutenance",
-      description: "Accomplissement des dernières formalités administratives.",
-      details: [
-        "Corrections éventuelles demandées par le jury",
-        "Dépôt de la version finale",
-        "Retrait du diplôme",
-        "Publication dans le répertoire des thèses",
-      ],
-      color: "teal",
     },
   ];
 
@@ -92,19 +64,19 @@ export default function GuideSoutenancePage() {
     emerald: { bg: "bg-emerald-600", border: "border-emerald-600", text: "text-emerald-600", light: "bg-emerald-50" },
     amber: { bg: "bg-amber-500", border: "border-amber-500", text: "text-amber-600", light: "bg-amber-50" },
     purple: { bg: "bg-purple-600", border: "border-purple-600", text: "text-purple-600", light: "bg-purple-50" },
-    rose: { bg: "bg-rose-600", border: "border-rose-600", text: "text-rose-600", light: "bg-rose-50" },
-    teal: { bg: "bg-teal-600", border: "border-teal-600", text: "text-teal-600", light: "bg-teal-50" },
   };
 
   const requiredDocuments = [
-    { name: "Formulaire de demande de soutenance", category: "Administratif", required: true },
-    { name: "Exemplaires de la thèse/mémoire", category: "Académique", required: true },
-    { name: "Avis du directeur de thèse", category: "Académique", required: true },
-    { name: "Attestation de non-plagiat", category: "Académique", required: true },
-    { name: "Relevés de notes complets", category: "Académique", required: true },
-    { name: "Quitus de la bibliothèque", category: "Administratif", required: true },
-    { name: "Attestation de paiement des frais", category: "Financier", required: true },
-    { name: "CV actualisé", category: "Personnel", required: false },
+    { name: "Lettre de transmission du dossier par le Doyen", category: "Administratif", required: true },
+    { name: "Notification ou décision rectorale d'inscription", category: "Académique", required: true },
+    { name: "PV d'approbation du jury par le Conseil de Faculté", category: "Académique", required: true },
+    { name: "PV de constitution du jury par le Conseil de Département", category: "Académique", required: true },
+    { name: "Avis favorable du Comité d'encadrement", category: "Académique", required: true },
+    { name: "Bordereaux de paiement des frais académiques", category: "Financier", required: true },
+    { name: "Publications requises", category: "Académique", required: true },
+    { name: "Volumes de dissertation avec synthèses", category: "Académique", required: true },
+    { name: "Certificat d'analyse anti-plagiat (max 15% similitude)", category: "Académique", required: true },
+    { name: "CV actualisé", category: "Personnel", required: true },
   ];
 
   return (
@@ -216,6 +188,32 @@ export default function GuideSoutenancePage() {
                   ))}
                 </tbody>
               </table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Note importante */}
+        <Card className="mt-12 border-2 border-amber-200 bg-amber-50">
+          <CardContent className="pt-6">
+            <div className="flex gap-4">
+              <div className="shrink-0">
+                <AlertCircle className="h-6 w-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="font-bold text-amber-900 mb-2">NB : Information importante</h3>
+                <p className="text-amber-800 leading-relaxed mb-3">
+                  La faculté transmettra votre dossier physique au Secrétariat Général à la Recherche 
+                  pour traitement. Le candidat est invité de suivre l&apos;évolution en ligne via le compte 
+                  créé pour la soumission de son dossier en ligne.
+                </p>
+                <div className="flex items-center gap-2 text-amber-900 font-semibold">
+                  <Clock className="h-5 w-5" />
+                  <span>
+                    Délai moyen pour le traitement du dossier : 5 jours ouvrables à partir de la 
+                    réception du dossier physique au Secrétariat Général à la Recherche
+                  </span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

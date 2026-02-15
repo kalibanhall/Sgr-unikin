@@ -53,6 +53,7 @@ interface AdminUser {
   email: string;
   name: string | null;
   role: "ADMIN" | "SUPER_ADMIN";
+  adminLevel: number | null;
   createdAt: string;
 }
 
@@ -73,6 +74,7 @@ export default function AdminUsersPage() {
     password: "",
     confirmPassword: "",
     role: "ADMIN" as "ADMIN" | "SUPER_ADMIN",
+    adminLevel: "1",
   });
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
@@ -143,6 +145,7 @@ export default function AdminUsersPage() {
           name: formData.name,
           password: formData.password,
           role: formData.role,
+          adminLevel: formData.adminLevel,
         }),
       });
 
@@ -195,6 +198,7 @@ export default function AdminUsersPage() {
       password: "",
       confirmPassword: "",
       role: "ADMIN",
+      adminLevel: "1",
     });
     setFormErrors({});
     setShowPassword(false);
@@ -373,6 +377,38 @@ export default function AdminUsersPage() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {/* Niveau d'administration */}
+                <div className="space-y-2">
+                  <Label htmlFor="adminLevel">Niveau d&apos;administration <span className="text-red-500">*</span></Label>
+                  <Select
+                    value={formData.adminLevel}
+                    onValueChange={(value) => 
+                      setFormData({ ...formData, adminLevel: value })
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Sélectionnez un niveau" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">
+                        <span>Niveau 1 — Soumission & Réception dossier</span>
+                      </SelectItem>
+                      <SelectItem value="2">
+                        <span>Niveau 2 — Analyse technique</span>
+                      </SelectItem>
+                      <SelectItem value="3">
+                        <span>Niveau 3 — Décision finale</span>
+                      </SelectItem>
+                      <SelectItem value="4">
+                        <span>Niveau 4 — Validation & Décision finale</span>
+                      </SelectItem>
+                      <SelectItem value="5">
+                        <span>Niveau 5 — Accès complet</span>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <DialogFooter>
@@ -458,6 +494,7 @@ export default function AdminUsersPage() {
                   <TableHead>Nom</TableHead>
                   <TableHead>Email</TableHead>
                   <TableHead>Rôle</TableHead>
+                  <TableHead>Niveau</TableHead>
                   <TableHead>Date de création</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -465,7 +502,7 @@ export default function AdminUsersPage() {
               <TableBody>
                 {admins.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8 text-slate-500">
+                    <TableCell colSpan={6} className="text-center py-8 text-slate-500">
                       Aucun administrateur trouvé
                     </TableCell>
                   </TableRow>
@@ -504,6 +541,15 @@ export default function AdminUsersPage() {
                         >
                           {admin.role === "SUPER_ADMIN" ? "Super Admin" : "Administrateur"}
                         </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {admin.adminLevel ? (
+                          <Badge variant="outline" className="font-mono">
+                            Niveau {admin.adminLevel}
+                          </Badge>
+                        ) : (
+                          <span className="text-slate-400">—</span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2 text-slate-600">

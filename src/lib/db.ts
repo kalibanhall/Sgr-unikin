@@ -76,6 +76,7 @@ export interface User {
   password: string;
   name: string | null;
   role: 'STUDENT' | 'ADMIN' | 'SUPER_ADMIN';
+  admin_level: number | null; // 1-5, null for students
   email_verified: boolean;
   verify_token: string | null;
   verify_expires: Date | null;

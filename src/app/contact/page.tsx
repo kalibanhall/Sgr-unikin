@@ -12,14 +12,39 @@ import { APP_CONFIG } from "@/lib/config";
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulation d'envoi
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    setIsSubmitting(false);
-    setSubmitted(true);
+    setError('');
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setError(data.error || 'Une erreur est survenue lors de l\'envoi');
+      }
+    } catch {
+      setError('Erreur de connexion au serveur. Veuillez réessayer.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const { contact } = APP_CONFIG;
@@ -86,10 +111,21 @@ export default function ContactPage() {
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-4">
+                  {error && (
+                    <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                      <p className="text-sm text-red-600">{error}</p>
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Nom complet</Label>
-                      <Input id="name" placeholder="Votre nom" required />
+                      <Input 
+                        id="name" 
+                        placeholder="Votre nom" 
+                        required 
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email</Label>
@@ -98,13 +134,21 @@ export default function ContactPage() {
                         type="email"
                         placeholder="votre.email@example.com"
                         required
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="subject">Sujet</Label>
-                    <Input id="subject" placeholder="Objet de votre message" required />
+                    <Input 
+                      id="subject" 
+                      placeholder="Objet de votre message" 
+                      required 
+                      value={formData.subject}
+                      onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                    />
                   </div>
 
                   <div className="space-y-2">
@@ -114,6 +158,8 @@ export default function ContactPage() {
                       placeholder="Décrivez votre demande..."
                       rows={5}
                       required
+                      value={formData.message}
+                      onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     />
                   </div>
 

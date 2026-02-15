@@ -15,7 +15,8 @@ import {
   Clock, 
   AlertCircle,
   Loader2,
-  ArrowRight
+  ArrowRight,
+  Printer
 } from "lucide-react";
 import Link from "next/link";
 import { getStudyLevelLabel, formatDate } from "@/lib/utils";
@@ -185,12 +186,40 @@ export default function DashboardPage() {
               {profile.isComplete ? (
                 <div className="flex items-center gap-3">
                   <CheckCircle className="h-6 w-6 text-green-600" />
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium text-green-800">Félicitations !</p>
                     <p className="text-green-700 text-sm">
-                      Votre inscription est complète. Vous pouvez télécharger votre attestation.
+                      Votre dossier est validé. Vous pouvez imprimer votre certificat de validation.
                     </p>
                   </div>
+                  <a
+                    href="/api/student/dossier/certificate"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shrink-0"
+                  >
+                    <Printer className="h-4 w-4" />
+                    Imprimer le certificat
+                  </a>
+                </div>
+              ) : (profile.dossierStatus === "VALIDATED" || profile.dossierStatus === "COMPLETED") ? (
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  <div className="flex-1">
+                    <p className="font-medium text-green-800">Dossier validé !</p>
+                    <p className="text-green-700 text-sm">
+                      Votre dossier a été validé. Imprimez votre certificat et déposez-le à votre faculté.
+                    </p>
+                  </div>
+                  <a
+                    href="/api/student/dossier/certificate"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shrink-0"
+                  >
+                    <Printer className="h-4 w-4" />
+                    Imprimer le certificat
+                  </a>
                 </div>
               ) : profile.currentStep === 1 && profile.validations.length === 0 ? (
                 <div className="flex items-center gap-3">
