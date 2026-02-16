@@ -66,6 +66,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://sgr.unikin.ac.cd",
   },
+  verification: {
+    google: "googlea91df189bace1835",
+  },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

@@ -16,7 +16,11 @@ import {
   Building,
   Plus,
   Trash2,
-  CheckCircle
+  CheckCircle,
+  KeyRound,
+  Eye,
+  EyeOff,
+  AlertCircle
 } from "lucide-react";
 
 interface Faculty {
@@ -53,6 +57,15 @@ export default function AdminSettingsPage() {
   const [newAdminEmail, setNewAdminEmail] = useState("");
   const [newAdminName, setNewAdminName] = useState("");
   const [newAdminPassword, setNewAdminPassword] = useState("");
+
+  // Changement de mot de passe
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPwd, setNewPwd] = useState("");
+  const [confirmPwd, setConfirmPwd] = useState("");
+  const [showCurrentPwd, setShowCurrentPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  const [pwdChanging, setPwdChanging] = useState(false);
+  const [pwdMessage, setPwdMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
 
@@ -158,6 +171,42 @@ export default function AdminSettingsPage() {
       console.error("Erreur:", error);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwdMessage(null);
+
+    if (newPwd !== confirmPwd) {
+      setPwdMessage({ type: "error", text: "Les mots de passe ne correspondent pas" });
+      return;
+    }
+    if (newPwd.length < 6) {
+      setPwdMessage({ type: "error", text: "Le nouveau mot de passe doit contenir au moins 6 caractères" });
+      return;
+    }
+
+    setPwdChanging(true);
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword: newPwd }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setPwdMessage({ type: "success", text: "Mot de passe mis à jour avec succès" });
+        setCurrentPassword("");
+        setNewPwd("");
+        setConfirmPwd("");
+      } else {
+        setPwdMessage({ type: "error", text: data.error || "Erreur lors du changement" });
+      }
+    } catch {
+      setPwdMessage({ type: "error", text: "Erreur de connexion au serveur" });
+    } finally {
+      setPwdChanging(false);
     }
   };
 
@@ -297,6 +346,85 @@ export default function AdminSettingsPage() {
             </CardContent>
           </Card>
         )}
+
+        {/* Changement de mot de passe */}
+        <Card className="mb-8">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <KeyRound className="h-5 w-5 text-blue-600" />
+              <CardTitle>Changer mon mot de passe</CardTitle>
+            </div>
+            <CardDescription>Modifiez votre mot de passe de connexion</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleChangePassword} className="space-y-4 max-w-md">
+              <div>
+                <Label htmlFor="currentPwd">Mot de passe actuel</Label>
+                <div className="relative">
+                  <Input
+                    id="currentPwd"
+                    type={showCurrentPwd ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Votre mot de passe actuel"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrentPwd(!showCurrentPwd)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showCurrentPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="newPwd">Nouveau mot de passe</Label>
+                <div className="relative">
+                  <Input
+                    id="newPwd"
+                    type={showNewPwd ? "text" : "password"}
+                    value={newPwd}
+                    onChange={(e) => setNewPwd(e.target.value)}
+                    placeholder="Minimum 6 caractères"
+                    required
+                    minLength={6}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPwd(!showNewPwd)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showNewPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+              <div>
+                <Label htmlFor="confirmPwd">Confirmer le nouveau mot de passe</Label>
+                <Input
+                  id="confirmPwd"
+                  type="password"
+                  value={confirmPwd}
+                  onChange={(e) => setConfirmPwd(e.target.value)}
+                  placeholder="Répétez le nouveau mot de passe"
+                  required
+                />
+              </div>
+              {pwdMessage && (
+                <div className={`flex items-center gap-2 p-3 rounded-lg text-sm ${
+                  pwdMessage.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+                }`}>
+                  {pwdMessage.type === "success" ? <CheckCircle className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                  {pwdMessage.text}
+                </div>
+              )}
+              <Button type="submit" disabled={pwdChanging || !currentPassword || !newPwd || !confirmPwd}>
+                {pwdChanging ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <KeyRound className="h-4 w-4 mr-2" />}
+                Changer le mot de passe
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
 
         {/* Informations système */}
         <Card>

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, FileText, Upload, UserCheck, Award, AlertCircle, Clock, Printer } from "lucide-react";
+import { CheckCircle, FileText, Upload, UserCheck, AlertCircle, Clock, Printer, Download } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -56,15 +56,31 @@ export default function GuideInscriptionPage() {
     },
   ];
 
-  const requiredDocuments = [
-    { name: "Photo d'identité", format: "JPG, PNG (max 10 Mo)", required: true },
-    { name: "Diplôme ou attestation de réussite", format: "PDF (max 10 Mo)", required: true },
-    { name: "Relevés de notes", format: "PDF (max 10 Mo)", required: true },
-    { name: "Acte de naissance", format: "PDF (max 10 Mo)", required: true },
-    { name: "Attestation d'inscription précédente", format: "PDF (max 10 Mo)", required: false },
-    { name: "Curriculum Vitae", format: "PDF (max 10 Mo)", required: false },
-    { name: "Lettre de motivation", format: "PDF (max 10 Mo)", required: false },
-    { name: "Projet de recherche (Doctorat)", format: "PDF (max 10 Mo)", required: false },
+  const checklists = [
+    {
+      title: "Inscription Thèse de Doctorat",
+      description: "Liste des documents requis pour l'inscription à la thèse de doctorat",
+      file: "/checklists/checklist-inscription-these.pdf",
+      color: "from-blue-500 to-blue-600",
+      bgColor: "bg-blue-50",
+      borderColor: "border-blue-200",
+    },
+    {
+      title: "Soutenance DEA / DES",
+      description: "Liste des documents requis pour la soutenance de mémoire DEA ou DES",
+      file: "/checklists/checklist-soutenance-dea-des.pdf",
+      color: "from-emerald-500 to-emerald-600",
+      bgColor: "bg-emerald-50",
+      borderColor: "border-emerald-200",
+    },
+    {
+      title: "Soutenance Thèse de Doctorat",
+      description: "Liste des documents requis pour la soutenance de thèse de doctorat",
+      file: "/checklists/checklist-soutenance-these.pdf",
+      color: "from-violet-500 to-violet-600",
+      bgColor: "bg-violet-50",
+      borderColor: "border-violet-200",
+    },
   ];
 
   return (
@@ -116,44 +132,42 @@ export default function GuideInscriptionPage() {
           ))}
         </div>
 
-        {/* Documents requis */}
+        {/* Checklists téléchargeables */}
         <Card className="mb-12">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <FileText className="h-6 w-6 text-blue-600" />
-              Documents requis
+              <Download className="h-6 w-6 text-blue-600" />
+              Checklists des documents requis
             </CardTitle>
+            <p className="text-gray-600 mt-1">
+              Téléchargez la checklist correspondant à votre programme pour connaître tous les documents à fournir.
+            </p>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Document</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Format</th>
-                    <th className="text-left py-3 px-4 font-medium text-gray-900">Obligatoire</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {requiredDocuments.map((doc, index) => (
-                    <tr key={index} className="border-b last:border-b-0">
-                      <td className="py-3 px-4 text-gray-900">{doc.name}</td>
-                      <td className="py-3 px-4 text-gray-700">{doc.format}</td>
-                      <td className="py-3 px-4">
-                        {doc.required ? (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                            Obligatoire
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-900">
-                            Optionnel
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {checklists.map((checklist, index) => (
+                <div
+                  key={index}
+                  className={`${checklist.bgColor} ${checklist.borderColor} border-2 rounded-xl p-6 flex flex-col items-center text-center`}
+                >
+                  <div className={`w-14 h-14 rounded-full bg-linear-to-br ${checklist.color} flex items-center justify-center mb-4`}>
+                    <FileText className="h-7 w-7 text-white" />
+                  </div>
+                  <h3 className="font-bold text-gray-900 mb-2">{checklist.title}</h3>
+                  <p className="text-sm text-gray-600 mb-4 flex-1">{checklist.description}</p>
+                  <a
+                    href={checklist.file}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button className={`bg-linear-to-r ${checklist.color} text-white hover:opacity-90`}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Télécharger PDF
+                    </Button>
+                  </a>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
