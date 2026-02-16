@@ -5,10 +5,7 @@ import type { NextRequest } from "next/server";
 const PRODUCTION_DOMAIN = "sgr.unikin.ac.cd";
 
 // Activer la redirection vers le domaine personnalisé
-// DÉSACTIVÉ : le domaine personnalisé n'a pas de certificat SSL valide sur Render
-// Réactiver uniquement APRÈS avoir configuré le custom domain dans Render Dashboard
-// (Settings > Custom Domains > Add sgr.unikin.ac.cd) et que le certificat soit émis
-const ENABLE_DOMAIN_REDIRECT = false;
+const ENABLE_DOMAIN_REDIRECT = true;
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
