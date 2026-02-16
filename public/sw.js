@@ -1,6 +1,6 @@
-const CACHE_NAME = 'sgr-unikin-v1';
-const STATIC_CACHE = 'sgr-unikin-static-v1';
-const DYNAMIC_CACHE = 'sgr-unikin-dynamic-v1';
+const CACHE_NAME = 'sgr-unikin-v3';
+const STATIC_CACHE = 'sgr-unikin-static-v3';
+const DYNAMIC_CACHE = 'sgr-unikin-dynamic-v3';
 
 // Assets à mettre en cache immédiatement
 const STATIC_ASSETS = [

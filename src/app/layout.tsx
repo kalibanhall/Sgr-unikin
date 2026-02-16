@@ -25,8 +25,47 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "SGR-UNIKIN | Secrétariat Général à la Recherche",
-  description: "Plateforme d'inscription et de gestion des étudiants du troisième cycle de l'Université de Kinshasa",
+  metadataBase: new URL("https://sgr.unikin.ac.cd"),
+  title: {
+    default: "SGR-UNIKIN | Secrétariat Général à la Recherche - Université de Kinshasa",
+    template: "%s | SGR-UNIKIN",
+  },
+  description: "Plateforme officielle d'inscription et de gestion des étudiants du troisième cycle (DEA, Doctorat) de l'Université de Kinshasa. Soumission de dossiers, suivi de validation, soutenance de thèse.",
+  keywords: [
+    "Université de Kinshasa",
+    "UNIKIN",
+    "SGR",
+    "Secrétariat Général à la Recherche",
+    "troisième cycle",
+    "doctorat",
+    "DEA",
+    "thèse",
+    "soutenance",
+    "inscription",
+    "3ème cycle",
+    "RDC",
+    "Congo",
+    "Kinshasa",
+    "recherche universitaire",
+    "études supérieures",
+  ],
+  authors: [{ name: "Université de Kinshasa - SGR" }],
+  creator: "Secrétariat Général à la Recherche - UNIKIN",
+  publisher: "Université de Kinshasa",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "https://sgr.unikin.ac.cd",
+  },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -59,21 +98,21 @@ export const metadata: Metadata = {
     locale: "fr_CD",
     url: "https://sgr.unikin.ac.cd",
     siteName: "SGR-UNIKIN",
-    title: "SGR-UNIKIN | Secrétariat Général à la Recherche",
-    description: "Plateforme d'inscription et de gestion des étudiants du troisième cycle de l'Université de Kinshasa",
+    title: "SGR-UNIKIN | Secrétariat Général à la Recherche - Université de Kinshasa",
+    description: "Plateforme officielle d'inscription et de gestion des étudiants du troisième cycle (DEA, Doctorat) de l'Université de Kinshasa. Soumission de dossiers, suivi de validation, soutenance de thèse.",
     images: [
       {
         url: "/logo-unikin.png",
         width: 512,
         height: 512,
-        alt: "Logo SGR-UNIKIN",
+        alt: "Logo Université de Kinshasa - SGR-UNIKIN",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "SGR-UNIKIN | Secrétariat Général à la Recherche",
-    description: "Plateforme d'inscription et de gestion des étudiants du troisième cycle de l'Université de Kinshasa",
+    title: "SGR-UNIKIN | Secrétariat Général à la Recherche - Université de Kinshasa",
+    description: "Plateforme officielle d'inscription et gestion des étudiants du 3e cycle - Université de Kinshasa",
     images: ["/logo-unikin.png"],
   },
   other: {
@@ -93,6 +132,36 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "EducationalOrganization",
+              name: "Secrétariat Général à la Recherche - Université de Kinshasa",
+              alternateName: "SGR-UNIKIN",
+              url: "https://sgr.unikin.ac.cd",
+              logo: "https://sgr.unikin.ac.cd/logo-unikin.png",
+              description:
+                "Plateforme officielle d'inscription et de gestion des étudiants du troisième cycle (DEA, Doctorat) de l'Université de Kinshasa.",
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: "Kinshasa",
+                addressRegion: "Mont Amba",
+                addressCountry: "CD",
+              },
+              parentOrganization: {
+                "@type": "CollegeOrUniversity",
+                name: "Université de Kinshasa",
+                alternateName: "UNIKIN",
+                url: "https://unikin.ac.cd",
+              },
+              sameAs: ["https://unikin.ac.cd"],
+            }),
+          }}
+        />
+      </head>
       <body className={`${inter.className} antialiased bg-gray-50`}>
         <Providers>
           <div className="flex flex-col min-h-screen">
@@ -171,18 +240,18 @@ export default function RootLayout({
                 navigator.serviceWorker.register('/sw.js')
                   .then(function(registration) {
                     console.log('SW registered: ', registration.scope);
-                    
-                    // Vérifier les mises à jour
+                    // Vérifier les mises à jour immédiatement
+                    registration.update();
+                    // Vérifier toutes les 60 secondes
+                    setInterval(function() { registration.update(); }, 60000);
                     registration.addEventListener('updatefound', () => {
                       const newWorker = registration.installing;
                       if (newWorker) {
                         newWorker.addEventListener('statechange', () => {
                           if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                            // Nouvelle version disponible
-                            if (confirm('Une nouvelle version est disponible. Actualiser?')) {
-                              newWorker.postMessage({ type: 'SKIP_WAITING' });
-                              window.location.reload();
-                            }
+                            // Force l'activation immédiate de la nouvelle version
+                            newWorker.postMessage({ type: 'SKIP_WAITING' });
+                            window.location.reload();
                           }
                         });
                       }

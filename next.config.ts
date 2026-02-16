@@ -69,6 +69,16 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        // Pages HTML: pas de cache navigateur pour toujours servir la dernière version
+        source: '/((?!_next|api|.*\\.).*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=0, must-revalidate',
+          },
+        ],
+      },
     ];
   },
   
