@@ -232,49 +232,49 @@ CREATE TRIGGER update_admin_reviews_updated_at BEFORE UPDATE ON admin_reviews
 -- =====================================================
 
 -- Insertion des utilisateurs par défaut (mots de passe hashés avec bcrypt)
--- superadmin123 -> $2b$10$mdGjPr.twFN49pVh/jqqM.DECDLXt.JTwiDpHhP1zRnWU4Vbe33k2
--- admin123 -> $2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m
+-- superadmin123 -> $2b$10$25/iCZhv2O.Q3HAzZaP14u12y/s2gu5K18LY.8Ny/MvKdNwWz7F8a
+-- admin123 -> $2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS
 
 INSERT INTO users (email, password, name, role, admin_level, email_verified) VALUES
 -- Super Admin
-('sg.recherche@unikin.ac.cd', '$2b$10$mdGjPr.twFN49pVh/jqqM.DECDLXt.JTwiDpHhP1zRnWU4Vbe33k2', 'Super Admin SGR', 'SUPER_ADMIN', 5, TRUE),
+('sg.recherche@unikin.ac.cd', '$2b$10$25/iCZhv2O.Q3HAzZaP14u12y/s2gu5K18LY.8Ny/MvKdNwWz7F8a', 'Super Admin SGR', 'SUPER_ADMIN', 5, TRUE),
 -- Niveau 5 : Direction
-('jonathanmukanya9@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Jonathan Mukanya', 'ADMIN', 5, TRUE),
-('garaphmutwal@yahoo.fr', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Paulin Mutwale', 'ADMIN', 5, TRUE),
+('jonathanmukanya9@gmail.com', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Jonathan Mukanya Mpoyi', 'ADMIN', 5, TRUE),
+('garaphmutwal@yahoo.fr', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Paulin Mutwale Kapepula', 'ADMIN', 5, TRUE),
 -- Niveau 4 : Validation finale
-('yvettepoungam@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Estelle Yvette Poungam', 'ADMIN', 4, TRUE),
-('michel.kapembo@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Michel Kapembo', 'ADMIN', 4, TRUE),
+('yvettepoungam@gmail.com', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Estelle Yvette Poungam', 'ADMIN', 4, TRUE),
+('michel.kapembo@unikin.ac.cd', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Michel Kapembo', 'ADMIN', 4, TRUE),
 -- Niveau 3 : Analyse technique
-('sebastienbayauli@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Sébastien Bayauli', 'ADMIN', 3, TRUE),
-('nancy.niemba@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Nancy Niemba', 'ADMIN', 3, TRUE),
-('osee@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Osée', 'ADMIN', 3, TRUE),
--- Niveau 2 : Réception
-('hugotamina@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Hugo Tamina', 'ADMIN', 2, TRUE),
-('emmanuel.djamba@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Djamba Emmanuel', 'ADMIN', 2, TRUE),
-('harry.kayembe@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Harry Kayembe', 'ADMIN', 2, TRUE),
-('jimmykabeya@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Jimmy Kabeya', 'ADMIN', 2, TRUE),
+('sebastienbayauli@gmail.com', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Sébastien Bayauli', 'ADMIN', 3, TRUE),
+('nancy.niemba@unikin.ac.cd', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Nancy Niemba', 'ADMIN', 3, TRUE),
+('osee@unikin.ac.cd', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Osée', 'ADMIN', 3, TRUE),
+-- Niveau 2 : Analyse technique du dossier
+('hugotamina@gmail.com', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Hugo Tamina Maloya', 'ADMIN', 2, TRUE),
+('emmanuel.djamba@unikin.ac.cd', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Djamba Okenda Emmanuel', 'ADMIN', 2, TRUE),
+('harry.kayembe@unikin.ac.cd', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Harry Kayembe', 'ADMIN', 2, TRUE),
+('jimmykabeya@unikin.ac.cd', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Jimmy Kabeya', 'ADMIN', 2, TRUE),
 -- Niveau 1 : Soumission / Accueil / Rendez-vous
-('lisabokuma2@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Lisa Bokuma', 'ADMIN', 1, TRUE),
-('mosesmutamba52@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Moïse Mulumba', 'ADMIN', 1, TRUE),
-('bigohealex@gmail.com', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Alex Bigohe', 'ADMIN', 1, TRUE),
-('nathalie@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Nathalie', 'ADMIN', 1, TRUE),
-('ines@unikin.ac.cd', '$2b$10$MTK//zUUUduwDDXs/.cO0OaKS.cUTrusM5KZM5Z08wpeYuRFjFe/m', 'Inès', 'ADMIN', 1, TRUE);
+('lisabokuma2@gmail.com', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Lisa Bokuma', 'ADMIN', 1, TRUE),
+('mosesmutamba52@gmail.com', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Moïse Mulumba', 'ADMIN', 1, TRUE),
+('bigohealex@gmail.com', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Alex Bigohe', 'ADMIN', 1, TRUE),
+('nathalie@unikin.ac.cd', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Nathalie', 'ADMIN', 1, TRUE),
+('ines@unikin.ac.cd', '$2b$10$t0CtopFjSEcTiWxB5Obfh.ECcESfPljItmwkZgCW7sF3gfScekhDS', 'Inès', 'ADMIN', 1, TRUE);
 
 -- Insertion des facultés
 INSERT INTO faculties (name, code) VALUES
-('Faculté des Sciences Économiques et de Gestion', 'ECOGEST'),
-('Faculté de Médecine Dentaire', 'MEDDENT'),
-('Faculté des Sciences Sociales, Administratives et Politiques', 'SSAP'),
-('Faculté des Sciences et Technologies', 'SCITECH'),
-('Faculté des Sciences Agronomiques et Environnement', 'AGROENV'),
-('Faculté du Pétrole, Gaz et Énergies Renouvelables', 'PETRO'),
-('Faculté de Médecine Vétérinaire', 'VETERINAIRE'),
-('Faculté des Sciences Pharmaceutiques', 'PHARMA'),
-('Faculté des Lettres et Sciences Humaines', 'LETTRES'),
-('Faculté Polytechnique', 'POLYTECH'),
-('Faculté de Psychologie et Sciences de l''Éducation', 'PSYCHO'),
-('Faculté de Droit', 'DROIT'),
-('Faculté de Médecine', 'MEDECINE');
+('Sciences Économiques et de Gestion', 'ECOGEST'),
+('Médecine Dentaire', 'MEDDENT'),
+('Sciences Sociales, Administratives et Politiques', 'SSAP'),
+('Sciences et Technologies', 'SCITECH'),
+('Sciences Agronomiques et Environnement', 'AGROENV'),
+('Pétrole, Gaz et Énergies Renouvelables', 'PETRO'),
+('Médecine Vétérinaire', 'VETERINAIRE'),
+('Sciences Pharmaceutiques', 'PHARMA'),
+('Lettres et Sciences Humaines', 'LETTRES'),
+('Polytechnique', 'POLYTECH'),
+('Psychologie et Sciences de l''Éducation', 'PSYCHO'),
+('Droit', 'DROIT'),
+('Médecine', 'MEDECINE');
 
 -- Insertion des départements
 -- ECOGEST
@@ -307,7 +307,7 @@ INSERT INTO departments (name, code, faculty_id)
 SELECT d.name, d.code, f.id FROM faculties f,
 (VALUES
   ('Sciences politiques', 'SSAP-DEP1'),
-  ('Relations internationales', 'SSAP-DEP2'),
+  ('Relation internationale', 'SSAP-DEP2'),
   ('Anthropologie', 'SSAP-DEP3'),
   ('Sociologie', 'SSAP-DEP4'),
   ('Sciences du travail', 'SSAP-DEP5')
@@ -334,7 +334,7 @@ SELECT d.name, d.code, f.id FROM faculties f,
   ('Production animale', 'AGROENV-DEP1'),
   ('Production végétale', 'AGROENV-DEP2'),
   ('Technologies agroindustrielle', 'AGROENV-DEP3'),
-  ('Agro-économie', 'AGROENV-DEP4'),
+  ('Agro économie', 'AGROENV-DEP4'),
   ('Gestion des ressources naturelles', 'AGROENV-DEP5')
 ) AS d(name, code)
 WHERE f.code = 'AGROENV';
@@ -387,7 +387,7 @@ SELECT d.name, d.code, f.id FROM faculties f,
   ('Langues et informatique appliquée aux affaires et commerce', 'LETTRES-DEP8'),
   ('Traduction et interprétariat', 'LETTRES-DEP9'),
   ('Lettres-Arts de spectacle Africain et patrimoine culturels', 'LETTRES-DEP10'),
-  ('École des langues vivantes', 'LETTRES-DEP11')
+  ('Ecoles des langues vivantes', 'LETTRES-DEP11')
 ) AS d(name, code)
 WHERE f.code = 'LETTRES';
 

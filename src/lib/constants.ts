@@ -1,17 +1,17 @@
 export const FACULTIES = [
-  { code: "ECOGEST", name: "Faculté des Sciences Économiques et de Gestion" },
-  { code: "MEDDENT", name: "Faculté de Médecine Dentaire" },
-  { code: "SSAP", name: "Faculté des Sciences Sociales, Administratives et Politiques" },
-  { code: "SCITECH", name: "Faculté des Sciences et Technologies" },
-  { code: "AGROENV", name: "Faculté des Sciences Agronomiques et Environnement" },
-  { code: "PETRO", name: "Faculté du Pétrole, Gaz et Énergies Renouvelables" },
-  { code: "VETERINAIRE", name: "Faculté de Médecine Vétérinaire" },
-  { code: "PHARMA", name: "Faculté des Sciences Pharmaceutiques" },
-  { code: "LETTRES", name: "Faculté des Lettres et Sciences Humaines" },
-  { code: "POLYTECH", name: "Faculté Polytechnique" },
-  { code: "PSYCHO", name: "Faculté de Psychologie et Sciences de l'Éducation" },
-  { code: "DROIT", name: "Faculté de Droit" },
-  { code: "MEDECINE", name: "Faculté de Médecine" },
+  { code: "ECOGEST", name: "Sciences Économiques et de Gestion" },
+  { code: "MEDDENT", name: "Médecine Dentaire" },
+  { code: "SSAP", name: "Sciences Sociales, Administratives et Politiques" },
+  { code: "SCITECH", name: "Sciences et Technologies" },
+  { code: "AGROENV", name: "Sciences Agronomiques et Environnement" },
+  { code: "PETRO", name: "Pétrole, Gaz et Énergies Renouvelables" },
+  { code: "VETERINAIRE", name: "Médecine Vétérinaire" },
+  { code: "PHARMA", name: "Sciences Pharmaceutiques" },
+  { code: "LETTRES", name: "Lettres et Sciences Humaines" },
+  { code: "POLYTECH", name: "Polytechnique" },
+  { code: "PSYCHO", name: "Psychologie et Sciences de l'Éducation" },
+  { code: "DROIT", name: "Droit" },
+  { code: "MEDECINE", name: "Médecine" },
 ];
 
 // Départements par faculté (89 départements au total)
@@ -33,7 +33,7 @@ export const DEPARTMENTS: Record<string, string[]> = {
   ],
   SSAP: [
     "Sciences politiques",
-    "Relations internationales",
+    "Relation internationale",
     "Anthropologie",
     "Sociologie",
     "Sciences du travail",
@@ -50,7 +50,7 @@ export const DEPARTMENTS: Record<string, string[]> = {
     "Production animale",
     "Production végétale",
     "Technologies agroindustrielle",
-    "Agro-économie",
+    "Agro économie",
     "Gestion des ressources naturelles",
   ],
   PETRO: [
@@ -83,7 +83,7 @@ export const DEPARTMENTS: Record<string, string[]> = {
     "Langues et informatique appliquée aux affaires et commerce",
     "Traduction et interprétariat",
     "Lettres-Arts de spectacle Africain et patrimoine culturels",
-    "École des langues vivantes",
+    "Ecoles des langues vivantes",
   ],
   POLYTECH: [
     "Génie civil",
