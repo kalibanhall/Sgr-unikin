@@ -2,9 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { userRepository, studentRepository, validationRepository, adminReviewRepository } from "@/lib/repositories";
 import { sendEmail, getValidationEmailTemplate, getValidationCertificateEmailTemplate } from "@/lib/email";
+import { generateCertificatePDF } from "@/lib/pdf-certificate";
 import { ADMIN_LEVELS, FACULTIES } from "@/lib/constants";
-import { readFile } from "fs/promises";
-import { join } from "path";
 
 // POST - Valider ou rejeter une étape
 export async function POST(
@@ -83,7 +82,7 @@ export async function POST(
         dossierStatus: isComplete ? "VALIDATED" : student.dossier_status,
       });
 
-      // Si dossier complet, envoyer le certificat de validation
+      // Si dossier complet, envoyer le certificat de validation en PDF
       if (isComplete) {
         const facultyEntry = FACULTIES.find(f => f.code === student.faculty);
         const facultyName = facultyEntry?.name || student.faculty || "Non spécifiée";
@@ -101,25 +100,26 @@ export async function POST(
           : "N/A";
         const validationDate = now.toLocaleDateString("fr-CD", { day: "2-digit", month: "2-digit", year: "numeric" });
 
-        // Lire le cachet SGR en base64
-        let cachetBase64: string | undefined;
+        // Générer le certificat PDF
+        let pdfBytes: Uint8Array | null = null;
         try {
-          const cachetPath = join(process.cwd(), "public", "cachet-sgr.png");
-          const cachetBuffer = await readFile(cachetPath);
-          cachetBase64 = cachetBuffer.toString("base64");
-        } catch {
-          console.warn("Cachet SGR non trouvé dans public/cachet-sgr.png");
+          pdfBytes = await generateCertificatePDF({
+            referenceNumber,
+            studentName,
+            faculty: facultyName,
+            department,
+            thesisTitle,
+            submissionDate,
+            emissionDate: validationDate,
+          });
+        } catch (pdfErr) {
+          console.error("Erreur génération certificat PDF:", pdfErr);
         }
 
         const certTemplate = getValidationCertificateEmailTemplate(
           studentName,
-          facultyName,
-          department,
-          thesisTitle,
           referenceNumber,
-          submissionDate,
           validationDate,
-          cachetBase64
         );
 
         await sendEmail({
@@ -127,6 +127,13 @@ export async function POST(
           subject: certTemplate.subject,
           html: certTemplate.html,
           text: certTemplate.text,
+          ...(pdfBytes ? {
+            attachments: [{
+              filename: `Certificat_Validation_${referenceNumber.replace(/\//g, '_')}.pdf`,
+              content: pdfBytes,
+              contentType: 'application/pdf',
+            }],
+          } : {}),
         });
       }
     }
