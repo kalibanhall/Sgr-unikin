@@ -28,6 +28,7 @@ import {
   Clock
 } from "lucide-react";
 import { getStudyLevelLabel, formatDate } from "@/lib/utils";
+import { ADMIN_LEVELS } from "@/lib/constants";
 
 interface StudentDetail {
   id: string;
@@ -100,6 +101,9 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
   const [submittingReview, setSubmittingReview] = useState(false);
   
   const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
+  const adminLevel = session?.user?.adminLevel || 1;
+  const levelConfig = ADMIN_LEVELS.find(l => l.level === adminLevel);
+  const canValidateCurrentStep = isSuperAdmin || (levelConfig?.allowedSteps?.includes(student?.currentStep ?? -1) ?? false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -411,7 +415,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
         </Card>
 
         {/* Actions de validation */}
-        {!student.isComplete && (
+        {!student.isComplete && canValidateCurrentStep && (
           <Card className="mt-8 border-2 border-blue-200">
             <CardHeader>
               <CardTitle className="text-blue-900">Actions de validation</CardTitle>
@@ -457,6 +461,21 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                   )}
                   Rejeter
                 </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Message si l'admin n'a pas le droit de valider cette étape */}
+        {!student.isComplete && !canValidateCurrentStep && (
+          <Card className="mt-8 border-2 border-gray-200 bg-gray-50">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-3 text-gray-600">
+                <Shield className="h-5 w-5" />
+                <div>
+                  <p className="font-medium">Vous ne pouvez pas valider cette étape</p>
+                  <p className="text-sm">Votre niveau ({levelConfig?.shortLabel || `Niveau ${adminLevel}`}) permet d&apos;intervenir sur les étapes : {levelConfig?.allowedSteps?.join(", ") || "aucune"}. L&apos;étape actuelle est {student.currentStep}.</p>
+                </div>
               </div>
             </CardContent>
           </Card>

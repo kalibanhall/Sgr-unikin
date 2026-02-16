@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getStudyLevelLabel, formatDate } from "@/lib/utils";
+import { ADMIN_LEVELS } from "@/lib/constants";
 
 interface Stats {
   totalStudents: number;
@@ -89,6 +90,11 @@ export default function AdminDashboardPage() {
     recentRegistrations: [],
   };
 
+  const adminLevel = session?.user?.adminLevel || 1;
+  const levelConfig = ADMIN_LEVELS.find(l => l.level === adminLevel);
+  const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
+  const canManageAppointments = isSuperAdmin || (levelConfig?.canManageAppointments ?? false);
+
   const statCards = [
     {
       title: "Total étudiants",
@@ -134,6 +140,14 @@ export default function AdminDashboardPage() {
                 Vue d&apos;ensemble de la gestion des inscriptions
               </p>
             </div>
+            <div className="text-right">
+              <Badge variant="secondary" className="text-sm px-3 py-1">
+                {isSuperAdmin ? "Super Admin" : levelConfig?.shortLabel || `Niveau ${adminLevel}`}
+              </Badge>
+              <p className="text-xs text-gray-500 mt-1">
+                {isSuperAdmin ? "Acc\u00e8s complet" : levelConfig?.description || ""}
+              </p>
+            </div>
           </div>
 
           {/* Navigation rapide */}
@@ -146,14 +160,16 @@ export default function AdminDashboardPage() {
                 </CardContent>
               </Card>
             </Link>
-            <Link href="/admin/rendez-vous">
-              <Card className="cursor-pointer hover:shadow-md transition-shadow">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <Calendar className="h-5 w-5 text-green-600" />
-                  <span className="font-medium text-gray-900">Rendez-vous</span>
-                </CardContent>
-              </Card>
-            </Link>
+            {canManageAppointments && (
+              <Link href="/admin/rendez-vous">
+                <Card className="cursor-pointer hover:shadow-md transition-shadow">
+                  <CardContent className="flex items-center gap-3 p-4">
+                    <Calendar className="h-5 w-5 text-green-600" />
+                    <span className="font-medium text-gray-900">Rendez-vous</span>
+                  </CardContent>
+                </Card>
+              </Link>
+            )}
             <Link href="/admin/documents">
               <Card className="cursor-pointer hover:shadow-md transition-shadow">
                 <CardContent className="flex items-center gap-3 p-4">

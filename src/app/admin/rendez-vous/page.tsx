@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { ADMIN_LEVELS } from "@/lib/constants";
 import { 
   Calendar, 
   Clock, 
@@ -64,8 +65,18 @@ export default function AdminAppointmentsPage() {
     if (status === "unauthenticated") {
       router.push("/login");
     }
-    if (status === "authenticated" && session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPER_ADMIN") {
-      router.push("/dashboard");
+    if (status === "authenticated") {
+      if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPER_ADMIN") {
+        router.push("/dashboard");
+      } else {
+        // Vérifier canManageAppointments
+        const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
+        const level = session?.user?.adminLevel || 1;
+        const config = ADMIN_LEVELS.find(l => l.level === level);
+        if (!isSuperAdmin && !config?.canManageAppointments) {
+          router.push("/admin");
+        }
+      }
     }
   }, [status, session, router]);
 
