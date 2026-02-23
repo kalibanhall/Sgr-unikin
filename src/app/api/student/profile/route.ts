@@ -28,6 +28,7 @@ interface StudentProfile {
   current_step: number;
   max_steps: number;
   dossier_status: string;
+  dossier_type: string | null;
   is_complete: boolean;
   created_at: Date;
 }
@@ -101,6 +102,7 @@ export async function GET() {
       currentStep: student.current_step,
       maxSteps: student.max_steps,
       dossierStatus: student.dossier_status || "",
+      dossierType: student.dossier_type || "INSCRIPTION",
       isComplete: student.is_complete,
       createdAt: student.created_at ? new Date(student.created_at).toISOString() : null,
       user: {

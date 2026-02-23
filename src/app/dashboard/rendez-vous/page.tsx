@@ -17,9 +17,7 @@ import {
   Plus,
   CheckCircle,
   XCircle,
-  AlertCircle,
-  User,
-  Users
+  AlertCircle
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
@@ -39,38 +37,40 @@ interface Appointment {
 const destinataires = [
   { 
     id: "SGR", 
-    nom: "Prof. MBAYA KALUBI", 
+    nom: "Prof. Paulin MUTWALE KAPEPULA", 
     fonction: "SGR", 
-    description: "Gestion & validation",
-    initiales: "MK"
+    description: "Secrétaire Général à la Recherche",
+    initiales: "PMK"
   },
   { 
-    id: "ASSISTANT_SGR", 
-    nom: "Prof. LUKUSA TSHIMANGA", 
-    fonction: "Assistant Principal du SGR", 
-    description: "Direction générale",
-    initiales: "LT"
-  },
-  { 
-    id: "CHARGE_OIPR", 
-    nom: "Prof. KASONGO MULENDA", 
-    fonction: "Chargé de l'OIPR", 
-    description: "Encadrement académique",
+    id: "AP", 
+    nom: "Prof. KAPEMBO Michel", 
+    fonction: "Assistant Principal", 
+    description: "Assistant Principal du SGR",
     initiales: "KM"
   },
   { 
-    id: "CHARGE_PROJET", 
-    nom: "Prof. MBUYI KABANGE", 
-    fonction: "Chargé de Projet", 
-    description: "Affaires institutionnelles",
-    initiales: "MK"
+    id: "CHARGE_PUBLICATIONS", 
+    nom: "Chargé des Publications", 
+    fonction: "Publications et Recherche", 
+    description: "Publications et recherche scientifique",
+    initiales: "CP"
+  },
+  { 
+    id: "CHARGE_ANTIPLAGIAT", 
+    nom: "Chargé Anti-plagiat", 
+    fonction: "Check Anti-plagiat", 
+    description: "Vérification anti-plagiat des travaux",
+    initiales: "CA"
+  },
+  { 
+    id: "CHARGE_OIPR", 
+    nom: "Chargé de l'OIPR", 
+    fonction: "OIPR", 
+    description: "Office Ivoirien de la Propriété Intellectuelle",
+    initiales: "CO"
   },
 ];
-
-const targetRoles = destinataires.map(d => ({
-  value: d.id,
-  label: d.nom
-}));
 
 export default function AppointmentsPage() {
   const { data: session, status } = useSession();
@@ -153,11 +153,6 @@ export default function AppointmentsPage() {
       default:
         return <Badge className="bg-yellow-100 text-yellow-800"><Clock className="h-3 w-3 mr-1" /> En attente</Badge>;
     }
-  };
-
-  const getTargetRoleLabel = (value: string) => {
-    const dest = destinataires.find(d => d.id === value);
-    return dest ? `${dest.nom} - ${dest.fonction}` : value;
   };
 
   const getDestinataire = (value: string) => {

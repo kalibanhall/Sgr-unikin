@@ -75,6 +75,7 @@ CREATE TABLE students (
     
     -- Gestion du dossier
     dossier_status dossier_status DEFAULT 'DRAFT' NOT NULL,
+    dossier_type VARCHAR(50) DEFAULT 'INSCRIPTION' NOT NULL,
     submitted_at TIMESTAMP WITH TIME ZONE,
     draft_expires_at TIMESTAMP WITH TIME ZONE,
     

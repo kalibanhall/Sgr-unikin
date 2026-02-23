@@ -15,6 +15,13 @@ export async function runMigrations() {
     `);
     console.log('✅ Secret question columns added');
 
+    // Add dossier_type column for multiple request types
+    await query(`
+      ALTER TABLE students 
+      ADD COLUMN IF NOT EXISTS dossier_type VARCHAR(50) DEFAULT 'INSCRIPTION'
+    `);
+    console.log('✅ Dossier type column added');
+
     // Promote Jonathan Mutwale to SUPER_ADMIN if exists
     const result = await query(`
       UPDATE users 

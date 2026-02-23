@@ -16,7 +16,8 @@ import {
   AlertCircle,
   Loader2,
   ArrowRight,
-  Printer
+  Printer,
+  PlusCircle
 } from "lucide-react";
 import Link from "next/link";
 import { getStudyLevelLabel, formatDate } from "@/lib/utils";
@@ -32,6 +33,7 @@ interface StudentProfile {
   maxSteps: number;
   isComplete: boolean;
   dossierStatus: string;
+  dossierType: string;
   submittedAt: string | null;
   createdAt: string;
   user: {
@@ -51,6 +53,8 @@ export default function DashboardPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [showNewRequestModal, setShowNewRequestModal] = useState(false);
+  const [creatingRequest, setCreatingRequest] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -108,8 +112,9 @@ export default function DashboardPage() {
   }
 
   const getStatusBadge = () => {
+    const typeLabel = getDossierTypeLabel(profile.dossierType || 'INSCRIPTION');
     if (profile.isComplete) {
-      return <Badge variant="success" className="text-base px-4 py-1.5 font-semibold">Inscription complète</Badge>;
+      return <Badge variant="success" className="text-base px-4 py-1.5 font-semibold">{typeLabel} complète</Badge>;
     }
     const lastValidation = profile.validations[profile.validations.length - 1];
     if (lastValidation?.status === "REJECTED") {
@@ -123,6 +128,41 @@ export default function DashboardPage() {
       );
     }
     return <Badge variant="secondary" className="text-base px-4 py-1.5 font-semibold">Brouillon</Badge>;
+  };
+
+  const handleNewRequest = async (requestType: 'SOUTENANCE' | 'AUTRE') => {
+    setCreatingRequest(true);
+    try {
+      const res = await fetch('/api/student/new-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ requestType }),
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        // Refresh the page to show new dossier state
+        window.location.reload();
+      } else {
+        alert(data.error || 'Erreur lors de la création de la demande');
+      }
+    } catch (error) {
+      console.error('Error creating new request:', error);
+      alert('Erreur lors de la création de la demande');
+    } finally {
+      setCreatingRequest(false);
+      setShowNewRequestModal(false);
+    }
+  };
+
+  const getDossierTypeLabel = (type: string) => {
+    switch (type) {
+      case 'INSCRIPTION': return 'Inscription';
+      case 'SOUTENANCE': return 'Soutenance';
+      case 'AUTRE': return 'Autre demande';
+      default: return type;
+    }
   };
 
   const quickActions = [
@@ -161,7 +201,12 @@ export default function DashboardPage() {
             Bienvenue{profile.firstName || profile.lastName ? `, ${profile.firstName || ""} ${profile.lastName || ""}` : " !"}
           </h1>
           <p className="text-gray-900 mt-1">
-            Gérez votre dossier d&apos;inscription au troisième cycle
+            {profile.dossierType === 'SOUTENANCE' ? 
+              "Gérez votre demande de soutenance" :
+              profile.dossierType === 'AUTRE' ?
+                "Gérez votre demande administrative" :
+                "Gérez votre dossier d'inscription au troisième cycle"
+            }
           </p>
         </div>
 
@@ -170,7 +215,7 @@ export default function DashboardPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>État de votre dossier</CardTitle>
+                <CardTitle>État de votre dossier {profile.dossierType && profile.dossierType !== 'INSCRIPTION' ? `(${getDossierTypeLabel(profile.dossierType)})` : ''}</CardTitle>
                 <CardDescription>
                   Inscrit depuis {formatDate(profile.createdAt)}
                 </CardDescription>
@@ -184,23 +229,39 @@ export default function DashboardPage() {
             {/* Message selon l'étape */}
             <div className="mt-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
               {profile.isComplete ? (
-                <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
-                  <div className="flex-1">
-                    <p className="font-medium text-green-800">Félicitations !</p>
-                    <p className="text-green-700 text-sm">
-                      Votre dossier est validé. Vous pouvez imprimer votre certificat de validation.
-                    </p>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-600" />
+                    <div className="flex-1">
+                      <p className="font-medium text-green-800">Félicitations !</p>
+                      <p className="text-green-700 text-sm">
+                        Votre dossier de {getDossierTypeLabel(profile.dossierType || 'INSCRIPTION').toLowerCase()} est validé.
+                      </p>
+                    </div>
+                    <a
+                      href="/api/student/dossier/certificate"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shrink-0"
+                    >
+                      <Printer className="h-4 w-4" />
+                      Imprimer le certificat
+                    </a>
                   </div>
-                  <a
-                    href="/api/student/dossier/certificate"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shrink-0"
-                  >
-                    <Printer className="h-4 w-4" />
-                    Imprimer le certificat
-                  </a>
+                  
+                  {/* Nouvelle demande section */}
+                  <div className="pt-4 border-t border-green-200">
+                    <p className="text-green-700 text-sm mb-3">
+                      Vous pouvez maintenant soumettre une nouvelle demande (ex: soutenance de thèse).
+                    </p>
+                    <button
+                      onClick={() => setShowNewRequestModal(true)}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                      Nouvelle demande
+                    </button>
+                  </div>
                 </div>
               ) : (profile.dossierStatus === "VALIDATED" || profile.dossierStatus === "COMPLETED") ? (
                 <div className="flex items-center gap-3">
@@ -346,6 +407,62 @@ export default function DashboardPage() {
           ))}
         </div>
       </div>
+
+      {/* Modal Nouvelle demande */}
+      {showNewRequestModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              Nouvelle demande
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Choisissez le type de demande que vous souhaitez soumettre. 
+              Vos documents précédents seront archivés.
+            </p>
+            
+            <div className="space-y-3 mb-6">
+              <button
+                onClick={() => handleNewRequest('SOUTENANCE')}
+                disabled={creatingRequest}
+                className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left disabled:opacity-50"
+              >
+                <p className="font-medium text-gray-900">Soutenance de thèse</p>
+                <p className="text-sm text-gray-600">
+                  Demande de soutenance pour votre mémoire ou thèse
+                </p>
+              </button>
+              
+              <button
+                onClick={() => handleNewRequest('AUTRE')}
+                disabled={creatingRequest}
+                className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-left disabled:opacity-50"
+              >
+                <p className="font-medium text-gray-900">Autre demande</p>
+                <p className="text-sm text-gray-600">
+                  Autre type de demande administrative
+                </p>
+              </button>
+            </div>
+            
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setShowNewRequestModal(false)}
+                disabled={creatingRequest}
+                className="px-4 py-2 text-gray-600 hover:text-gray-900 disabled:opacity-50"
+              >
+                Annuler
+              </button>
+            </div>
+            
+            {creatingRequest && (
+              <div className="mt-4 flex items-center justify-center gap-2 text-blue-600">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Création en cours...</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

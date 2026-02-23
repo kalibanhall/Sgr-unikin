@@ -44,10 +44,11 @@ interface Appointment {
 }
 
 const targetRoles = [
-  { value: "SECRETAIRE_ACADEMIQUE", label: "Secrétaire Académique" },
-  { value: "CHEF_DEPARTEMENT", label: "Chef de Département" },
-  { value: "DIRECTEUR_RECHERCHE", label: "Directeur de la Recherche" },
-  { value: "SECRETAIRE_GENERAL", label: "Secrétaire Général" },
+  { value: "SGR", label: "Prof. Paulin MUTWALE KAPEPULA (SGR)" },
+  { value: "AP", label: "Prof. KAPEMBO Michel (Assistant Principal)" },
+  { value: "CHARGE_PUBLICATIONS", label: "Chargé des Publications et Recherche" },
+  { value: "CHARGE_ANTIPLAGIAT", label: "Chargé du Check Anti-plagiat" },
+  { value: "CHARGE_OIPR", label: "Chargé de l'OIPR" },
 ];
 
 export default function AdminAppointmentsPage() {
