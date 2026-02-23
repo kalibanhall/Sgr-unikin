@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Facture Proforma - SGR-UNIKIN | CHRIS NGOZULU KASONGO</title>
+    <style>
+        @page {
+            margin: 1.5cm;
+            size: A4;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #2d3748;
+            max-width: 21cm;
+            margin: 0 auto;
+            padding: 30px 40px;
+            background: #fff;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 4px solid #1e3a8a;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .header-left {
+            flex: 1;
+        }
+        .header-right {
+            text-align: right;
+            min-width: 220px;
+        }
+        .company-name {
+            font-size: 17pt;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+        .company-title {
+            font-size: 10pt;
+            color: #64748b;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        .header-left div {
+            font-size: 10pt;
+            color: #475569;
+            line-height: 1.6;
+        }
+        .header-right div {
+            font-size: 10pt;
+            margin-bottom: 4px;
+        }
+        .badge-proforma {
+            display: inline-block;
+            background: #1e3a8a;
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 10pt;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        /* ===== TITLE ===== */
+        .document-title {
+            font-size: 26pt;
+            font-weight: 800;
+            color: #1e3a8a;
+            text-align: center;
+            margin: 25px 0 5px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .document-subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 10pt;
+            margin-bottom: 25px;
+        }
+
+        /* ===== INFO BOXES ===== */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .info-col {
+            width: 48%;
+        }
+        .info-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+            height: 100%;
+        }
+        .info-box h3 {
+            margin: 0 0 12px 0;
+            color: #1e3a8a;
+            font-size: 11pt;
+            border-bottom: 2px solid #dbeafe;
+            padding-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-box p {
+            margin: 0;
+            font-size: 10.5pt;
+            line-height: 1.7;
+        }
+
+        .objet-box {
+            background: linear-gradient(135deg, #eff6ff 0%, #f8fafc 100%);
+            border: 1px solid #bfdbfe;
+            border-left: 4px solid #1e3a8a;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 25px;
+        }
+        .objet-box h3 {
+            margin: 0 0 8px 0;
+            color: #1e3a8a;
+            font-size: 11pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .objet-box p {
+            margin: 0;
+            font-size: 10.5pt;
+            line-height: 1.7;
+        }
+
+        /* ===== SECTION TITLES ===== */
+        .section-title {
+            font-size: 13pt;
+            font-weight: 700;
+            color: #1e3a8a;
+            margin: 28px 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #1e3a8a;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-number {
+            background: #1e3a8a;
+            color: #fff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11pt;
+            font-weight: 700;
+        }
+
+        /* ===== TABLES ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 20px;
+        }
+        th {
+            background: #1e3a8a;
+            color: white;
+            padding: 11px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        th:last-child {
+            text-align: right;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 10.5pt;
+        }
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        tr:hover {
+            background: #eff6ff;
+        }
+        .amount {
+            text-align: right;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .subtotal-row {
+            background: #dbeafe !important;
+            font-weight: 700;
+        }
+        .subtotal-row td {
+            border-bottom: 2px solid #93c5fd;
+            padding: 12px;
+        }
+        .total-row {
+            background: #1e3a8a !important;
+            color: white;
+            font-weight: 800;
+            font-size: 13pt;
+        }
+        .total-row td {
+            padding: 14px 12px;
+            border-bottom: none;
+        }
+
+        /* ===== FEATURES ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .feature-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .feature-box h4 {
+            margin: 0 0 10px 0;
+            color: #1e3a8a;
+            font-size: 11pt;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .feature-icon {
+            font-size: 16pt;
+        }
+        .feature-box ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .feature-box li {
+            margin-bottom: 4px;
+            font-size: 10pt;
+            color: #475569;
+        }
+
+        /* ===== TECH STACK ===== */
+        .tech-table td:first-child {
+            font-weight: 600;
+            color: #1e3a8a;
+            width: 25%;
+        }
+
+        /* ===== CONDITIONS ===== */
+        .conditions {
+            background: linear-gradient(135deg, #fef3c7 0%, #fffbeb 100%);
+            border: 1px solid #f59e0b;
+            border-left: 4px solid #f59e0b;
+            border-radius: 10px;
+            padding: 18px;
+            margin-top: 25px;
+        }
+        .conditions h3 {
+            margin: 0 0 12px 0;
+            color: #92400e;
+            font-size: 12pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .conditions ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .conditions li {
+            margin-bottom: 6px;
+            font-size: 10pt;
+            color: #78350f;
+        }
+
+        /* ===== SIGNATURE ===== */
+        .signature-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            page-break-inside: avoid;
+        }
+        .signature-box {
+            width: 44%;
+            text-align: center;
+        }
+        .signature-line {
+            border-top: 2px solid #1e3a8a;
+            margin-top: 70px;
+            padding-top: 10px;
+            font-size: 10pt;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 35px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 9pt;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+        }
+
+        /* ===== PRINT ===== */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            .no-print {
+                display: none !important;
+            }
+            tr:hover {
+                background: inherit;
+            }
+        }
+
+        /* ===== PRINT BUTTON ===== */
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11pt;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+            transition: all 0.2s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .print-btn:hover {
+            background: #1e40af;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn no-print" onclick="window.print()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Exporter en PDF
+    </button>
+
+    <!-- ===== EN-TÊTE ===== -->
+    <div class="header">
+        <div class="header-left">
+            <div class="company-name">CHRIS NGOZULU KASONGO</div>
+            <div class="company-title">Full Stack Developer</div>
+            <div>+243 83 23 13 105</div>
+            <div>Kasongongozulu@gmail.com</div>
+            <div>Kinshasa, RD Congo</div>
+        </div>
+        <div class="header-right">
+            <span class="badge-proforma">PROFORMA</span>
+            <div><strong>Facture N° :</strong> PRO-2026-012</div>
+            <div><strong>Date d'émission :</strong> 23 février 2026</div>
+        </div>
+    </div>
+
+    <!-- ===== TITRE ===== -->
+    <h1 class="document-title">Facture Proforma</h1>
+    <p class="document-subtitle">Plateforme de gestion du Secrétariat Général à la Recherche — Université de Kinshasa</p>
+
+    <!-- ===== PARTIES ===== -->
+    <div class="info-row">
+        <div class="info-col">
+            <div class="info-box">
+                <h3>Prestataire</h3>
+                <p><strong>CHRIS NGOZULU KASONGO</strong><br>
+                Full Stack Developer<br>
+                Kinshasa, RD Congo<br>
+                Tél : +243 83 23 13 105<br>
+                Email : Kasongongozulu@gmail.com</p>
+            </div>
+        </div>
+        <div class="info-col">
+            <div class="info-box">
+                <h3>Client</h3>
+                <p><strong>Secrétariat Général à la Recherche (SGR)</strong><br>
+                Université de Kinshasa (UNIKIN)<br>
+                Mont Amba, Kinshasa<br>
+                République Démocratique du Congo</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== OBJET ===== -->
+    <div class="objet-box">
+        <h3>Objet</h3>
+        <p><strong>Conception et développement d'une plateforme complète de gestion du Secrétariat Général à la Recherche (SGR-UNIKIN)</strong><br>
+        Incluant : inscription 3<sup>e</sup> cycle (Thèse & Master) • Soumission et traitement des dossiers • Prise de rendez-vous en ligne</p>
+    </div>
+
+    <!-- ===== 1. DÉVELOPPEMENT ===== -->
+    <h2 class="section-title">
+        <span class="section-number">1</span>
+        Conception & Développement de la Plateforme
+    </h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 5%">N°</th>
+                <th style="width: 40%">Désignation</th>
+                <th style="width: 38%">Détail</th>
+                <th style="width: 17%">Montant (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td><strong>Analyse & conception</strong></td>
+                <td>Étude des besoins, cahier des charges, architecture système, maquettes UI/UX</td>
+                <td class="amount">400,00</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><strong>Développement Frontend</strong></td>
+                <td>Interface utilisateur responsive, pages publiques, tableaux de bord étudiant & admin</td>
+                <td class="amount">800,00</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><strong>Développement Backend & API</strong></td>
+                <td>API REST sécurisée, authentification (JWT/bcrypt), gestion fichiers, validations</td>
+                <td class="amount">900,00</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><strong>Base de données</strong></td>
+                <td>Conception, modélisation et implémentation PostgreSQL, migrations</td>
+                <td class="amount">250,00</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><strong>Système de messagerie</strong></td>
+                <td>Emails transactionnels (confirmation, notifications, réinitialisation mot de passe)</td>
+                <td class="amount">200,00</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td><strong>Module rendez-vous</strong></td>
+                <td>Système de prise de RDV en ligne avec gestion calendrier et notifications</td>
+                <td class="amount">200,00</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td><strong>PWA (Progressive Web App)</strong></td>
+                <td>Installation mobile, mode hors-ligne, notifications push</td>
+                <td class="amount">150,00</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td><strong>Tests & déploiement</strong></td>
+                <td>Tests fonctionnels, configuration serveur, mise en production</td>
+                <td class="amount">150,00</td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td><strong>Documentation</strong></td>
+                <td>Guide de déploiement, documentation technique et utilisateur</td>
+                <td class="amount">150,00</td>
+            </tr>
+            <tr class="subtotal-row">
+                <td colspan="3"><strong>SOUS-TOTAL DÉVELOPPEMENT</strong></td>
+                <td class="amount"><strong>3 200,00</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ===== 2. HÉBERGEMENT ===== -->
+    <h2 class="section-title">
+        <span class="section-number">2</span>
+        Hébergement VPS & Services Connexes (Abonnement annuel)
+    </h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 5%">N°</th>
+                <th style="width: 40%">Désignation</th>
+                <th style="width: 38%">Détail</th>
+                <th style="width: 17%">Montant (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td><strong>Serveur VPS</strong></td>
+                <td>Hébergement application web — 12 mois</td>
+                <td class="amount">120,00</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><strong>Base de données PostgreSQL</strong></td>
+                <td>Instance dédiée — 12 mois</td>
+                <td class="amount">96,00</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><strong>Stockage fichiers</strong></td>
+                <td>Espace documents étudiants & dossiers — 12 mois</td>
+                <td class="amount">84,00</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><strong>Sauvegardes & maintenance</strong></td>
+                <td>Backups automatiques quotidiens, monitoring — 12 mois</td>
+                <td class="amount">80,00</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><strong>Certificat SSL / HTTPS</strong></td>
+                <td>Let's Encrypt — Renouvellement automatique</td>
+                <td class="amount">Inclus</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td><strong>Configuration DNS</strong></td>
+                <td>Nom de domaine sgr.unikin.ac.cd</td>
+                <td class="amount">Inclus</td>
+            </tr>
+            <tr class="subtotal-row">
+                <td colspan="3"><strong>SOUS-TOTAL HÉBERGEMENT & SERVICES (1 AN)</strong></td>
+                <td class="amount"><strong>380,00</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ===== RÉCAPITULATIF ===== -->
+    <h2 class="section-title">
+        <span class="section-number">3</span>
+        Récapitulatif Général
+    </h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Désignation</th>
+                <th style="width: 20%">Montant (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Conception & développement de la plateforme SGR-UNIKIN</strong></td>
+                <td class="amount">3 200,00</td>
+            </tr>
+            <tr>
+                <td><strong>Hébergement VPS & services connexes (abonnement 1 an)</strong></td>
+                <td class="amount">380,00</td>
+            </tr>
+            <tr class="total-row">
+                <td><strong>TOTAL GÉNÉRAL</strong></td>
+                <td class="amount"><strong>3 580,00 USD</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ===== FONCTIONNALITÉS ===== -->
+    <h2 class="section-title">
+        <span class="section-number">4</span>
+        Fonctionnalités Livrées
+    </h2>
+
+    <div class="features-grid">
+        <div class="feature-box">
+            <h4>Module Étudiant</h4>
+            <ul>
+                <li>Inscription en ligne (Thèse / Master)</li>
+                <li>Tableau de bord personnel</li>
+                <li>Upload de documents (20+ types)</li>
+                <li>Suivi du statut de validation en temps réel</li>
+                <li>Prise de rendez-vous en ligne</li>
+                <li>Notifications par email</li>
+            </ul>
+        </div>
+        <div class="feature-box">
+            <h4>Module Administration</h4>
+            <ul>
+                <li>Gestion complète des étudiants</li>
+                <li>Validation et traitement des dossiers</li>
+                <li>Gestion des rendez-vous</li>
+                <li>Statistiques et rapports détaillés</li>
+                <li>Gestion des utilisateurs & rôles</li>
+                <li>Export des données</li>
+            </ul>
+        </div>
+        <div class="feature-box">
+            <h4>Sécurité</h4>
+            <ul>
+                <li>Authentification sécurisée (bcrypt)</li>
+                <li>Sessions JWT chiffrées</li>
+                <li>Protection CSRF</li>
+                <li>Validation des données (Zod)</li>
+                <li>HTTPS obligatoire</li>
+            </ul>
+        </div>
+        <div class="feature-box">
+            <h4>Performance</h4>
+            <ul>
+                <li>Application PWA installable</li>
+                <li>Design responsive (mobile & desktop)</li>
+                <li>Optimisation des performances</li>
+                <li>Cache intelligent</li>
+                <li>Temps de chargement rapide</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== STACK TECHNIQUE ===== -->
+    <h2 class="section-title">
+        <span class="section-number">5</span>
+        Stack Technique
+    </h2>
+
+    <table class="tech-table">
+        <thead>
+            <tr>
+                <th>Catégorie</th>
+                <th>Technologie</th>
+                <th>Version</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Framework</td>
+                <td>Next.js (App Router)</td>
+                <td>16.x</td>
+            </tr>
+            <tr>
+                <td>Langage</td>
+                <td>TypeScript</td>
+                <td>5.x</td>
+            </tr>
+            <tr>
+                <td>Frontend</td>
+                <td>React</td>
+                <td>19.x</td>
+            </tr>
+            <tr>
+                <td>CSS</td>
+                <td>Tailwind CSS</td>
+                <td>4.x</td>
+            </tr>
+            <tr>
+                <td>Base de données</td>
+                <td>PostgreSQL</td>
+                <td>16.x</td>
+            </tr>
+            <tr>
+                <td>Authentification</td>
+                <td>NextAuth.js</td>
+                <td>5.x</td>
+            </tr>
+            <tr>
+                <td>UI Components</td>
+                <td>Radix UI + Lucide Icons</td>
+                <td>Latest</td>
+            </tr>
+            <tr>
+                <td>Emails</td>
+                <td>Nodemailer</td>
+                <td>7.x</td>
+            </tr>
+            <tr>
+                <td>Hébergement</td>
+                <td>VPS (Linux)</td>
+                <td>—</td>
+            </tr>
+        </tbody>
+    </table>
+
+
+
+    <!-- ===== SIGNATURES ===== -->
+    <div class="signature-area">
+        <div class="signature-box">
+            <div class="signature-line">
+                <strong>Le Prestataire</strong><br>
+                CHRIS NGOZULU KASONGO<br>
+                Full Stack Developer<br>
+                Date : _______________
+            </div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-line">
+                <strong>Le Client</strong><br>
+                SGR — Université de Kinshasa<br><br>
+                Date : _______________
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="footer">
+        <p>Ce document est une facture proforma et ne constitue pas une facture définitive.<br>
+        Une facture définitive sera émise après acceptation et règlement.<br><br>
+        <strong>CHRIS NGOZULU KASONGO</strong> · Full Stack Developer · +243 83 23 13 105 · Kasongongozulu@gmail.com</p>
+    </div>
+
+</body>
+</html>

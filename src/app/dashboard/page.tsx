@@ -231,15 +231,45 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </div>
+              ) : profile.dossierStatus === "SUBMITTED" ? (
+                <div className="flex items-center gap-3">
+                  <Clock className="h-6 w-6 text-orange-600" />
+                  <div className="flex-1">
+                    <p className="font-medium text-orange-800">Dossier soumis — en attente de validation</p>
+                    <p className="text-orange-700 text-sm">
+                      Votre dossier est en cours d&apos;examen. Vous pouvez imprimer votre certificat de soumission.
+                    </p>
+                  </div>
+                  <a
+                    href="/api/student/dossier/submission-certificate"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium shrink-0"
+                  >
+                    <Printer className="h-4 w-4" />
+                    Certificat de soumission
+                  </a>
+                </div>
               ) : (
                 <div className="flex items-center gap-3">
                   <Clock className="h-6 w-6 text-orange-600" />
-                  <div>
+                  <div className="flex-1">
                     <p className="font-medium text-orange-800">En attente de validation</p>
                     <p className="text-orange-700 text-sm">
                       Votre dossier est en cours d&apos;examen. Vous serez notifié dès qu&apos;il sera traité.
                     </p>
                   </div>
+                  {profile.dossierStatus !== "DRAFT" && (
+                    <a
+                      href="/api/student/dossier/submission-certificate"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shrink-0"
+                    >
+                      <Printer className="h-4 w-4" />
+                      Certificat de soumission
+                    </a>
+                  )}
                 </div>
               )}
             </div>

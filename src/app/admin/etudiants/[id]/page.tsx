@@ -71,6 +71,7 @@ interface StudentDetail {
     status: string;
     comment: string | null;
     validatedAt: string | null;
+    validatedBy: string | null;
   }>;
 }
 
@@ -397,6 +398,11 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                           <Loader2 className="h-5 w-5 text-yellow-600" />
                         )}
                         <span className="font-medium">Étape {validation.step}</span>
+                        {validation.validatedBy && (
+                          <span className="text-sm text-gray-600 ml-2">
+                            par <span className="font-medium">{validation.validatedBy}</span>
+                          </span>
+                        )}
                       </div>
                       {validation.validatedAt && (
                         <span className="text-sm text-gray-500">

@@ -1,28 +1,12 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-// Configuration du transporteur email
-// En développement, on utilise un service de test (Ethereal)
-// En production, configurez avec vos vrais identifiants SMTP
-const createTransporter = () => {
-  // Utiliser les variables d'environnement pour la configuration
-  if (process.env.SMTP_HOST && process.env.SMTP_USER) {
-    return nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || "587"),
-      secure: process.env.SMTP_SECURE === "true",
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
-      },
-    });
+// Initialiser Resend avec la clé API
+const getResendClient = () => {
+  if (process.env.RESEND_API_KEY) {
+    return new Resend(process.env.RESEND_API_KEY);
   }
-
-  // Mode développement - utiliser Ethereal ou console log
-  console.log("⚠️ Email en mode développement - les emails seront logués dans la console");
   return null;
 };
-
-const transporter = createTransporter();
 
 interface EmailAttachment {
   filename: string;
@@ -39,40 +23,52 @@ interface SendMailOptions {
 }
 
 export async function sendEmail({ to, subject, html, text, attachments }: SendMailOptions): Promise<boolean> {
-  try {
-    if (!transporter) {
-      // En mode développement, logger l'email
-      console.log("\n📧 === EMAIL DE DÉVELOPPEMENT ===");
-      console.log(`À: ${to}`);
-      console.log(`Sujet: ${subject}`);
-      console.log(`Contenu: ${text || html}`);
-      if (attachments?.length) {
-        console.log(`Pièces jointes: ${attachments.map(a => a.filename).join(", ")}`);
-      }
-      console.log("================================\n");
-      return true;
-    }
+  const resend = getResendClient();
 
-    const mailAttachments = attachments?.map(a => ({
+  if (!resend) {
+    // Mode développement — pas de clé API Resend
+    console.log("\n📧 === EMAIL DE DÉVELOPPEMENT (RESEND_API_KEY non configurée) ===");
+    console.log(`À: ${to}`);
+    console.log(`Sujet: ${subject}`);
+    console.log(`Contenu texte: ${text || "(HTML uniquement)"}`);
+    if (attachments?.length) {
+      console.log(`Pièces jointes: ${attachments.map(a => a.filename).join(", ")}`);
+    }
+    console.log("================================\n");
+    return true;
+  }
+
+  try {
+    const fromAddress = process.env.EMAIL_FROM || "SGR-UNIKIN <onboarding@resend.dev>";
+
+    const resendAttachments = attachments?.map(a => ({
       filename: a.filename,
       content: Buffer.from(a.content),
-      contentType: a.contentType || "application/pdf",
     }));
 
-    const info = await transporter.sendMail({
-      from: `"SGR-UNIKIN" <${process.env.SMTP_FROM || "noreply@unikin.cd"}>`,
-      to,
+    const { data, error } = await resend.emails.send({
+      from: fromAddress,
+      to: [to],
       subject,
       html,
       text: text || html.replace(/<[^>]*>/g, ""),
-      attachments: mailAttachments,
+      attachments: resendAttachments,
     });
 
-    console.log("Email envoyé:", info.messageId);
+    if (error) {
+      console.error("❌ Erreur Resend:", error);
+      throw new Error(`Erreur Resend: ${error.message}`);
+    }
+
+    console.log(`✅ Email envoyé avec succès à ${to} — ID: ${data?.id}`);
     return true;
-  } catch (error) {
-    console.error("Erreur envoi email:", error);
-    return false;
+  } catch (error: unknown) {
+    const err = error as Error;
+    console.error("❌ Erreur envoi email:");
+    console.error("   Destinataire:", to);
+    console.error("   Sujet:", subject);
+    console.error("   Message:", err.message);
+    throw new Error(`Échec de l'envoi de l'email: ${err.message}`);
   }
 }
 

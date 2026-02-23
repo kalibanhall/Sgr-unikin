@@ -44,12 +44,25 @@ export async function POST(request: NextRequest) {
     // Envoyer l'email
     const emailTemplate = getPasswordResetEmailTemplate(user.name || 'Utilisateur', resetUrl);
     
-    await sendEmail({
-      to: user.email,
-      subject: emailTemplate.subject,
-      html: emailTemplate.html,
-      text: emailTemplate.text,
-    });
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: emailTemplate.subject,
+        html: emailTemplate.html,
+        text: emailTemplate.text,
+      });
+    } catch (emailError) {
+      console.error('Erreur envoi email de réinitialisation:', emailError);
+      // Nettoyer le token si l'email n'a pas pu être envoyé
+      await userRepository.update(user.id, {
+        resetToken: null,
+        resetExpires: null,
+      });
+      return NextResponse.json(
+        { error: "Impossible d'envoyer l'email. Veuillez réessayer ou contacter l'administrateur." },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       message: 'Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.',

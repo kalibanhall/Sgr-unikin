@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Facture Proforma - Redynamisation unikin.ac.cd | CHRIS NGOZULU KASONGO</title>
+    <style>
+        @page {
+            margin: 1.5cm;
+            size: A4;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #2d3748;
+            max-width: 21cm;
+            margin: 0 auto;
+            padding: 30px 40px;
+            background: #fff;
+        }
+
+        /* ===== HEADER ===== */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 4px solid #14532d;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+        .header-left {
+            flex: 1;
+        }
+        .header-right {
+            text-align: right;
+            min-width: 220px;
+        }
+        .company-name {
+            font-size: 17pt;
+            font-weight: 700;
+            color: #14532d;
+            margin-bottom: 2px;
+            letter-spacing: 0.5px;
+        }
+        .company-title {
+            font-size: 10pt;
+            color: #64748b;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        .header-left div {
+            font-size: 10pt;
+            color: #475569;
+            line-height: 1.6;
+        }
+        .header-right div {
+            font-size: 10pt;
+            margin-bottom: 4px;
+        }
+        .badge-proforma {
+            display: inline-block;
+            background: #14532d;
+            color: #fff;
+            padding: 6px 18px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 10pt;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        /* ===== TITLE ===== */
+        .document-title {
+            font-size: 26pt;
+            font-weight: 800;
+            color: #14532d;
+            text-align: center;
+            margin: 25px 0 5px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        .document-subtitle {
+            text-align: center;
+            color: #64748b;
+            font-size: 10pt;
+            margin-bottom: 25px;
+        }
+
+        /* ===== INFO BOXES ===== */
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .info-col {
+            width: 48%;
+        }
+        .info-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+            height: 100%;
+        }
+        .info-box h3 {
+            margin: 0 0 12px 0;
+            color: #14532d;
+            font-size: 11pt;
+            border-bottom: 2px solid #dcfce7;
+            padding-bottom: 6px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .info-box p {
+            margin: 0;
+            font-size: 10.5pt;
+            line-height: 1.7;
+        }
+
+        .objet-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #f8fafc 100%);
+            border: 1px solid #bbf7d0;
+            border-left: 4px solid #14532d;
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 25px;
+        }
+        .objet-box h3 {
+            margin: 0 0 8px 0;
+            color: #14532d;
+            font-size: 11pt;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .objet-box p {
+            margin: 0;
+            font-size: 10.5pt;
+            line-height: 1.7;
+        }
+
+        /* ===== SECTION TITLES ===== */
+        .section-title {
+            font-size: 13pt;
+            font-weight: 700;
+            color: #14532d;
+            margin: 28px 0 12px 0;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #14532d;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-number {
+            background: #14532d;
+            color: #fff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11pt;
+            font-weight: 700;
+        }
+
+        /* ===== TABLES ===== */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0 20px;
+        }
+        th {
+            background: #14532d;
+            color: white;
+            padding: 11px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 10pt;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        th:last-child {
+            text-align: right;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 10.5pt;
+        }
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        tr:hover {
+            background: #f0fdf4;
+        }
+        .amount {
+            text-align: right;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .subtotal-row {
+            background: #dcfce7 !important;
+            font-weight: 700;
+        }
+        .subtotal-row td {
+            border-bottom: 2px solid #86efac;
+            padding: 12px;
+        }
+        .total-row {
+            background: #14532d !important;
+            color: white;
+            font-weight: 800;
+            font-size: 13pt;
+        }
+        .total-row td {
+            padding: 14px 12px;
+            border-bottom: none;
+        }
+
+        /* ===== FEATURES ===== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .feature-box {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        .feature-box h4 {
+            margin: 0 0 10px 0;
+            color: #14532d;
+            font-size: 11pt;
+        }
+        .feature-box ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+        .feature-box li {
+            margin-bottom: 4px;
+            font-size: 10pt;
+            color: #475569;
+        }
+
+        /* ===== TECH STACK ===== */
+        .tech-table td:first-child {
+            font-weight: 600;
+            color: #14532d;
+            width: 25%;
+        }
+
+        /* ===== SIGNATURE ===== */
+        .signature-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 50px;
+            page-break-inside: avoid;
+        }
+        .signature-box {
+            width: 44%;
+            text-align: center;
+        }
+        .signature-line {
+            border-top: 2px solid #14532d;
+            margin-top: 70px;
+            padding-top: 10px;
+            font-size: 10pt;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 35px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 9pt;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 15px;
+        }
+
+        /* ===== PRINT ===== */
+        @media print {
+            body {
+                padding: 0;
+                font-size: 10pt;
+            }
+            .no-print {
+                display: none !important;
+            }
+            tr:hover {
+                background: inherit;
+            }
+        }
+
+        /* ===== PRINT BUTTON ===== */
+        .print-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #14532d;
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 11pt;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(20, 83, 45, 0.3);
+            transition: all 0.2s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .print-btn:hover {
+            background: #166534;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(20, 83, 45, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <button class="print-btn no-print" onclick="window.print()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Exporter en PDF
+    </button>
+
+    <!-- ===== EN-TETE ===== -->
+    <div class="header">
+        <div class="header-left">
+            <div class="company-name">CHRIS NGOZULU KASONGO</div>
+            <div class="company-title">Full Stack Developer</div>
+            <div>+243 83 23 13 105</div>
+            <div>Kasongongozulu@gmail.com</div>
+            <div>Kinshasa, RD Congo</div>
+        </div>
+        <div class="header-right">
+            <span class="badge-proforma">PROFORMA</span>
+            <div><strong>Facture N° :</strong> PRO-2026-013</div>
+            <div><strong>Date d'emission :</strong> 23 fevrier 2026</div>
+        </div>
+    </div>
+
+    <!-- ===== TITRE ===== -->
+    <h1 class="document-title">Facture Proforma</h1>
+    <p class="document-subtitle">Redynamisation du site web institutionnel — unikin.ac.cd</p>
+
+    <!-- ===== PARTIES ===== -->
+    <div class="info-row">
+        <div class="info-col">
+            <div class="info-box">
+                <h3>Prestataire</h3>
+                <p><strong>CHRIS NGOZULU KASONGO</strong><br>
+                Full Stack Developer<br>
+                Kinshasa, RD Congo<br>
+                Tel : +243 83 23 13 105<br>
+                Email : Kasongongozulu@gmail.com</p>
+            </div>
+        </div>
+        <div class="info-col">
+            <div class="info-box">
+                <h3>Client</h3>
+                <p><strong>Universite de Kinshasa (UNIKIN)</strong><br>
+                Mont Amba, Kinshasa<br>
+                Republique Democratique du Congo<br>
+                Site actuel : unikin.ac.cd</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== OBJET ===== -->
+    <div class="objet-box">
+        <h3>Objet</h3>
+        <p><strong>Redynamisation complete du site web institutionnel unikin.ac.cd</strong><br>
+        Incluant : Refonte UI/UX et design moderne &bull; Integration de contenu &bull; Portail etudiant &bull; Gestion des actualites &bull; Modernisation technique, SEO et responsive &bull; Gestion des comptes et identifiants @unikin.ac.cd</p>
+    </div>
+
+    <!-- ===== 1. DEVELOPPEMENT ===== -->
+    <h2 class="section-title">
+        <span class="section-number">1</span>
+        Conception & Developpement du Site
+    </h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 5%">N°</th>
+                <th style="width: 38%">Designation</th>
+                <th style="width: 40%">Detail</th>
+                <th style="width: 17%">Montant (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td><strong>Audit & analyse du site existant</strong></td>
+                <td>Analyse de l'architecture actuelle, identification des faiblesses, cahier des charges</td>
+                <td class="amount">250,00</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><strong>Refonte UI/UX & design</strong></td>
+                <td>Nouveau design moderne, charte graphique, maquettes, prototypes interactifs</td>
+                <td class="amount">400,00</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><strong>Developpement Frontend</strong></td>
+                <td>Integration responsive, pages institutionnelles, portail etudiant, actualites</td>
+                <td class="amount">650,00</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><strong>Developpement Backend & API</strong></td>
+                <td>Systeme de gestion de contenu, API REST, authentification, gestion comptes @unikin.ac.cd</td>
+                <td class="amount">700,00</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><strong>Base de donnees & migration</strong></td>
+                <td>Conception BDD, migration des donnees existantes, gestion identifiants etudiants</td>
+                <td class="amount">300,00</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td><strong>Systeme de messagerie @unikin.ac.cd</strong></td>
+                <td>Configuration serveur mail, creation et gestion des comptes email institutionnels</td>
+                <td class="amount">250,00</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td><strong>SEO & optimisation</strong></td>
+                <td>Referencement naturel, meta tags, sitemap, performance, accessibilite</td>
+                <td class="amount">200,00</td>
+            </tr>
+            <tr>
+                <td>8</td>
+                <td><strong>Tests & deploiement</strong></td>
+                <td>Tests fonctionnels, compatibilite navigateurs, mise en production</td>
+                <td class="amount">150,00</td>
+            </tr>
+            <tr>
+                <td>9</td>
+                <td><strong>Formation & documentation</strong></td>
+                <td>Formation equipe UNIKIN, guide d'administration, documentation technique</td>
+                <td class="amount">100,00</td>
+            </tr>
+            <tr class="subtotal-row">
+                <td colspan="3"><strong>SOUS-TOTAL DEVELOPPEMENT</strong></td>
+                <td class="amount"><strong>3 000,00</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ===== 2. HEBERGEMENT ===== -->
+    <h2 class="section-title">
+        <span class="section-number">2</span>
+        Hebergement VPS & Services Connexes (Abonnement annuel)
+    </h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 5%">N°</th>
+                <th style="width: 38%">Designation</th>
+                <th style="width: 40%">Detail</th>
+                <th style="width: 17%">Montant (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td><strong>Serveur VPS haute performance</strong></td>
+                <td>VPS dedie (8 Go RAM, 4 vCPU) pour site + gestion comptes — 12 mois</td>
+                <td class="amount">480,00</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td><strong>Serveur de messagerie</strong></td>
+                <td>Infrastructure mail @unikin.ac.cd, antispam, antivirus — 12 mois</td>
+                <td class="amount">420,00</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td><strong>Base de donnees PostgreSQL</strong></td>
+                <td>Instance dediee haute capacite — 12 mois</td>
+                <td class="amount">240,00</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td><strong>Stockage & CDN</strong></td>
+                <td>Stockage fichiers, documents, medias + reseau de distribution — 12 mois</td>
+                <td class="amount">200,00</td>
+            </tr>
+            <tr>
+                <td>5</td>
+                <td><strong>Sauvegardes & monitoring</strong></td>
+                <td>Backups automatiques quotidiens, surveillance 24/7, alertes — 12 mois</td>
+                <td class="amount">180,00</td>
+            </tr>
+            <tr>
+                <td>6</td>
+                <td><strong>Nom de domaine & DNS</strong></td>
+                <td>Gestion DNS unikin.ac.cd, sous-domaines, configuration SPF/DKIM/DMARC</td>
+                <td class="amount">80,00</td>
+            </tr>
+            <tr>
+                <td>7</td>
+                <td><strong>Certificats SSL / HTTPS</strong></td>
+                <td>Certificats securises pour domaine + sous-domaines — 12 mois</td>
+                <td class="amount">100,00</td>
+            </tr>
+            <tr class="subtotal-row">
+                <td colspan="3"><strong>SOUS-TOTAL HEBERGEMENT & SERVICES (1 AN)</strong></td>
+                <td class="amount"><strong>1 700,00</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ===== RECAPITULATIF ===== -->
+    <h2 class="section-title">
+        <span class="section-number">3</span>
+        Recapitulatif General
+    </h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Designation</th>
+                <th style="width: 20%">Montant (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Conception & developpement — Redynamisation unikin.ac.cd</strong></td>
+                <td class="amount">3 000,00</td>
+            </tr>
+            <tr>
+                <td><strong>Hebergement VPS & services connexes (abonnement 1 an)</strong></td>
+                <td class="amount">1 700,00</td>
+            </tr>
+            <tr class="total-row">
+                <td><strong>TOTAL GENERAL</strong></td>
+                <td class="amount"><strong>4 700,00 USD</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ===== FONCTIONNALITES ===== -->
+    <h2 class="section-title">
+        <span class="section-number">4</span>
+        Fonctionnalites & Modules Prevus
+    </h2>
+
+    <div class="features-grid">
+        <div class="feature-box">
+            <h4>Portail Institutionnel</h4>
+            <ul>
+                <li>Page d'accueil dynamique et moderne</li>
+                <li>Presentation des facultes et departements</li>
+                <li>Annuaire des enseignants et chercheurs</li>
+                <li>Calendrier academique interactif</li>
+                <li>Galerie photos et medias</li>
+                <li>Pages d'information multilingues</li>
+            </ul>
+        </div>
+        <div class="feature-box">
+            <h4>Portail Etudiant</h4>
+            <ul>
+                <li>Espace personnel etudiant</li>
+                <li>Consultation des resultats</li>
+                <li>Acces aux ressources pedagogiques</li>
+                <li>Messagerie interne @unikin.ac.cd</li>
+                <li>Notifications et alertes</li>
+                <li>Gestion du profil et identifiants</li>
+            </ul>
+        </div>
+        <div class="feature-box">
+            <h4>Gestion de Contenu & Actualites</h4>
+            <ul>
+                <li>Systeme de publication d'actualites</li>
+                <li>Gestion des evenements</li>
+                <li>Panneau d'administration intuitif</li>
+                <li>Gestion des documents officiels</li>
+                <li>Blog et communiques</li>
+            </ul>
+        </div>
+        <div class="feature-box">
+            <h4>Infrastructure & Securite</h4>
+            <ul>
+                <li>Gestion centralisee des comptes @unikin.ac.cd</li>
+                <li>Authentification securisee</li>
+                <li>Protection anti-DDoS</li>
+                <li>HTTPS sur tous les sous-domaines</li>
+                <li>Sauvegardes automatiques</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== STACK TECHNIQUE ===== -->
+    <h2 class="section-title">
+        <span class="section-number">5</span>
+        Stack Technique
+    </h2>
+
+    <table class="tech-table">
+        <thead>
+            <tr>
+                <th>Categorie</th>
+                <th>Technologie</th>
+                <th>Detail</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Framework</td>
+                <td>Next.js (App Router)</td>
+                <td>SSR, SSG, ISR pour performances optimales</td>
+            </tr>
+            <tr>
+                <td>Langage</td>
+                <td>TypeScript</td>
+                <td>Typage strict, maintenabilite</td>
+            </tr>
+            <tr>
+                <td>Frontend</td>
+                <td>React + Tailwind CSS</td>
+                <td>Interface moderne et responsive</td>
+            </tr>
+            <tr>
+                <td>Base de donnees</td>
+                <td>PostgreSQL</td>
+                <td>Robuste, scalable, haute disponibilite</td>
+            </tr>
+            <tr>
+                <td>CMS</td>
+                <td>Administration sur mesure</td>
+                <td>Interface d'administration personnalisee</td>
+            </tr>
+            <tr>
+                <td>Messagerie</td>
+                <td>Postfix + Dovecot</td>
+                <td>Serveur mail @unikin.ac.cd</td>
+            </tr>
+            <tr>
+                <td>Serveur</td>
+                <td>VPS Linux (Ubuntu)</td>
+                <td>Nginx, haute performance</td>
+            </tr>
+            <tr>
+                <td>Securite</td>
+                <td>Let's Encrypt + Fail2ban</td>
+                <td>SSL, protection intrusions</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ===== SIGNATURES ===== -->
+    <div class="signature-area">
+        <div class="signature-box">
+            <div class="signature-line">
+                <strong>Le Prestataire</strong><br>
+                CHRIS NGOZULU KASONGO<br>
+                Full Stack Developer<br>
+                Date : _______________
+            </div>
+        </div>
+        <div class="signature-box">
+            <div class="signature-line">
+                <strong>Le Client</strong><br>
+                Universite de Kinshasa<br><br>
+                Date : _______________
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="footer">
+        <p>Ce document est une facture proforma et ne constitue pas une facture definitive.<br>
+        Une facture definitive sera emise apres acceptation et reglement.<br><br>
+        <strong>CHRIS NGOZULU KASONGO</strong> &middot; Full Stack Developer &middot; +243 83 23 13 105 &middot; Kasongongozulu@gmail.com</p>
+    </div>
+
+</body>
+</html>

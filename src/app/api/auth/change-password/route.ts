@@ -28,8 +28,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Récupérer l'utilisateur avec son hash
-    const user = await userRepository.findByEmail(session.user.email!);
+    // Récupérer l'utilisateur avec son hash (utiliser l'ID plutôt que l'email pour fiabilité)
+    const user = await userRepository.findById(session.user.id);
     if (!user || !user.password) {
       return NextResponse.json({ error: "Utilisateur non trouvé" }, { status: 404 });
     }

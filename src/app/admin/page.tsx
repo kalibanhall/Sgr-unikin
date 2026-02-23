@@ -15,7 +15,10 @@ import {
   GraduationCap,
   UserCog,
   Calendar,
-  FolderOpen
+  FolderOpen,
+  Shield,
+  AlertCircle,
+  XCircle
 } from "lucide-react";
 import Link from "next/link";
 import { getStudyLevelLabel, formatDate } from "@/lib/utils";
@@ -35,6 +38,15 @@ interface Stats {
     currentStep: number;
     createdAt: string;
     user: { email: string };
+  }>;
+  recentAdminActions?: Array<{
+    id: string;
+    step: number;
+    decision: string;
+    comment: string | null;
+    createdAt: string;
+    admin: { name: string | null; email: string };
+    student: { id: string; firstName: string; lastName: string };
   }>;
 }
 
@@ -88,6 +100,7 @@ export default function AdminDashboardPage() {
     studentsPerLevel: [],
     studentsPerStep: [],
     recentRegistrations: [],
+    recentAdminActions: [],
   };
 
   const adminLevel = session?.user?.adminLevel || 1;
@@ -135,7 +148,9 @@ export default function AdminDashboardPage() {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Tableau de bord</h1>
+              <h1 className="text-3xl font-bold text-gray-900">
+                Bienvenue{session?.user?.name ? `, ${session.user.name}` : " !"}
+              </h1>
               <p className="text-gray-600 mt-1">
                 Vue d&apos;ensemble de la gestion des inscriptions
               </p>
@@ -349,6 +364,71 @@ export default function AdminDashboardPage() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Actions récentes des administrateurs - Super Admin uniquement */}
+        {isSuperAdmin && safeStats.recentAdminActions && safeStats.recentAdminActions.length > 0 && (
+          <Card className="mt-8 border-2 border-indigo-200">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Shield className="h-5 w-5 text-indigo-600" />
+                <CardTitle className="text-indigo-900">Actions récentes des administrateurs</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {safeStats.recentAdminActions.map((action) => (
+                  <div
+                    key={action.id}
+                    className={`p-4 rounded-lg border ${
+                      action.decision === "APPROVED" || action.decision === "FAVORABLE"
+                        ? "bg-green-50 border-green-200"
+                        : action.decision === "REJECTED" || action.decision === "DEFAVORABLE"
+                        ? "bg-red-50 border-red-200"
+                        : "bg-orange-50 border-orange-200"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        {action.decision === "APPROVED" || action.decision === "FAVORABLE" ? (
+                          <CheckCircle className="h-5 w-5 text-green-600" />
+                        ) : action.decision === "REJECTED" || action.decision === "DEFAVORABLE" ? (
+                          <XCircle className="h-5 w-5 text-red-600" />
+                        ) : (
+                          <AlertCircle className="h-5 w-5 text-orange-600" />
+                        )}
+                        <div>
+                          <span className="font-medium text-gray-900">
+                            {action.admin.name || action.admin.email}
+                          </span>
+                          <span className="text-gray-600 ml-2">
+                            a {action.decision === "APPROVED" || action.decision === "FAVORABLE" ? "validé" : 
+                               action.decision === "REJECTED" || action.decision === "DEFAVORABLE" ? "rejeté" : 
+                               "émis un avis sur"} l&apos;étape {action.step}
+                          </span>
+                        </div>
+                      </div>
+                      <span className="text-sm text-gray-500">{formatDate(action.createdAt)}</span>
+                    </div>
+                    <div className="flex items-center gap-2 ml-8">
+                      <span className="text-gray-600">Candidat :</span>
+                      <Link 
+                        href={`/admin/etudiants/${action.student.id}`}
+                        className="font-medium text-blue-600 hover:underline"
+                      >
+                        {action.student.firstName} {action.student.lastName}
+                      </Link>
+                    </div>
+                    {action.comment && (
+                      <p className="text-sm text-gray-700 mt-2 ml-8 bg-white/50 p-2 rounded italic">
+                        &quot;{action.comment}&quot;
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

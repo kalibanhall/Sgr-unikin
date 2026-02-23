@@ -14,6 +14,19 @@ interface RecentStudent {
   email: string;
 }
 
+interface RecentAdminAction {
+  id: string;
+  step: number;
+  decision: string;
+  comment: string | null;
+  created_at: Date;
+  admin_name: string | null;
+  admin_email: string;
+  student_id: string;
+  student_first_name: string;
+  student_last_name: string;
+}
+
 export async function GET() {
   try {
     const session = await auth();
@@ -69,6 +82,40 @@ export async function GET() {
       ),
     ]);
 
+    // Recent admin actions (for super admin only)
+    let recentAdminActions: Array<{
+      id: string;
+      step: number;
+      decision: string;
+      comment: string | null;
+      createdAt: Date;
+      admin: { name: string | null; email: string };
+      student: { id: string; firstName: string; lastName: string };
+    }> = [];
+
+    if (user.role === "SUPER_ADMIN") {
+      const actionsResult = await query<RecentAdminAction>(
+        `SELECT ar.id, ar.step, ar.decision, ar.comment, ar.created_at,
+                u.name as admin_name, u.email as admin_email,
+                s.id as student_id, s.first_name as student_first_name, s.last_name as student_last_name
+         FROM admin_reviews ar
+         JOIN users u ON ar.admin_id = u.id
+         JOIN students s ON ar.student_id = s.id
+         ORDER BY ar.created_at DESC
+         LIMIT 10`
+      );
+
+      recentAdminActions = actionsResult.rows.map((a) => ({
+        id: a.id,
+        step: a.step,
+        decision: a.decision,
+        comment: a.comment,
+        createdAt: a.created_at,
+        admin: { name: a.admin_name, email: a.admin_email },
+        student: { id: a.student_id, firstName: a.student_first_name, lastName: a.student_last_name },
+      }));
+    }
+
     return NextResponse.json({
       totalStudents: parseInt(totalStudentsResult.rows[0].count),
       pendingValidations: parseInt(pendingResult.rows[0].count),
@@ -90,6 +137,7 @@ export async function GET() {
         createdAt: s.created_at,
         user: { email: s.email },
       })),
+      recentAdminActions,
     });
   } catch (error) {
     console.error("Erreur stats:", error);
