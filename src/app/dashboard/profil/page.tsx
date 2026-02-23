@@ -64,6 +64,15 @@ export default function ProfilePage() {
   const [savingSecret, setSavingSecret] = useState(false);
   const [secretMessage, setSecretMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  // Password change state
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showCurrentPwd, setShowCurrentPwd] = useState(false);
+  const [showNewPwd, setShowNewPwd] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordMessage, setPasswordMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
   const {
     register,
     handleSubmit,
@@ -242,6 +251,50 @@ export default function ProfilePage() {
       setSecretMessage({ type: "error", text: "Erreur serveur" });
     } finally {
       setSavingSecret(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    setPasswordMessage(null);
+
+    if (!currentPassword) {
+      setPasswordMessage({ type: "error", text: "Le mot de passe actuel est requis" });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      setPasswordMessage({ type: "error", text: "Le nouveau mot de passe doit contenir au moins 6 caractères" });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMessage({ type: "error", text: "Les mots de passe ne correspondent pas" });
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      const res = await fetch("/api/auth/change-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setPasswordMessage({ type: "success", text: "Mot de passe modifié avec succès" });
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setTimeout(() => setPasswordMessage(null), 5000);
+      } else {
+        setPasswordMessage({ type: "error", text: data.error || "Erreur lors du changement" });
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      setPasswordMessage({ type: "error", text: "Erreur serveur" });
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -547,6 +600,106 @@ export default function ProfilePage() {
                 <>
                   <KeyRound className="mr-2 h-4 w-4" />
                   {hasSecretQuestion ? "Modifier la question secrète" : "Enregistrer la question secrète"}
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Changement de mot de passe */}
+        <Card className="mb-6 border-blue-200">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <KeyRound className="h-5 w-5 text-blue-600" />
+              Changer mon mot de passe
+            </CardTitle>
+            <CardDescription>
+              Modifiez votre mot de passe de connexion
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="currentPassword">Mot de passe actuel</Label>
+              <div className="relative">
+                <Input
+                  id="currentPassword"
+                  type={showCurrentPwd ? "text" : "password"}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Votre mot de passe actuel"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPwd(!showCurrentPwd)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  {showCurrentPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">Nouveau mot de passe</Label>
+              <div className="relative">
+                <Input
+                  id="newPassword"
+                  type={showNewPwd ? "text" : "password"}
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Minimum 6 caractères"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPwd(!showNewPwd)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  {showNewPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirmer le nouveau mot de passe</Label>
+              <Input
+                id="confirmPassword"
+                type={showNewPwd ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="Répétez le nouveau mot de passe"
+              />
+            </div>
+
+            {passwordMessage && (
+              <div className={`p-3 rounded-lg flex items-center gap-2 ${
+                passwordMessage.type === "success" 
+                  ? "bg-green-100 text-green-800 border border-green-200" 
+                  : "bg-red-100 text-red-800 border border-red-200"
+              }`}>
+                {passwordMessage.type === "success" ? (
+                  <CheckCircle className="h-4 w-4" />
+                ) : (
+                  <AlertCircle className="h-4 w-4" />
+                )}
+                <span className="text-sm">{passwordMessage.text}</span>
+              </div>
+            )}
+
+            <Button 
+              type="button" 
+              onClick={handleChangePassword} 
+              disabled={changingPassword || !currentPassword || !newPassword || !confirmPassword}
+            >
+              {changingPassword ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Modification...
+                </>
+              ) : (
+                <>
+                  <KeyRound className="mr-2 h-4 w-4" />
+                  Changer le mot de passe
                 </>
               )}
             </Button>
