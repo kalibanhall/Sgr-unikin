@@ -23,6 +23,7 @@ export function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isAdmin = session?.user?.role === "ADMIN" || session?.user?.role === "SUPER_ADMIN";
+  const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
   const isAdminPage = pathname.startsWith("/admin");
 
   // Déterminer l'URL du logo en fonction de l'état de connexion
@@ -47,6 +48,7 @@ export function Navbar() {
     { href: "/admin/etudiants", label: "Candidats", icon: Users },
     { href: "/admin/documents", label: "Documents", icon: FileText },
     { href: "/admin/rendez-vous", label: "Rendez-vous", icon: Calendar },
+    ...(isSuperAdmin ? [{ href: "/admin/administrateurs", label: "Admins", icon: Users }] : []),
     { href: "/admin/parametres", label: "Paramètres", icon: Settings },
   ];
 
