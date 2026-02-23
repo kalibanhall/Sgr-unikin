@@ -82,6 +82,10 @@ export interface User {
   verify_expires: Date | null;
   reset_token: string | null;
   reset_expires: Date | null;
+  secret_question: string | null;
+  secret_answer: string | null;
+  failed_reset_attempts: number;
+  reset_locked_until: Date | null;
   created_at: Date;
   updated_at: Date;
 }

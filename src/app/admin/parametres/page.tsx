@@ -20,7 +20,9 @@ import {
   KeyRound,
   Eye,
   EyeOff,
-  AlertCircle
+  AlertCircle,
+  ShieldAlert,
+  RotateCcw,
 } from "lucide-react";
 
 interface Faculty {
@@ -38,6 +40,16 @@ interface AdminUser {
   name: string | null;
   role: string;
   createdAt: string;
+}
+
+interface LockedUser {
+  id: string;
+  email: string;
+  name: string | null;
+  role: string;
+  failedAttempts: number;
+  lockedUntil: string | null;
+  isLocked: boolean;
 }
 
 export default function AdminSettingsPage() {
@@ -67,6 +79,13 @@ export default function AdminSettingsPage() {
   const [pwdChanging, setPwdChanging] = useState(false);
   const [pwdMessage, setPwdMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
+  // Admin reset user password
+  const [lockedUsers, setLockedUsers] = useState<LockedUser[]>([]);
+  const [resetUserId, setResetUserId] = useState<string | null>(null);
+  const [resetNewPassword, setResetNewPassword] = useState("");
+  const [resettingPassword, setResettingPassword] = useState(false);
+  const [resetMessage, setResetMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
   const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
 
   useEffect(() => {
@@ -81,9 +100,10 @@ export default function AdminSettingsPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [facultiesRes, adminsRes] = await Promise.all([
+        const [facultiesRes, adminsRes, lockedRes] = await Promise.all([
           fetch("/api/admin/faculties"),
           fetch("/api/admin/users"),
+          fetch("/api/admin/reset-user-password"),
         ]);
         
         if (facultiesRes.ok) {
@@ -93,6 +113,10 @@ export default function AdminSettingsPage() {
         if (adminsRes.ok) {
           const data = await adminsRes.json();
           setAdmins(data);
+        }
+        if (lockedRes.ok) {
+          const data = await lockedRes.json();
+          setLockedUsers(data);
         }
       } catch (error) {
         console.error("Erreur:", error);
@@ -207,6 +231,45 @@ export default function AdminSettingsPage() {
       setPwdMessage({ type: "error", text: "Erreur de connexion au serveur" });
     } finally {
       setPwdChanging(false);
+    }
+  };
+
+  const handleAdminResetPassword = async (userId: string) => {
+    if (!resetNewPassword || resetNewPassword.length < 6) {
+      setResetMessage({ type: "error", text: "Le mot de passe doit contenir au moins 6 caractères" });
+      return;
+    }
+
+    setResettingPassword(true);
+    setResetMessage(null);
+
+    try {
+      const res = await fetch("/api/admin/reset-user-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, newPassword: resetNewPassword }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setResetMessage({ 
+          type: "success", 
+          text: `Mot de passe réinitialisé pour ${data.userName || data.userEmail}. Communiquez-lui le nouveau mot de passe.`
+        });
+        setResetNewPassword("");
+        setResetUserId(null);
+        // Refresh locked users list
+        const lockedRes = await fetch("/api/admin/reset-user-password");
+        if (lockedRes.ok) {
+          setLockedUsers(await lockedRes.json());
+        }
+      } else {
+        setResetMessage({ type: "error", text: data.error || "Erreur lors de la réinitialisation" });
+      }
+    } catch {
+      setResetMessage({ type: "error", text: "Erreur de connexion au serveur" });
+    } finally {
+      setResettingPassword(false);
     }
   };
 
@@ -425,6 +488,96 @@ export default function AdminSettingsPage() {
             </form>
           </CardContent>
         </Card>
+
+        {/* Réinitialiser mot de passe utilisateur (Admin) */}
+        {(isSuperAdmin || session?.user?.role === "ADMIN") && (
+          <Card className="mb-8 border-amber-200 bg-amber-50/30">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <ShieldAlert className="h-5 w-5 text-amber-600" />
+                <CardTitle>Réinitialiser mot de passe utilisateur</CardTitle>
+              </div>
+              <CardDescription>
+                Réinitialisez le mot de passe des utilisateurs bloqués après 3 tentatives échouées
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {resetMessage && (
+                <div className={`flex items-center gap-2 p-3 rounded-lg text-sm mb-4 ${
+                  resetMessage.type === "success" ? "bg-green-100 text-green-700 border border-green-200" : "bg-red-100 text-red-700 border border-red-200"
+                }`}>
+                  {resetMessage.type === "success" ? <CheckCircle className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+                  {resetMessage.text}
+                </div>
+              )}
+
+              {lockedUsers.length === 0 ? (
+                <div className="text-center py-6 text-gray-500">
+                  <CheckCircle className="h-12 w-12 mx-auto mb-2 text-green-400" />
+                  <p>Aucun utilisateur bloqué actuellement</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {lockedUsers.map((user) => (
+                    <div key={user.id} className={`p-4 rounded-lg border ${user.isLocked ? 'bg-red-50 border-red-200' : 'bg-amber-50 border-amber-200'}`}>
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <p className="font-medium text-gray-900">{user.name || user.email}</p>
+                          <p className="text-sm text-gray-600">{user.email}</p>
+                        </div>
+                        <Badge className={user.isLocked ? "bg-red-100 text-red-800" : "bg-amber-100 text-amber-800"}>
+                          {user.isLocked ? "Bloqué" : `${user.failedAttempts} tentative(s)`}
+                        </Badge>
+                      </div>
+                      
+                      {user.isLocked && user.lockedUntil && (
+                        <p className="text-xs text-red-600 mb-2">
+                          Bloqué jusqu&apos;au {new Date(user.lockedUntil).toLocaleString("fr-FR")}
+                        </p>
+                      )}
+
+                      {resetUserId === user.id ? (
+                        <div className="flex gap-2 mt-2">
+                          <Input
+                            type="text"
+                            placeholder="Nouveau mot de passe (min 6 car.)"
+                            value={resetNewPassword}
+                            onChange={(e) => setResetNewPassword(e.target.value)}
+                            className="flex-1"
+                          />
+                          <Button
+                            size="sm"
+                            onClick={() => handleAdminResetPassword(user.id)}
+                            disabled={resettingPassword || resetNewPassword.length < 6}
+                          >
+                            {resettingPassword ? <Loader2 className="h-4 w-4 animate-spin" /> : "Réinitialiser"}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => { setResetUserId(null); setResetNewPassword(""); }}
+                          >
+                            Annuler
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setResetUserId(user.id)}
+                          className="mt-2"
+                        >
+                          <RotateCcw className="h-4 w-4 mr-1" />
+                          Réinitialiser le mot de passe
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Informations système */}
         <Card>

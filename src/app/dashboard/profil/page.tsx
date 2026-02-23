@@ -11,7 +11,18 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FACULTIES, STUDY_LEVELS } from "@/lib/constants";
-import { Loader2, Save, CheckCircle } from "lucide-react";
+import { Loader2, Save, CheckCircle, KeyRound, ShieldQuestion, Eye, EyeOff, AlertCircle } from "lucide-react";
+
+const SECRET_QUESTIONS = [
+  "Quel est le nom de votre premier animal de compagnie ?",
+  "Quel est le nom de jeune fille de votre mère ?",
+  "Dans quelle ville êtes-vous né(e) ?",
+  "Quel est le prénom de votre meilleur ami d'enfance ?",
+  "Quel était le nom de votre école primaire ?",
+  "Quel est votre plat préféré ?",
+  "Quel est le prénom de votre grand-père paternel ?",
+  "Quel était votre surnom d'enfance ?",
+];
 
 interface StudentProfile {
   id: string;
@@ -42,6 +53,16 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  // Secret question state
+  const [hasSecretQuestion, setHasSecretQuestion] = useState(false);
+  const [currentSecretQuestion, setCurrentSecretQuestion] = useState<string | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState("");
+  const [secretAnswer, setSecretAnswer] = useState("");
+  const [currentPasswordForSecret, setCurrentPasswordForSecret] = useState("");
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [savingSecret, setSavingSecret] = useState(false);
+  const [secretMessage, setSecretMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const {
     register,
@@ -90,6 +111,29 @@ export default function ProfilePage() {
       router.push("/login");
     }
   }, [status, router]);
+
+  // Fetch secret question status
+  useEffect(() => {
+    const fetchSecretQuestion = async () => {
+      try {
+        const res = await fetch("/api/auth/secret-question");
+        if (res.ok) {
+          const data = await res.json();
+          setHasSecretQuestion(data.hasSecretQuestion);
+          setCurrentSecretQuestion(data.secretQuestion);
+          if (data.secretQuestion) {
+            setSelectedQuestion(data.secretQuestion);
+          }
+        }
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
+    };
+
+    if (session?.user) {
+      fetchSecretQuestion();
+    }
+  }, [session]);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -149,6 +193,55 @@ export default function ProfilePage() {
       console.error("Erreur:", error);
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSaveSecretQuestion = async () => {
+    setSecretMessage(null);
+
+    if (!selectedQuestion || !secretAnswer) {
+      setSecretMessage({ type: "error", text: "Veuillez sélectionner une question et entrer une réponse" });
+      return;
+    }
+
+    if (secretAnswer.length < 2) {
+      setSecretMessage({ type: "error", text: "La réponse doit contenir au moins 2 caractères" });
+      return;
+    }
+
+    if (hasSecretQuestion && !currentPasswordForSecret) {
+      setSecretMessage({ type: "error", text: "Le mot de passe actuel est requis pour modifier la question" });
+      return;
+    }
+
+    setSavingSecret(true);
+    try {
+      const res = await fetch("/api/auth/secret-question", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          secretQuestion: selectedQuestion,
+          secretAnswer: secretAnswer,
+          currentPassword: currentPasswordForSecret || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setSecretMessage({ type: "success", text: "Question secrète enregistrée avec succès" });
+        setHasSecretQuestion(true);
+        setCurrentSecretQuestion(selectedQuestion);
+        setSecretAnswer("");
+        setCurrentPasswordForSecret("");
+        setTimeout(() => setSecretMessage(null), 5000);
+      } else {
+        setSecretMessage({ type: "error", text: data.error || "Erreur lors de l'enregistrement" });
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+      setSecretMessage({ type: "error", text: "Erreur serveur" });
+    } finally {
+      setSavingSecret(false);
     }
   };
 
@@ -323,7 +416,7 @@ export default function ProfilePage() {
           </Card>
 
           {/* Bouton de sauvegarde */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 mb-8">
             <Button type="submit" disabled={saving} size="lg">
               {saving ? (
                 <>
@@ -345,6 +438,120 @@ export default function ProfilePage() {
             )}
           </div>
         </form>
+
+        {/* Question secrète pour récupération de mot de passe */}
+        <Card className="mb-6 border-amber-200 bg-amber-50/50">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <ShieldQuestion className="h-5 w-5 text-amber-600" />
+              Question secrète de récupération
+            </CardTitle>
+            <CardDescription>
+              Configurez une question secrète pour récupérer votre mot de passe en cas d&apos;oubli
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {hasSecretQuestion && (
+              <div className="p-3 bg-green-100 border border-green-200 rounded-lg mb-4">
+                <div className="flex items-center gap-2 text-green-800">
+                  <CheckCircle className="h-4 w-4" />
+                  <span className="text-sm font-medium">Question secrète configurée</span>
+                </div>
+                <p className="text-sm text-green-700 mt-1">
+                  Question actuelle : &quot;{currentSecretQuestion}&quot;
+                </p>
+              </div>
+            )}
+
+            <div className="space-y-2">
+              <Label>Sélectionnez une question secrète</Label>
+              <Select value={selectedQuestion} onValueChange={setSelectedQuestion}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choisissez une question..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {SECRET_QUESTIONS.map((q, i) => (
+                    <SelectItem key={i} value={q}>{q}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="secretAnswer">Votre réponse secrète</Label>
+              <div className="relative">
+                <Input
+                  id="secretAnswer"
+                  type={showAnswer ? "text" : "password"}
+                  value={secretAnswer}
+                  onChange={(e) => setSecretAnswer(e.target.value)}
+                  placeholder="Entrez votre réponse..."
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowAnswer(!showAnswer)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  {showAnswer ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              <p className="text-xs text-slate-500">
+                La réponse est insensible à la casse (majuscules/minuscules)
+              </p>
+            </div>
+
+            {hasSecretQuestion && (
+              <div className="space-y-2">
+                <Label htmlFor="currentPasswordForSecret">
+                  Mot de passe actuel <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  id="currentPasswordForSecret"
+                  type="password"
+                  value={currentPasswordForSecret}
+                  onChange={(e) => setCurrentPasswordForSecret(e.target.value)}
+                  placeholder="Requis pour modifier la question"
+                />
+              </div>
+            )}
+
+            {secretMessage && (
+              <div className={`p-3 rounded-lg flex items-center gap-2 ${
+                secretMessage.type === "success" 
+                  ? "bg-green-100 text-green-800 border border-green-200" 
+                  : "bg-red-100 text-red-800 border border-red-200"
+              }`}>
+                {secretMessage.type === "success" ? (
+                  <CheckCircle className="h-4 w-4" />
+                ) : (
+                  <AlertCircle className="h-4 w-4" />
+                )}
+                <span className="text-sm">{secretMessage.text}</span>
+              </div>
+            )}
+
+            <Button 
+              type="button" 
+              onClick={handleSaveSecretQuestion} 
+              disabled={savingSecret}
+              variant="outline"
+              className="border-amber-300 hover:bg-amber-100"
+            >
+              {savingSecret ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Enregistrement...
+                </>
+              ) : (
+                <>
+                  <KeyRound className="mr-2 h-4 w-4" />
+                  {hasSecretQuestion ? "Modifier la question secrète" : "Enregistrer la question secrète"}
+                </>
+              )}
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

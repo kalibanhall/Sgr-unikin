@@ -91,6 +91,10 @@ export const userRepository = {
     verifyExpires: Date | null;
     resetToken: string | null;
     resetExpires: Date | null;
+    secretQuestion: string | null;
+    secretAnswer: string | null;
+    failedResetAttempts: number;
+    resetLockedUntil: Date | null;
   }>): Promise<User | null> {
     const setClauses: string[] = [];
     const values: unknown[] = [];
@@ -135,6 +139,22 @@ export const userRepository = {
     if (data.resetExpires !== undefined) {
       setClauses.push(`reset_expires = $${paramIndex++}`);
       values.push(data.resetExpires);
+    }
+    if (data.secretQuestion !== undefined) {
+      setClauses.push(`secret_question = $${paramIndex++}`);
+      values.push(data.secretQuestion);
+    }
+    if (data.secretAnswer !== undefined) {
+      setClauses.push(`secret_answer = $${paramIndex++}`);
+      values.push(data.secretAnswer);
+    }
+    if (data.failedResetAttempts !== undefined) {
+      setClauses.push(`failed_reset_attempts = $${paramIndex++}`);
+      values.push(data.failedResetAttempts);
+    }
+    if (data.resetLockedUntil !== undefined) {
+      setClauses.push(`reset_locked_until = $${paramIndex++}`);
+      values.push(data.resetLockedUntil);
     }
 
     if (setClauses.length === 0) return null;
