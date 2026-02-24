@@ -651,7 +651,11 @@ export const appointmentRepository = {
     offset?: number;
   }): Promise<(Appointment & { student: Student & { user: User } })[]> {
     let sql = `
-      SELECT a.*, s.*, u.email, u.name as user_name
+      SELECT 
+        a.id, a.student_id, a.target_role, a.subject, a.message, 
+        a.requested_date, a.approved_date, a.admin_note, a.status, a.created_at,
+        s.first_name, s.last_name, s.study_level, s.faculty,
+        u.email
       FROM appointments a
       JOIN students s ON a.student_id = s.id
       JOIN users u ON s.user_id = u.id
