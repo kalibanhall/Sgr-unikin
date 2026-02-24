@@ -18,8 +18,13 @@ export async function GET() {
 
     const users = await userRepository.findMany();
 
+    // Filtrer uniquement les admins et super admins
+    const adminUsers = users.filter(
+      (user) => user.role === "ADMIN" || user.role === "SUPER_ADMIN"
+    );
+
     // Ne pas renvoyer les mots de passe
-    const sanitizedUsers = users.map((user) => ({
+    const sanitizedUsers = adminUsers.map((user) => ({
       id: user.id,
       email: user.email,
       name: user.name,
