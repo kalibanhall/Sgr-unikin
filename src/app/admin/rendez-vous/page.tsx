@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ADMIN_LEVELS } from "@/lib/constants";
 import { 
   Calendar, 
   Clock, 
@@ -61,6 +60,7 @@ export default function AdminAppointmentsPage() {
   const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
   const [adminNote, setAdminNote] = useState("");
   const [approvedDate, setApprovedDate] = useState("");
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -69,14 +69,6 @@ export default function AdminAppointmentsPage() {
     if (status === "authenticated") {
       if (session?.user?.role !== "ADMIN" && session?.user?.role !== "SUPER_ADMIN") {
         router.push("/dashboard");
-      } else {
-        // Vérifier canManageAppointments
-        const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
-        const level = session?.user?.adminLevel || 1;
-        const config = ADMIN_LEVELS.find(l => l.level === level);
-        if (!isSuperAdmin && !config?.canManageAppointments) {
-          router.push("/admin");
-        }
       }
     }
   }, [status, session, router]);
@@ -84,6 +76,17 @@ export default function AdminAppointmentsPage() {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
+        // Check if current user is allowed to manage appointments
+        const checkRes = await fetch("/api/admin/appointments/access");
+        if (checkRes.ok) {
+          const { hasAccess } = await checkRes.json();
+          if (!hasAccess) {
+            setAccessDenied(true);
+            setLoading(false);
+            return;
+          }
+        }
+
         const res = await fetch("/api/admin/appointments");
         if (res.ok) {
           const data = await res.json();
@@ -156,6 +159,22 @@ export default function AdminAppointmentsPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      </div>
+    );
+  }
+
+  if (accessDenied) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <Card>
+          <CardContent className="py-12 text-center max-w-md">
+            <Calendar className="h-16 w-16 mx-auto text-gray-400 mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Accès restreint</h2>
+            <p className="text-gray-600">
+              La gestion des rendez-vous est réservée à l&apos;administrateur désigné par le Super Admin.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     );
   }

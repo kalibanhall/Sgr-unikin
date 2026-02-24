@@ -33,12 +33,14 @@ export async function PUT(
       role?: 'STUDENT' | 'ADMIN' | 'SUPER_ADMIN';
       password?: string;
       adminLevel?: number | null;
+      isAppointmentManager?: boolean;
     } = {};
 
     if (body.name) updateData.name = body.name;
     if (body.email) updateData.email = body.email;
     if (body.role) updateData.role = body.role;
     if (body.adminLevel !== undefined) updateData.adminLevel = body.adminLevel ? parseInt(body.adminLevel) : null;
+    if (body.isAppointmentManager !== undefined) updateData.isAppointmentManager = body.isAppointmentManager;
     if (body.password) {
       updateData.password = await bcrypt.hash(body.password, 12);
     }
@@ -51,6 +53,7 @@ export async function PUT(
       name: updatedUser?.name,
       role: updatedUser?.role,
       adminLevel: updatedUser?.admin_level,
+      isAppointmentManager: updatedUser?.is_appointment_manager || false,
     });
   } catch (error) {
     console.error("Erreur:", error);

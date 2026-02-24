@@ -86,6 +86,7 @@ export interface User {
   secret_answer: string | null;
   failed_reset_attempts: number;
   reset_locked_until: Date | null;
+  is_appointment_manager: boolean;
   created_at: Date;
   updated_at: Date;
 }

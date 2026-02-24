@@ -45,6 +45,13 @@ export async function runMigrations() {
     `);
     console.log('✅ Technical validations index created');
 
+    // Add is_appointment_manager column
+    await query(`
+      ALTER TABLE users 
+      ADD COLUMN IF NOT EXISTS is_appointment_manager BOOLEAN DEFAULT FALSE
+    `);
+    console.log('✅ Appointment manager column added');
+
     // Promote Jonathan Mutwale to SUPER_ADMIN if exists
     const result = await query(`
       UPDATE users 

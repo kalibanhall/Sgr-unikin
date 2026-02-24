@@ -30,6 +30,7 @@ export async function GET() {
       name: user.name,
       role: user.role,
       adminLevel: user.admin_level,
+      isAppointmentManager: user.is_appointment_manager || false,
       emailVerified: user.email_verified,
       createdAt: user.created_at,
     }));

@@ -95,6 +95,7 @@ export const userRepository = {
     secretAnswer: string | null;
     failedResetAttempts: number;
     resetLockedUntil: Date | null;
+    isAppointmentManager: boolean;
   }>): Promise<User | null> {
     const setClauses: string[] = [];
     const values: unknown[] = [];
@@ -155,6 +156,10 @@ export const userRepository = {
     if (data.resetLockedUntil !== undefined) {
       setClauses.push(`reset_locked_until = $${paramIndex++}`);
       values.push(data.resetLockedUntil);
+    }
+    if (data.isAppointmentManager !== undefined) {
+      setClauses.push(`is_appointment_manager = $${paramIndex++}`);
+      values.push(data.isAppointmentManager);
     }
 
     if (setClauses.length === 0) return null;

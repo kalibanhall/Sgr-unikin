@@ -46,6 +46,7 @@ import {
   UserCog,
   AlertCircle,
   Pencil,
+  CalendarCheck,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -55,6 +56,7 @@ interface AdminUser {
   name: string | null;
   role: "ADMIN" | "SUPER_ADMIN";
   adminLevel: number | null;
+  isAppointmentManager: boolean;
   createdAt: string;
 }
 
@@ -253,6 +255,56 @@ export default function AdminUsersPage() {
       toast.error(error instanceof Error ? error.message : "Erreur lors de la mise à jour");
     } finally {
       setUpdating(false);
+    }
+  };
+
+  const handleToggleAppointmentManager = async (admin: AdminUser) => {
+    const newValue = !admin.isAppointmentManager;
+    try {
+      // If enabling, first disable all others
+      if (newValue) {
+        // Optimistic update: clear all others locally
+        setAdmins((prev) =>
+          prev.map((a) => ({
+            ...a,
+            isAppointmentManager: a.id === admin.id ? true : false,
+          }))
+        );
+        // Disable all others via API
+        const othersToDisable = admins.filter(
+          (a) => a.id !== admin.id && a.isAppointmentManager
+        );
+        for (const other of othersToDisable) {
+          await fetch(`/api/admin/users/${other.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ isAppointmentManager: false }),
+          });
+        }
+      } else {
+        setAdmins((prev) =>
+          prev.map((a) =>
+            a.id === admin.id ? { ...a, isAppointmentManager: false } : a
+          )
+        );
+      }
+
+      const res = await fetch(`/api/admin/users/${admin.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isAppointmentManager: newValue }),
+      });
+
+      if (!res.ok) throw new Error("Erreur");
+
+      toast.success(
+        newValue
+          ? `${admin.name} est maintenant responsable des rendez-vous`
+          : `${admin.name} n'est plus responsable des rendez-vous`
+      );
+    } catch (error) {
+      fetchAdmins(); // Re-fetch on error
+      toast.error("Erreur lors de la mise à jour");
     }
   };
 
@@ -574,6 +626,12 @@ export default function AdminUsersPage() {
                           {admin.id === session?.user?.id && (
                             <Badge variant="outline" className="text-xs">Vous</Badge>
                           )}
+                          {admin.isAppointmentManager && (
+                            <Badge className="text-xs bg-orange-100 text-orange-800 hover:bg-orange-200">
+                              <CalendarCheck className="h-3 w-3 mr-1" />
+                              RDV
+                            </Badge>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -616,6 +674,21 @@ export default function AdminUsersPage() {
                       <TableCell className="text-right">
                         {admin.id !== session?.user?.id && (
                           <div className="flex items-center justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleToggleAppointmentManager(admin)}
+                              className={admin.isAppointmentManager
+                                ? "text-orange-600 hover:text-orange-800 hover:bg-orange-50"
+                                : "text-gray-400 hover:text-orange-600 hover:bg-orange-50"
+                              }
+                              title={admin.isAppointmentManager
+                                ? "Retirer la responsabilité RDV"
+                                : "Nommer responsable des RDV"
+                              }
+                            >
+                              <CalendarCheck className="h-4 w-4" />
+                            </Button>
                             <Button
                               variant="ghost"
                               size="sm"
