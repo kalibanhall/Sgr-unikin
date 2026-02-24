@@ -22,6 +22,29 @@ export async function runMigrations() {
     `);
     console.log('✅ Dossier type column added');
 
+    // Create technical_validations table for double validation on technical step
+    await query(`
+      CREATE TABLE IF NOT EXISTS technical_validations (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        student_id UUID NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+        step INTEGER NOT NULL,
+        admin_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        status VARCHAR(20) NOT NULL DEFAULT 'APPROVED',
+        comment TEXT,
+        validated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+        UNIQUE(student_id, step, admin_id)
+      )
+    `);
+    console.log('✅ Technical validations table created');
+
+    // Create index for technical_validations
+    await query(`
+      CREATE INDEX IF NOT EXISTS idx_technical_validations_student_step 
+      ON technical_validations(student_id, step)
+    `);
+    console.log('✅ Technical validations index created');
+
     // Promote Jonathan Mutwale to SUPER_ADMIN if exists
     const result = await query(`
       UPDATE users 

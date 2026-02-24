@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { query } from "@/lib/db";
 import { userRepository, studentRepository, validationRepository, adminReviewRepository } from "@/lib/repositories";
 import { sendEmail, getValidationEmailTemplate, getValidationCertificateEmailTemplate } from "@/lib/email";
 import { generateCertificatePDF } from "@/lib/pdf-certificate";
 import { ADMIN_LEVELS, FACULTIES } from "@/lib/constants";
+
+// Step that requires double validation (technical step)
+const DOUBLE_VALIDATION_STEP = 2;
+const REQUIRED_VALIDATIONS = 2;
 
 // POST - Valider ou rejeter une étape
 export async function POST(
@@ -51,6 +56,62 @@ export async function POST(
 
     const student = studentWithUser;
 
+    // Double validation logic for technical step
+    if (stepNumber === DOUBLE_VALIDATION_STEP && status === "APPROVED") {
+      // Check if this admin has already validated this step
+      const existingValidation = await query(
+        `SELECT * FROM technical_validations 
+         WHERE student_id = $1 AND step = $2 AND admin_id = $3`,
+        [id, stepNumber, session.user.id]
+      );
+
+      if (existingValidation.rows.length > 0) {
+        return NextResponse.json(
+          { error: "Vous avez déjà validé cette étape technique" },
+          { status: 400 }
+        );
+      }
+
+      // Add this admin's technical validation
+      await query(
+        `INSERT INTO technical_validations (id, student_id, step, admin_id, status, comment)
+         VALUES (uuid_generate_v4(), $1, $2, $3, $4, $5)`,
+        [id, stepNumber, session.user.id, status, comment || null]
+      );
+
+      // Count total validations for this step
+      const validationCount = await query(
+        `SELECT COUNT(*) as count FROM technical_validations 
+         WHERE student_id = $1 AND step = $2 AND status = 'APPROVED'`,
+        [id, stepNumber]
+      );
+
+      const count = parseInt(validationCount.rows[0].count);
+
+      // Créer un avis admin (visible par le Super Admin)
+      await adminReviewRepository.create({
+        studentId: id,
+        adminId: session.user.id,
+        step: stepNumber,
+        decision: status,
+        comment: comment || null,
+        isPrivate: true,
+      });
+
+      // If not enough validations yet, return pending status
+      if (count < REQUIRED_VALIDATIONS) {
+        return NextResponse.json({
+          success: true,
+          message: `Validation technique enregistrée (${count}/${REQUIRED_VALIDATIONS}). En attente d'une deuxième validation.`,
+          validationCount: count,
+          requiredValidations: REQUIRED_VALIDATIONS,
+          pending: true,
+        });
+      }
+
+      // If we have enough validations, proceed with full validation
+    }
+
     // Créer ou mettre à jour la validation
     await validationRepository.upsert({
       studentId: id,
@@ -61,15 +122,17 @@ export async function POST(
       validatedAt: new Date(),
     });
 
-    // Créer un avis admin (visible par le Super Admin)
-    await adminReviewRepository.create({
-      studentId: id,
-      adminId: session.user.id,
-      step: parseInt(step),
-      decision: status,
-      comment: comment || null,
-      isPrivate: true,
-    });
+    // Créer un avis admin (visible par le Super Admin) - only if not already created for double validation
+    if (stepNumber !== DOUBLE_VALIDATION_STEP || status !== "APPROVED") {
+      await adminReviewRepository.create({
+        studentId: id,
+        adminId: session.user.id,
+        step: parseInt(step),
+        decision: status,
+        comment: comment || null,
+        isPrivate: true,
+      });
+    }
 
     // Mettre à jour l'étape de l'étudiant si validé
     if (status === "APPROVED") {

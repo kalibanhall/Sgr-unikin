@@ -100,6 +100,12 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
   const [adminReviews, setAdminReviews] = useState<AdminReview[]>([]);
   const [reviewComment, setReviewComment] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [technicalValidations, setTechnicalValidations] = useState<{
+    count: number;
+    requiredValidations: number;
+    hasCurrentAdminValidated: boolean;
+    isComplete: boolean;
+  } | null>(null);
   
   const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
   const adminLevel = session?.user?.adminLevel || 1;
@@ -141,9 +147,22 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
       }
     };
 
+    const fetchTechnicalValidations = async () => {
+      try {
+        const res = await fetch(`/api/admin/students/${resolvedParams.id}/technical-validations?step=2`);
+        if (res.ok) {
+          const data = await res.json();
+          setTechnicalValidations(data);
+        }
+      } catch (error) {
+        console.error("Erreur:", error);
+      }
+    };
+
     if (session?.user) {
       fetchStudent();
       fetchReviews();
+      fetchTechnicalValidations();
     }
   }, [session, resolvedParams.id]);
 
@@ -202,14 +221,28 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
         }),
       });
 
+      const data = await res.json();
+
       if (res.ok) {
-        // Rafraîchir les données
-        const updatedRes = await fetch(`/api/admin/students/${resolvedParams.id}`);
-        if (updatedRes.ok) {
-          const data = await updatedRes.json();
-          setStudent(data);
-          setComment("");
+        // Check if this is a pending double validation
+        if (data.pending) {
+          alert(data.message);
+          // Refresh technical validations count
+          const techRes = await fetch(`/api/admin/students/${resolvedParams.id}/technical-validations?step=2`);
+          if (techRes.ok) {
+            setTechnicalValidations(await techRes.json());
+          }
+        } else {
+          // Full validation completed - refresh student data
+          const updatedRes = await fetch(`/api/admin/students/${resolvedParams.id}`);
+          if (updatedRes.ok) {
+            const updatedData = await updatedRes.json();
+            setStudent(updatedData);
+            setComment("");
+          }
         }
+      } else {
+        alert(data.error || "Erreur lors de la validation");
       }
     } catch (error) {
       console.error("Erreur:", error);
@@ -430,6 +463,36 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Technical validation info for step 2 */}
+              {student.currentStep === 2 && technicalValidations && (
+                <div className={`p-4 rounded-lg border ${
+                  technicalValidations.hasCurrentAdminValidated
+                    ? "bg-green-50 border-green-200"
+                    : technicalValidations.count > 0
+                    ? "bg-yellow-50 border-yellow-200"
+                    : "bg-blue-50 border-blue-200"
+                }`}>
+                  <div className="flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-blue-600" />
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        Validation technique - Double validation requise
+                      </p>
+                      <p className="text-sm text-gray-700">
+                        {technicalValidations.hasCurrentAdminValidated
+                          ? "Vous avez déjà validé cette étape technique."
+                          : `${technicalValidations.count}/${technicalValidations.requiredValidations} validation(s) technique(s) enregistrée(s).`
+                        }
+                        {!technicalValidations.hasCurrentAdminValidated && technicalValidations.count > 0 && (
+                          <span className="ml-1 text-green-600 font-medium">
+                            (Une première validation a été effectuée)
+                          </span>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-900">Commentaire (optionnel)</label>
                 <Textarea
@@ -443,7 +506,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
               <div className="flex gap-4">
                 <Button
                   onClick={() => handleValidation("approve")}
-                  disabled={validating}
+                  disabled={validating || (student.currentStep === 2 && technicalValidations?.hasCurrentAdminValidated)}
                   className="flex-1"
                   variant="default"
                 >
@@ -452,11 +515,16 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                   ) : (
                     <CheckCircle className="h-4 w-4 mr-2" />
                   )}
-                  Valider l&apos;étape {student.currentStep}
+                  {student.currentStep === 2 
+                    ? (technicalValidations?.hasCurrentAdminValidated 
+                        ? "Déjà validé" 
+                        : `Valider (${(technicalValidations?.count || 0) + 1}/${technicalValidations?.requiredValidations || 2})`)
+                    : `Valider l'étape ${student.currentStep}`
+                  }
                 </Button>
                 <Button
                   onClick={() => handleValidation("reject")}
-                  disabled={validating}
+                  disabled={validating || (student.currentStep === 2 && technicalValidations?.hasCurrentAdminValidated)}
                   className="flex-1"
                   variant="destructive"
                 >
