@@ -5,8 +5,7 @@ import type { NextRequest } from "next/server";
 const PRODUCTION_DOMAIN = "sgr.unikin.ac.cd";
 
 // Activer la redirection vers le domaine personnalisé
-// DÉSACTIVÉ - Le domaine sgr.unikin.ac.cd n'est pas encore configuré
-const ENABLE_DOMAIN_REDIRECT = false;
+const ENABLE_DOMAIN_REDIRECT = true;
 
 export function middleware(request: NextRequest) {
   const hostname = request.headers.get("host") || "";
