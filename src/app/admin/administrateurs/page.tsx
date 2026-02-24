@@ -45,6 +45,7 @@ import {
   EyeOff,
   UserCog,
   AlertCircle,
+  Pencil,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -66,6 +67,13 @@ export default function AdminUsersPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [editingAdmin, setEditingAdmin] = useState<AdminUser | null>(null);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [updating, setUpdating] = useState(false);
+  const [editData, setEditData] = useState({
+    role: "ADMIN" as "ADMIN" | "SUPER_ADMIN",
+    adminLevel: "1",
+  });
   
   // Form state
   const [formData, setFormData] = useState({
@@ -202,6 +210,50 @@ export default function AdminUsersPage() {
     });
     setFormErrors({});
     setShowPassword(false);
+  };
+
+  const openEditDialog = (admin: AdminUser) => {
+    setEditingAdmin(admin);
+    setEditData({
+      role: admin.role,
+      adminLevel: admin.adminLevel?.toString() || "1",
+    });
+    setEditDialogOpen(true);
+  };
+
+  const handleUpdate = async () => {
+    if (!editingAdmin) return;
+    setUpdating(true);
+    try {
+      const res = await fetch(`/api/admin/users/${editingAdmin.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          role: editData.role,
+          adminLevel: editData.adminLevel,
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Erreur lors de la mise à jour");
+      }
+
+      const updated = await res.json();
+      setAdmins((prev) =>
+        prev.map((a) =>
+          a.id === editingAdmin.id
+            ? { ...a, role: updated.role, adminLevel: updated.adminLevel }
+            : a
+        )
+      );
+      setEditDialogOpen(false);
+      toast.success("Administrateur mis à jour avec succès");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Erreur lors de la mise à jour");
+    } finally {
+      setUpdating(false);
+    }
   };
 
   if (status === "loading" || loading) {
@@ -563,19 +615,31 @@ export default function AdminUsersPage() {
                       </TableCell>
                       <TableCell className="text-right">
                         {admin.id !== session?.user?.id && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(admin.id)}
-                            disabled={deleting === admin.id}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                          >
-                            {deleting === admin.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="h-4 w-4" />
-                            )}
-                          </Button>
+                          <div className="flex items-center justify-end gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openEditDialog(admin)}
+                              className="text-blue-500 hover:text-blue-700 hover:bg-blue-50"
+                              title="Modifier le rôle"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(admin.id)}
+                              disabled={deleting === admin.id}
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                              title="Supprimer"
+                            >
+                              {deleting === admin.id ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="h-4 w-4" />
+                              )}
+                            </Button>
+                          </div>
                         )}
                       </TableCell>
                     </TableRow>
@@ -585,6 +649,88 @@ export default function AdminUsersPage() {
             </Table>
           </CardContent>
         </Card>
+
+        {/* Edit Dialog */}
+        <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+          <DialogContent className="sm:max-w-sm">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Pencil className="h-5 w-5 text-blue-600" />
+                Modifier le rôle
+              </DialogTitle>
+              <DialogDescription>
+                {editingAdmin?.name} ({editingAdmin?.email})
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label>Rôle</Label>
+                <Select
+                  value={editData.role}
+                  onValueChange={(value: "ADMIN" | "SUPER_ADMIN") =>
+                    setEditData({ ...editData, role: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ADMIN">
+                      <div className="flex items-center gap-2">
+                        <Shield className="h-4 w-4 text-blue-500" />
+                        Administrateur
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="SUPER_ADMIN">
+                      <div className="flex items-center gap-2">
+                        <ShieldCheck className="h-4 w-4 text-purple-500" />
+                        Super Administrateur
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Niveau d&apos;administration</Label>
+                <Select
+                  value={editData.adminLevel}
+                  onValueChange={(value) =>
+                    setEditData({ ...editData, adminLevel: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Niveau 1 — Soumission & Réception</SelectItem>
+                    <SelectItem value="2">Niveau 2 — Analyse technique</SelectItem>
+                    <SelectItem value="3">Niveau 3 — Décision finale</SelectItem>
+                    <SelectItem value="4">Niveau 4 — Validation & Décision</SelectItem>
+                    <SelectItem value="5">Niveau 5 — Accès complet</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+                Annuler
+              </Button>
+              <Button onClick={handleUpdate} disabled={updating}>
+                {updating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    Mise à jour...
+                  </>
+                ) : (
+                  "Enregistrer"
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

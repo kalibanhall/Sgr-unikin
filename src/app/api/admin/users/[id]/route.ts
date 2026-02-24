@@ -32,11 +32,13 @@ export async function PUT(
       email?: string;
       role?: 'STUDENT' | 'ADMIN' | 'SUPER_ADMIN';
       password?: string;
+      adminLevel?: number | null;
     } = {};
 
     if (body.name) updateData.name = body.name;
     if (body.email) updateData.email = body.email;
     if (body.role) updateData.role = body.role;
+    if (body.adminLevel !== undefined) updateData.adminLevel = body.adminLevel ? parseInt(body.adminLevel) : null;
     if (body.password) {
       updateData.password = await bcrypt.hash(body.password, 12);
     }
@@ -48,6 +50,7 @@ export async function PUT(
       email: updatedUser?.email,
       name: updatedUser?.name,
       role: updatedUser?.role,
+      adminLevel: updatedUser?.admin_level,
     });
   } catch (error) {
     console.error("Erreur:", error);
