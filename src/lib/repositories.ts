@@ -1,4 +1,4 @@
-import { query, generateId, User, Student, Document, Validation, Appointment, Faculty, AdminReview } from './db';
+import { query, generateId, User, Student, Document, Validation, Appointment, Faculty, AdminReview, AdminActivityLog, OtpCode } from './db';
 
 // =====================================================
 // USER REPOSITORY
@@ -877,4 +877,180 @@ export const adminReviewRepository = {
     );
     return result.rows[0];
   }
+};
+
+// =====================================================
+// ADMIN ACTIVITY LOG REPOSITORY
+// =====================================================
+
+export const activityLogRepository = {
+  async create(data: {
+    adminId: string;
+    actionType: string;
+    targetType?: string;
+    targetId?: string;
+    details?: Record<string, unknown>;
+    ipAddress?: string;
+  }): Promise<AdminActivityLog> {
+    const id = generateId();
+    const result = await query<AdminActivityLog>(
+      `INSERT INTO admin_activity_logs (id, admin_id, action_type, target_type, target_id, details, ip_address)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *`,
+      [
+        id,
+        data.adminId,
+        data.actionType,
+        data.targetType || null,
+        data.targetId || null,
+        JSON.stringify(data.details || {}),
+        data.ipAddress || null,
+      ]
+    );
+    return result.rows[0];
+  },
+
+  async findAll(options?: {
+    adminId?: string;
+    actionType?: string;
+    targetType?: string;
+    startDate?: string;
+    endDate?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ logs: (AdminActivityLog & { admin_name: string | null; admin_email: string })[]; total: number }> {
+    const conditions: string[] = [];
+    const params: unknown[] = [];
+    let paramIndex = 1;
+
+    if (options?.adminId) {
+      conditions.push(`al.admin_id = $${paramIndex++}`);
+      params.push(options.adminId);
+    }
+    if (options?.actionType) {
+      conditions.push(`al.action_type = $${paramIndex++}`);
+      params.push(options.actionType);
+    }
+    if (options?.targetType) {
+      conditions.push(`al.target_type = $${paramIndex++}`);
+      params.push(options.targetType);
+    }
+    if (options?.startDate) {
+      conditions.push(`al.created_at >= $${paramIndex++}`);
+      params.push(options.startDate);
+    }
+    if (options?.endDate) {
+      conditions.push(`al.created_at <= $${paramIndex++}`);
+      params.push(options.endDate);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+    const limit = options?.limit || 50;
+    const offset = options?.offset || 0;
+
+    const [countResult, logsResult] = await Promise.all([
+      query<{ count: string }>(
+        `SELECT COUNT(*) as count FROM admin_activity_logs al ${whereClause}`,
+        params
+      ),
+      query<AdminActivityLog & { admin_name: string | null; admin_email: string }>(
+        `SELECT al.*, u.name as admin_name, u.email as admin_email
+         FROM admin_activity_logs al
+         JOIN users u ON al.admin_id = u.id
+         ${whereClause}
+         ORDER BY al.created_at DESC
+         LIMIT ${limit} OFFSET ${offset}`,
+        params
+      ),
+    ]);
+
+    return {
+      logs: logsResult.rows,
+      total: parseInt(countResult.rows[0].count),
+    };
+  },
+
+  async getActionTypes(): Promise<string[]> {
+    const result = await query<{ action_type: string }>(
+      'SELECT DISTINCT action_type FROM admin_activity_logs ORDER BY action_type'
+    );
+    return result.rows.map(r => r.action_type);
+  },
+
+  async getAdmins(): Promise<{ id: string; name: string | null; email: string }[]> {
+    const result = await query<{ id: string; name: string | null; email: string }>(
+      `SELECT DISTINCT u.id, u.name, u.email 
+       FROM admin_activity_logs al 
+       JOIN users u ON al.admin_id = u.id 
+       ORDER BY u.name`
+    );
+    return result.rows;
+  },
+};
+
+// =====================================================
+// OTP CODE REPOSITORY
+// =====================================================
+
+export const otpCodeRepository = {
+  async create(data: {
+    userId: string;
+    code: string;
+    expiresAt: Date;
+  }): Promise<OtpCode> {
+    // Invalidate any existing unused OTPs for this user
+    await query(
+      `UPDATE otp_codes SET used = TRUE WHERE user_id = $1 AND used = FALSE`,
+      [data.userId]
+    );
+
+    const id = generateId();
+    const result = await query<OtpCode>(
+      `INSERT INTO otp_codes (id, user_id, code, expires_at)
+       VALUES ($1, $2, $3, $4)
+       RETURNING *`,
+      [id, data.userId, data.code, data.expiresAt]
+    );
+    return result.rows[0];
+  },
+
+  async findValid(userId: string, code: string): Promise<OtpCode | null> {
+    const result = await query<OtpCode>(
+      `SELECT * FROM otp_codes 
+       WHERE user_id = $1 AND code = $2 AND used = FALSE AND expires_at > NOW() AND attempts < 5
+       ORDER BY created_at DESC LIMIT 1`,
+      [userId, code]
+    );
+    return result.rows[0] || null;
+  },
+
+  async findLatestForUser(userId: string): Promise<OtpCode | null> {
+    const result = await query<OtpCode>(
+      `SELECT * FROM otp_codes 
+       WHERE user_id = $1 AND used = FALSE
+       ORDER BY created_at DESC LIMIT 1`,
+      [userId]
+    );
+    return result.rows[0] || null;
+  },
+
+  async incrementAttempts(id: string): Promise<void> {
+    await query(
+      `UPDATE otp_codes SET attempts = attempts + 1 WHERE id = $1`,
+      [id]
+    );
+  },
+
+  async markUsed(id: string): Promise<void> {
+    await query(
+      `UPDATE otp_codes SET used = TRUE WHERE id = $1`,
+      [id]
+    );
+  },
+
+  async cleanExpired(): Promise<void> {
+    await query(
+      `DELETE FROM otp_codes WHERE expires_at < NOW() OR used = TRUE`
+    );
+  },
 };

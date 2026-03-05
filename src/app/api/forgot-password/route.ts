@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { v4 as uuidv4 } from 'uuid';
-import { userRepository } from '@/lib/repositories';
-import { sendEmail, getPasswordResetEmailTemplate } from '@/lib/email';
+import { userRepository, otpCodeRepository } from '@/lib/repositories';
+
+function generateOTP(): string {
+  return Math.floor(100000 + Math.random() * 900000).toString();
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,55 +23,56 @@ export async function POST(request: NextRequest) {
     // même si l'email n'existe pas
     if (!user) {
       return NextResponse.json({
-        message: 'Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.',
+        success: true,
+        message: 'Si un compte existe avec cet email, un code OTP sera généré.',
+        // En mode direct, on indique qu'il n'y a pas de code (l'utilisateur ne saura pas si l'email existe)
+        directMode: true,
+        otpCode: null,
       });
     }
 
-    // Générer un token unique
-    const resetToken = uuidv4();
-    
-    // Le token expire dans 1 heure
-    const resetExpires = new Date(Date.now() + 60 * 60 * 1000);
-
-    // Mettre à jour l'utilisateur avec le token
-    await userRepository.update(user.id, {
-      resetToken,
-      resetExpires,
-    });
-
-    // Construire l'URL de réinitialisation
-    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
-    const resetUrl = `${baseUrl}/reset-password?token=${resetToken}`;
-
-    // Envoyer l'email
-    const emailTemplate = getPasswordResetEmailTemplate(user.name || 'Utilisateur', resetUrl);
-    
-    try {
-      await sendEmail({
-        to: user.email,
-        subject: emailTemplate.subject,
-        html: emailTemplate.html,
-        text: emailTemplate.text,
-      });
-    } catch (emailError) {
-      console.error('Erreur envoi email de réinitialisation:', emailError);
-      // Nettoyer le token si l'email n'a pas pu être envoyé
-      await userRepository.update(user.id, {
-        resetToken: null,
-        resetExpires: null,
-      });
+    // Vérifier si un OTP existe déjà et n'est pas expiré (rate limiting: 60 secondes)
+    const existingOtp = await otpCodeRepository.findLatestForUser(user.id);
+    if (existingOtp && new Date(existingOtp.created_at).getTime() > Date.now() - 60000) {
+      const secondsLeft = Math.ceil(
+        (new Date(existingOtp.created_at).getTime() + 60000 - Date.now()) / 1000
+      );
       return NextResponse.json(
-        { error: "Impossible d'envoyer l'email. Veuillez réessayer ou contacter l'administrateur." },
-        { status: 500 }
+        { error: `Veuillez patienter ${secondsLeft} secondes avant de demander un nouveau code.` },
+        { status: 429 }
       );
     }
 
+    // Générer un code OTP à 6 chiffres
+    const otpCode = generateOTP();
+    
+    // Le code expire dans 10 minutes
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    // Sauvegarder le code OTP
+    await otpCodeRepository.create({
+      userId: user.id,
+      code: otpCode,
+      expiresAt,
+    });
+
+    // TODO: Quand les APIs WhatsApp/SMS seront configurées, envoyer le code via ces canaux
+    // Pour l'instant, on utilise le mode direct: le code est affiché à l'écran
+
+    console.log(`[OTP] Code généré pour ${user.email}: ${otpCode}`);
+
     return NextResponse.json({
-      message: 'Si un compte existe avec cet email, vous recevrez un lien de réinitialisation.',
+      success: true,
+      message: 'Code OTP généré avec succès.',
+      userId: user.id,
+      // Mode direct: on renvoie le code pour l'afficher à l'écran
+      // À retirer quand WhatsApp/SMS sera configuré
+      directMode: true,
+      otpCode: otpCode,
     });
 
   } catch (error) {
-    console.error('Erreur forgot-password:', error);
+    console.error('Erreur forgot-password OTP:', error);
     return NextResponse.json(
       { error: 'Une erreur est survenue. Veuillez réessayer.' },
       { status: 500 }

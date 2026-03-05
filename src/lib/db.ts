@@ -183,6 +183,27 @@ export interface AdminReview {
   updated_at: Date;
 }
 
+export interface AdminActivityLog {
+  id: string;
+  admin_id: string;
+  action_type: string;
+  target_type: string | null;
+  target_id: string | null;
+  details: Record<string, unknown>;
+  ip_address: string | null;
+  created_at: Date;
+}
+
+export interface OtpCode {
+  id: string;
+  user_id: string;
+  code: string;
+  expires_at: Date;
+  used: boolean;
+  attempts: number;
+  created_at: Date;
+}
+
 // Helpers pour générer des IDs
 export function generateId(): string {
   return crypto.randomUUID();

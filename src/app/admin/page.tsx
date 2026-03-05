@@ -203,6 +203,16 @@ export default function AdminDashboardPage() {
                 </Card>
               </Link>
             )}
+            {session?.user?.role === "SUPER_ADMIN" && (
+              <Link href="/admin/journal-activites">
+                <Card className="cursor-pointer hover:shadow-md transition-shadow border-indigo-200 bg-indigo-50">
+                  <CardContent className="flex items-center gap-3 p-4">
+                    <Shield className="h-5 w-5 text-indigo-600" />
+                    <span className="font-medium text-indigo-900">Journal d&apos;activités</span>
+                  </CardContent>
+                </Card>
+              </Link>
+            )}
           </div>
         </div>
 

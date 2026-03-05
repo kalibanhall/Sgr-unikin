@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { userRepository } from "@/lib/repositories";
+import { logActivity, ACTION_TYPES } from "@/lib/activity-logger";
 
 // POST - Admin resets user password (after 3 failed attempts or on request)
 export async function POST(request: NextRequest) {
@@ -42,6 +43,15 @@ export async function POST(request: NextRequest) {
       resetLockedUntil: null,
       resetToken: null,
       resetExpires: null,
+    });
+
+    // Log activity
+    await logActivity({
+      adminId: session.user.id,
+      actionType: ACTION_TYPES.RESET_USER_PASSWORD,
+      targetType: 'USER',
+      targetId: userId,
+      details: { targetEmail: user.email, targetName: user.name },
     });
 
     return NextResponse.json({ 

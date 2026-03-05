@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { userRepository } from "@/lib/repositories";
+import { logActivity, ACTION_TYPES } from "@/lib/activity-logger";
 
 // GET - Récupérer tous les utilisateurs (Super Admin seulement)
 export async function GET() {
@@ -77,6 +78,15 @@ export async function POST(request: NextRequest) {
       role: role as 'STUDENT' | 'ADMIN' | 'SUPER_ADMIN',
       adminLevel: adminLevel ? parseInt(adminLevel) : null,
       emailVerified: true,
+    });
+
+    // Log activity
+    await logActivity({
+      adminId: session.user.id,
+      actionType: ACTION_TYPES.CREATE_ADMIN,
+      targetType: 'USER',
+      targetId: user.id,
+      details: { email, name, role, adminLevel },
     });
 
     return NextResponse.json({

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { userRepository } from "@/lib/repositories";
+import { logActivity, ACTION_TYPES } from "@/lib/activity-logger";
 
 // PUT - Mettre à jour un utilisateur
 export async function PUT(
@@ -47,6 +48,19 @@ export async function PUT(
 
     const updatedUser = await userRepository.update(id, updateData);
 
+    // Log activity
+    await logActivity({
+      adminId: session.user.id,
+      actionType: ACTION_TYPES.UPDATE_ADMIN,
+      targetType: 'USER',
+      targetId: id,
+      details: {
+        targetEmail: user.email,
+        targetName: user.name,
+        changes: Object.keys(updateData),
+      },
+    });
+
     return NextResponse.json({
       id: updatedUser?.id,
       email: updatedUser?.email,
@@ -90,6 +104,15 @@ export async function DELETE(
     }
 
     await userRepository.delete(id);
+
+    // Log activity
+    await logActivity({
+      adminId: session.user.id,
+      actionType: ACTION_TYPES.DELETE_ADMIN,
+      targetType: 'USER',
+      targetId: id,
+      details: { deletedEmail: user.email, deletedName: user.name },
+    });
 
     return NextResponse.json({ message: "Utilisateur supprimé" });
   } catch (error) {

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { userRepository, appointmentRepository } from "@/lib/repositories";
+import { logActivity, ACTION_TYPES } from "@/lib/activity-logger";
 
 // PUT - Mettre à jour un rendez-vous (approuver/rejeter)
 export async function PUT(
@@ -32,6 +33,21 @@ export async function PUT(
       approvedDate: approvedDate ? new Date(approvedDate) : null,
       adminNote: adminNote || null,
     });
+
+    // Log activity
+    if (status === 'APPROVED' || status === 'REJECTED') {
+      await logActivity({
+        adminId: session.user.id,
+        actionType: status === 'APPROVED' ? ACTION_TYPES.APPROVE_APPOINTMENT : ACTION_TYPES.REJECT_APPOINTMENT,
+        targetType: 'APPOINTMENT',
+        targetId: id,
+        details: {
+          appointmentSubject: appointment.subject,
+          decision: status,
+          adminNote: adminNote || null,
+        },
+      });
+    }
 
     // Transformer en camelCase pour le frontend
     const updatedAppointment = updated ? {

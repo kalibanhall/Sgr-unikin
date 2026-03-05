@@ -5,6 +5,7 @@ import { userRepository, studentRepository, validationRepository, adminReviewRep
 import { sendEmail, getValidationEmailTemplate, getValidationCertificateEmailTemplate } from "@/lib/email";
 import { generateCertificatePDF } from "@/lib/pdf-certificate";
 import { ADMIN_LEVELS, FACULTIES } from "@/lib/constants";
+import { logActivity, ACTION_TYPES } from "@/lib/activity-logger";
 
 // Step that requires double validation (technical step)
 const DOUBLE_VALIDATION_STEP = 2;
@@ -120,6 +121,20 @@ export async function POST(
       comment: comment || null,
       validatedBy: user.name || user.email,
       validatedAt: new Date(),
+    });
+
+    // Log activity
+    await logActivity({
+      adminId: session.user.id,
+      actionType: status === 'APPROVED' ? ACTION_TYPES.VALIDATE_STEP : ACTION_TYPES.REJECT_STEP,
+      targetType: 'STUDENT',
+      targetId: id,
+      details: {
+        studentName: `${student.first_name} ${student.last_name}`,
+        step: stepNumber,
+        decision: status,
+        comment: comment || null,
+      },
     });
 
     // Créer un avis admin (visible par le Super Admin) - only if not already created for double validation
