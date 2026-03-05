@@ -28,7 +28,11 @@ export async function GET() {
       adminNote: a.admin_note,
       status: a.status,
       createdAt: a.created_at,
-      student: {
+      guestName: a.guest_name,
+      guestEmail: a.guest_email,
+      guestPhone: a.guest_phone,
+      isGuest: !a.student_id,
+      student: a.student_id ? {
         firstName: a.first_name,
         lastName: a.last_name,
         studyLevel: a.study_level,
@@ -36,7 +40,7 @@ export async function GET() {
         user: {
           email: a.email,
         },
-      },
+      } : null,
     }));
 
     return NextResponse.json(formattedAppointments);

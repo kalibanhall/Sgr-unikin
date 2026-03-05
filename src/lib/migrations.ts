@@ -97,6 +97,19 @@ export async function runMigrations() {
     `);
     console.log('✅ OTP codes index created');
 
+    // Allow guest appointments (no student account required)
+    await query(`
+      ALTER TABLE appointments 
+      ALTER COLUMN student_id DROP NOT NULL
+    `);
+    await query(`
+      ALTER TABLE appointments 
+      ADD COLUMN IF NOT EXISTS guest_name VARCHAR(255),
+      ADD COLUMN IF NOT EXISTS guest_email VARCHAR(255),
+      ADD COLUMN IF NOT EXISTS guest_phone VARCHAR(50)
+    `);
+    console.log('✅ Guest appointment columns added');
+
     // Promote Jonathan Mutwale to SUPER_ADMIN if exists
     const result = await query(`
       UPDATE users 

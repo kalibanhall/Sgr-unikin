@@ -659,11 +659,12 @@ export const appointmentRepository = {
       SELECT 
         a.id, a.student_id, a.target_role, a.subject, a.message, 
         a.requested_date, a.approved_date, a.admin_note, a.status, a.created_at,
+        a.guest_name, a.guest_email, a.guest_phone,
         s.first_name, s.last_name, s.study_level, s.faculty,
         u.email
       FROM appointments a
-      JOIN students s ON a.student_id = s.id
-      JOIN users u ON s.user_id = u.id
+      LEFT JOIN students s ON a.student_id = s.id
+      LEFT JOIN users u ON s.user_id = u.id
       WHERE 1=1
     `;
     const params: unknown[] = [];
@@ -688,18 +689,21 @@ export const appointmentRepository = {
   },
 
   async create(data: {
-    studentId: string;
+    studentId?: string;
     targetRole: string;
     subject: string;
     message?: string;
     requestedDate: Date;
+    guestName?: string;
+    guestEmail?: string;
+    guestPhone?: string;
   }): Promise<Record<string, unknown>> {
     const id = generateId();
     const result = await query<Appointment>(
-      `INSERT INTO appointments (id, student_id, target_role, subject, message, requested_date)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO appointments (id, student_id, target_role, subject, message, requested_date, guest_name, guest_email, guest_phone)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING *`,
-      [id, data.studentId, data.targetRole, data.subject, data.message || null, data.requestedDate]
+      [id, data.studentId || null, data.targetRole, data.subject, data.message || null, data.requestedDate, data.guestName || null, data.guestEmail || null, data.guestPhone || null]
     );
     const row = result.rows[0];
     // Transformer en camelCase pour le frontend
@@ -713,6 +717,9 @@ export const appointmentRepository = {
       approvedDate: row.approved_date,
       adminNote: row.admin_note,
       status: row.status,
+      guestName: row.guest_name,
+      guestEmail: row.guest_email,
+      guestPhone: row.guest_phone,
       createdAt: row.created_at,
     };
   },

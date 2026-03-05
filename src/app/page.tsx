@@ -172,6 +172,13 @@ export default function HomePage() {
                 <Award className="mr-2 h-5 w-5" />
                 Comment solliciter une soutenance
               </a>
+              <a 
+                href="/rendez-vous"
+                className="inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl border-2 border-violet-400 shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105 bg-violet-600 hover:bg-violet-700"
+              >
+                <Calendar className="mr-2 h-5 w-5" />
+                Prendre un rendez-vous
+              </a>
             </div>
           </div>
         </div>

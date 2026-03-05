@@ -16,7 +16,9 @@ import {
   CheckCircle,
   XCircle,
   User,
+  UserX,
   Mail,
+  Phone,
   GraduationCap
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
@@ -31,6 +33,10 @@ interface Appointment {
   adminNote: string | null;
   approvedDate: string | null;
   createdAt: string;
+  isGuest: boolean;
+  guestName: string | null;
+  guestEmail: string | null;
+  guestPhone: string | null;
   student: {
     firstName: string;
     lastName: string;
@@ -39,7 +45,7 @@ interface Appointment {
     user: {
       email: string;
     };
-  };
+  } | null;
 }
 
 const targetRoles = [
@@ -230,16 +236,39 @@ export default function AdminAppointmentsPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <div className="p-2 bg-blue-100 rounded-lg">
-                          <User className="h-5 w-5 text-blue-600" />
+                        <div className={`p-2 rounded-lg ${appointment.isGuest ? 'bg-orange-100' : 'bg-blue-100'}`}>
+                          {appointment.isGuest ? (
+                            <UserX className="h-5 w-5 text-orange-600" />
+                          ) : (
+                            <User className="h-5 w-5 text-blue-600" />
+                          )}
                         </div>
                         <div>
-                          <h3 className="font-semibold text-gray-900">
-                            {appointment.student.firstName} {appointment.student.lastName}
-                          </h3>
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <Mail className="h-3 w-3" />
-                            <span>{appointment.student.user.email}</span>
+                          <div className="flex items-center gap-2">
+                            <h3 className="font-semibold text-gray-900">
+                              {appointment.isGuest
+                                ? appointment.guestName
+                                : `${appointment.student?.firstName} ${appointment.student?.lastName}`}
+                            </h3>
+                            {appointment.isGuest && (
+                              <Badge className="bg-orange-100 text-orange-800 text-[10px] px-1.5 py-0">
+                                Visiteur
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3 text-sm text-gray-500">
+                            <span className="flex items-center gap-1">
+                              <Mail className="h-3 w-3" />
+                              {appointment.isGuest
+                                ? appointment.guestEmail
+                                : appointment.student?.user?.email}
+                            </span>
+                            {appointment.isGuest && appointment.guestPhone && (
+                              <span className="flex items-center gap-1">
+                                <Phone className="h-3 w-3" />
+                                {appointment.guestPhone}
+                              </span>
+                            )}
                           </div>
                         </div>
                         {getStatusBadge(appointment.status)}
@@ -262,10 +291,12 @@ export default function AdminAppointmentsPage() {
                               minute: "2-digit",
                             })}
                           </span>
-                          <span className="flex items-center">
-                            <GraduationCap className="h-4 w-4 mr-1" />
-                            {appointment.student.studyLevel}
-                          </span>
+                          {!appointment.isGuest && appointment.student && (
+                            <span className="flex items-center">
+                              <GraduationCap className="h-4 w-4 mr-1" />
+                              {appointment.student.studyLevel}
+                            </span>
+                          )}
                         </div>
                         {appointment.message && (
                           <p className="text-sm text-gray-600 bg-gray-50 p-2 rounded">{appointment.message}</p>

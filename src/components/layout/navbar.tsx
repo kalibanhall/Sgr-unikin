@@ -33,6 +33,7 @@ export function Navbar() {
     { href: "/", label: "Accueil" },
     { href: "/guide-inscription", label: "Guide d'inscription" },
     { href: "/guide-soutenance", label: "Guide soutenance" },
+    { href: "/rendez-vous", label: "Rendez-vous" },
     { href: "/contact", label: "Contact" },
   ];
 

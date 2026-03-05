@@ -146,7 +146,7 @@ export interface Validation {
 
 export interface Appointment {
   id: string;
-  student_id: string;
+  student_id: string | null;
   target_role: string;
   subject: string;
   message: string | null;
@@ -154,6 +154,9 @@ export interface Appointment {
   approved_date: Date | null;
   admin_note: string | null;
   status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  guest_name: string | null;
+  guest_email: string | null;
+  guest_phone: string | null;
   created_at: Date;
   updated_at: Date;
 }
