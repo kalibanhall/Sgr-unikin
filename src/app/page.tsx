@@ -330,10 +330,10 @@ export default function HomePage() {
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500 rounded-full blur-3xl" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white drop-shadow-lg">
             Prêt à commencer votre inscription ?
           </h2>
-          <p className="text-slate-400 mb-10 max-w-2xl mx-auto text-lg">
+          <p className="text-blue-100 mb-10 max-w-2xl mx-auto text-lg">
             Rejoignez la communauté académique de l&apos;Université de Kinshasa et poursuivez
             votre parcours vers l&apos;excellence.
           </p>
