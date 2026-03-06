@@ -14,9 +14,11 @@ import {
   Clock,
   MessageCircle,
   ScrollText,
-  PenTool
+  PenTool,
+  UserCheck
 } from "lucide-react";
 import { APP_CONFIG } from "@/lib/config";
+import { ValidatedStudentsList } from "./validated-students";
 
 export default function HomePage() {
   const features = [
@@ -120,7 +122,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section - Design moderne avec dégradé subtil */}
-      <section className="relative bg-linear-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-24 overflow-hidden">
+      <section className="relative bg-linear-to-br from-slate-900 via-blue-900 to-slate-900 text-white py-16 md:py-24 overflow-hidden">
         {/* Background decoration */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500 rounded-full blur-3xl" />
@@ -129,55 +131,55 @@ export default function HomePage() {
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="flex justify-center mb-8">
+            <div className="flex justify-center mb-6">
               <div className="relative">
                 <div className="absolute -inset-4 bg-white/10 rounded-full blur-xl" />
                 <Image 
                   src="/logo-unikin.png" 
                   alt="Logo UNIKIN" 
-                  width={140} 
-                  height={140} 
-                  className="relative h-32 w-32 drop-shadow-2xl"
+                  width={120} 
+                  height={120} 
+                  className="relative h-24 w-24 md:h-32 md:w-32 drop-shadow-2xl"
                 />
               </div>
             </div>
-            <h1 className="text-4xl md:text-6xl font-bold mb-4 tracking-tight">
+            <h1 className="text-3xl md:text-5xl font-bold mb-3 tracking-tight">
               {APP_CONFIG.organization.name}
             </h1>
-            <p className="text-xl md:text-2xl text-blue-200 mb-2 font-medium">
+            <p className="text-lg md:text-xl text-blue-200 mb-1 font-medium">
               {APP_CONFIG.organization.university}
             </p>
-            <p className="text-lg text-blue-300/80 mb-10 italic">
+            <p className="text-sm md:text-base text-blue-300/80 mb-8 italic">
               {APP_CONFIG.organization.motto}
             </p>
-            <div className="flex flex-col sm:flex-row justify-center gap-4 hero-buttons">
+            <div className="flex flex-wrap justify-center gap-3 hero-buttons">
               <a 
                 href="/guide-inscription"
-                className="hero-btn-white inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105"
+                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg border border-white/30 hover:bg-white/10 transition-all duration-200 cursor-pointer"
               >
-                <BookOpen className="mr-2 h-5 w-5" />
-                Comment s&apos;inscrire en 3ème cycle
-              </a>
-              <a 
-                href="/contact"
-                className="inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl border-2 border-white/30 shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105 hover:bg-white/10"
-              >
-                <MessageCircle className="mr-2 h-5 w-5" />
-                Contactez-nous
+                <BookOpen className="mr-2 h-4 w-4" />
+                S&apos;inscrire en 3ème cycle
               </a>
               <a 
                 href="/guide-soutenance"
-                className="inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl border-2 border-emerald-400 shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105 bg-emerald-600 hover:bg-emerald-700"
+                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg border border-white/30 hover:bg-white/10 transition-all duration-200 cursor-pointer"
               >
-                <Award className="mr-2 h-5 w-5" />
-                Comment solliciter une soutenance
+                <Award className="mr-2 h-4 w-4" />
+                Solliciter une soutenance
               </a>
               <a 
                 href="/rendez-vous"
-                className="inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl border-2 border-violet-400 shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105 bg-violet-600 hover:bg-violet-700"
+                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg border border-white/30 hover:bg-white/10 transition-all duration-200 cursor-pointer"
               >
-                <Calendar className="mr-2 h-5 w-5" />
+                <Calendar className="mr-2 h-4 w-4" />
                 Prendre un rendez-vous
+              </a>
+              <a 
+                href="/contact"
+                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg border border-white/30 hover:bg-white/10 transition-all duration-200 cursor-pointer"
+              >
+                <MessageCircle className="mr-2 h-4 w-4" />
+                Nous contacter
               </a>
             </div>
           </div>
@@ -324,33 +326,36 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Candidats validés */}
+      <ValidatedStudentsList />
+
       {/* CTA Section */}
-      <section className="py-20 bg-slate-900 text-white relative overflow-hidden">
+      <section className="py-16 bg-blue-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-500 rounded-full blur-3xl" />
         </div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white drop-shadow-lg">
+          <h2 className="text-2xl md:text-3xl font-bold mb-3 text-white">
             Prêt à commencer votre inscription ?
           </h2>
-          <p className="text-blue-100 mb-10 max-w-2xl mx-auto text-lg">
+          <p className="text-blue-200 mb-8 max-w-2xl mx-auto">
             Rejoignez la communauté académique de l&apos;Université de Kinshasa et poursuivez
             votre parcours vers l&apos;excellence.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
+          <div className="flex flex-wrap justify-center gap-3">
             <Link href="/register">
               <Button 
-                size="lg" 
-                className="bg-white text-slate-900 hover:bg-slate-100 font-semibold px-8 py-6 text-lg rounded-xl shadow-xl"
+                size="sm" 
+                className="bg-white text-blue-900 hover:bg-blue-50 font-medium px-6 py-2 rounded-lg"
               >
-                <Users className="mr-2 h-5 w-5" />
+                <Users className="mr-2 h-4 w-4" />
                 Créer un compte
               </Button>
             </Link>
             <Link href="/contact">
               <Button 
-                size="lg" 
-                className="bg-transparent border-2 border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-6 text-lg rounded-xl"
+                size="sm" 
+                className="bg-transparent border border-white/40 text-white hover:bg-white/10 font-medium px-6 py-2 rounded-lg"
               >
                 Nous contacter
               </Button>
