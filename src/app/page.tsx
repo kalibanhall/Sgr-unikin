@@ -152,33 +152,33 @@ export default function HomePage() {
             <p className="text-sm md:text-base text-blue-300/80 mb-8 italic">
               {APP_CONFIG.organization.motto}
             </p>
-            <div className="flex flex-wrap justify-center gap-3 hero-buttons">
-              <a 
+            <div className="flex flex-col sm:flex-row justify-center gap-4 hero-buttons">
+              <a
                 href="/guide-inscription"
-                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg bg-white text-blue-900 hover:bg-blue-50 transition-all duration-200 cursor-pointer shadow-lg"
+                className="hero-btn-white inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105"
               >
-                <BookOpen className="mr-2 h-4 w-4" />
+                <BookOpen className="mr-2 h-5 w-5" />
                 Comment s&apos;inscrire en 3ème cycle
               </a>
-              <a 
+              <a
                 href="/contact"
-                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg border-2 border-white/40 text-white hover:bg-white/10 transition-all duration-200 cursor-pointer"
+                className="inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl border-2 border-white/30 shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105 hover:bg-white/10"
               >
-                <MessageCircle className="mr-2 h-4 w-4" />
+                <MessageCircle className="mr-2 h-5 w-5" />
                 Contactez-nous
               </a>
-              <a 
+              <a
                 href="/guide-soutenance"
-                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-all duration-200 cursor-pointer shadow-lg"
+                className="inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl border-2 border-emerald-400 shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105 bg-emerald-600 hover:bg-emerald-700"
               >
-                <Award className="mr-2 h-4 w-4" />
+                <Award className="mr-2 h-5 w-5" />
                 Comment solliciter une soutenance
               </a>
-              <a 
+              <a
                 href="/rendez-vous"
-                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-all duration-200 cursor-pointer shadow-lg"
+                className="inline-flex items-center justify-center font-semibold px-8 py-4 text-lg rounded-xl border-2 border-violet-400 shadow-xl hover:shadow-2xl transition-all duration-200 cursor-pointer hover:scale-105 bg-violet-600 hover:bg-violet-700"
               >
-                <Calendar className="mr-2 h-4 w-4" />
+                <Calendar className="mr-2 h-5 w-5" />
                 Prendre un rendez-vous
               </a>
             </div>
