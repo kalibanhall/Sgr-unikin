@@ -155,31 +155,31 @@ export default function HomePage() {
             <div className="flex flex-wrap justify-center gap-3 hero-buttons">
               <a 
                 href="/guide-inscription"
-                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg border border-white/30 hover:bg-white/10 transition-all duration-200 cursor-pointer"
+                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg bg-white text-blue-900 hover:bg-blue-50 transition-all duration-200 cursor-pointer shadow-lg"
               >
                 <BookOpen className="mr-2 h-4 w-4" />
-                S&apos;inscrire en 3ème cycle
-              </a>
-              <a 
-                href="/guide-soutenance"
-                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg border border-white/30 hover:bg-white/10 transition-all duration-200 cursor-pointer"
-              >
-                <Award className="mr-2 h-4 w-4" />
-                Solliciter une soutenance
-              </a>
-              <a 
-                href="/rendez-vous"
-                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg border border-white/30 hover:bg-white/10 transition-all duration-200 cursor-pointer"
-              >
-                <Calendar className="mr-2 h-4 w-4" />
-                Prendre un rendez-vous
+                Comment s&apos;inscrire en 3ème cycle
               </a>
               <a 
                 href="/contact"
-                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg border border-white/30 hover:bg-white/10 transition-all duration-200 cursor-pointer"
+                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg border-2 border-white/40 text-white hover:bg-white/10 transition-all duration-200 cursor-pointer"
               >
                 <MessageCircle className="mr-2 h-4 w-4" />
-                Nous contacter
+                Contactez-nous
+              </a>
+              <a 
+                href="/guide-soutenance"
+                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg bg-emerald-500 text-white hover:bg-emerald-600 transition-all duration-200 cursor-pointer shadow-lg"
+              >
+                <Award className="mr-2 h-4 w-4" />
+                Comment solliciter une soutenance
+              </a>
+              <a 
+                href="/rendez-vous"
+                className="inline-flex items-center justify-center font-medium px-5 py-2.5 text-sm rounded-lg bg-purple-500 text-white hover:bg-purple-600 transition-all duration-200 cursor-pointer shadow-lg"
+              >
+                <Calendar className="mr-2 h-4 w-4" />
+                Prendre un rendez-vous
               </a>
             </div>
           </div>
