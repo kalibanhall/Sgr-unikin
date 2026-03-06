@@ -56,7 +56,7 @@ const destinataires = [
     id: "CHARGE_OIPR", 
     nom: "Chargé de l'OIPR", 
     fonction: "OIPR", 
-    description: "Office Ivoirien de la Propriété Intellectuelle",
+    description: "Outil d'Inventaire et de Planification de la Recherche",
     initiales: "CO"
   },
 ];
@@ -194,21 +194,21 @@ export default function PublicAppointmentPage() {
                   key={dest.id}
                   type="button"
                   onClick={() => setTargetRole(dest.id)}
-                  className={`rounded-xl p-4 text-center transition-all cursor-pointer ${
+                  className={`rounded-xl p-4 text-center transition-all cursor-pointer border-2 ${
                     targetRole === dest.id
-                      ? "bg-blue-600 ring-2 ring-blue-400 ring-offset-2"
-                      : "bg-slate-800 hover:bg-slate-700"
+                      ? "bg-blue-50 border-blue-500 ring-2 ring-blue-300 ring-offset-1"
+                      : "bg-white border-gray-200 hover:border-blue-300 hover:shadow-md"
                   }`}
                 >
-                  <div className={`mx-auto w-14 h-14 rounded-full flex items-center justify-center mb-2 border-3 ${
+                  <div className={`mx-auto w-14 h-14 rounded-full flex items-center justify-center mb-2 shadow-md ${
                     targetRole === dest.id 
-                      ? "bg-gradient-to-br from-white/30 to-white/10 border-white/40" 
-                      : "bg-gradient-to-br from-blue-400 to-blue-600 border-blue-300/30"
+                      ? "bg-gradient-to-br from-blue-600 to-blue-800" 
+                      : "bg-gradient-to-br from-blue-500 to-blue-700"
                   }`}>
                     <span className="text-lg font-bold text-white">{dest.initiales}</span>
                   </div>
-                  <h3 className="font-semibold text-white text-xs">{dest.fonction}</h3>
-                  <p className="text-red-400 text-[10px] italic mt-1 leading-tight">{dest.description}</p>
+                  <h3 className={`font-semibold text-xs ${targetRole === dest.id ? 'text-blue-800' : 'text-gray-900'}`}>{dest.fonction}</h3>
+                  <p className="text-blue-600 text-[10px] italic mt-1 leading-tight">{dest.description}</p>
                 </button>
               ))}
             </div>

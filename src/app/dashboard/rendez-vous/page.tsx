@@ -68,7 +68,7 @@ const destinataires = [
     id: "CHARGE_OIPR", 
     nom: "Chargé de l'OIPR", 
     fonction: "OIPR", 
-    description: "Office Ivoirien de la Propriété Intellectuelle",
+    description: "Outil d'Inventaire et de Planification de la Recherche",
     initiales: "CO"
   },
 ];
@@ -201,14 +201,14 @@ export default function AppointmentsPage() {
               {destinataires.map((dest) => (
                 <div 
                   key={dest.id} 
-                  className="bg-slate-800 rounded-xl p-4 text-center hover:bg-slate-700 transition-colors"
+                  className="bg-white border-2 border-blue-100 rounded-xl p-4 text-center hover:border-blue-300 hover:shadow-md transition-all"
                 >
                   {/* Avatar avec initiales */}
-                  <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center mb-3 border-4 border-blue-300/30">
+                  <div className="mx-auto w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center mb-3 shadow-lg">
                     <span className="text-2xl font-bold text-white">{dest.initiales}</span>
                   </div>
-                  <h3 className="font-semibold text-white text-sm">{dest.fonction}</h3>
-                  <p className="text-red-400 text-xs italic mt-1">{dest.description}</p>
+                  <h3 className="font-semibold text-gray-900 text-sm">{dest.fonction}</h3>
+                  <p className="text-blue-600 text-xs italic mt-1">{dest.description}</p>
                 </div>
               ))}
             </div>
