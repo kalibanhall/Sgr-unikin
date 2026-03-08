@@ -1,0 +1,2291 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation Technique — SGR-UNIKIN</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    :root {
+      --primary: #1e40af;
+      --primary-dark: #1e3a8a;
+      --primary-light: #3b82f6;
+      --secondary: #0f172a;
+      --accent: #10b981;
+      --accent-gold: #d97706;
+      --bg: #f8fafc;
+      --white: #ffffff;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --red: #dc2626;
+      --green: #16a34a;
+      --amber: #d97706;
+      --purple: #7c3aed;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--gray-800);
+      line-height: 1.7;
+      font-size: 14px;
+    }
+
+    /* ==================== COVER PAGE ==================== */
+    .cover-page {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1e40af 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      padding: 60px 40px;
+      position: relative;
+      overflow: hidden;
+      page-break-after: always;
+    }
+
+    .cover-page::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 30%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .cover-logo {
+      width: 120px;
+      height: 120px;
+      background: rgba(255,255,255,0.1);
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 40px;
+      font-size: 48px;
+      font-weight: 900;
+      backdrop-filter: blur(10px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover-title {
+      font-size: 48px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover-subtitle {
+      font-size: 22px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cover-meta {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 30px 50px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .cover-meta-item {
+      font-size: 15px;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .cover-meta-item strong {
+      color: white;
+      font-weight: 600;
+    }
+
+    .cover-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 30px;
+    }
+
+    .cover-version {
+      margin-top: 40px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* ==================== MAIN CONTENT ==================== */
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 50px;
+    }
+
+    /* ==================== TABLE OF CONTENTS ==================== */
+    .toc-page {
+      page-break-after: always;
+      padding: 50px;
+    }
+
+    .toc-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .toc-line {
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary), var(--accent));
+      border-radius: 2px;
+      margin-bottom: 30px;
+    }
+
+    .toc-list {
+      list-style: none;
+      counter-reset: toc-counter;
+    }
+
+    .toc-list li {
+      counter-increment: toc-counter;
+      display: flex;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px dashed var(--gray-200);
+      font-size: 15px;
+    }
+
+    .toc-list li::before {
+      content: counter(toc-counter, decimal-leading-zero);
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 13px;
+      width: 36px;
+      height: 36px;
+      background: rgba(30, 64, 175, 0.08);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+
+    .toc-list li a {
+      text-decoration: none;
+      color: var(--gray-700);
+      font-weight: 500;
+      flex: 1;
+      transition: color 0.2s;
+    }
+
+    .toc-list li a:hover {
+      color: var(--primary);
+    }
+
+    .toc-list li .toc-page-ref {
+      color: var(--gray-400);
+      font-size: 13px;
+      font-weight: 400;
+    }
+
+    /* ==================== SECTIONS ==================== */
+    .section {
+      margin-bottom: 50px;
+      page-break-inside: avoid;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .section-number {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .section-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--secondary);
+      line-height: 1.2;
+    }
+
+    h3 {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin: 28px 0 12px;
+      padding-left: 12px;
+      border-left: 4px solid var(--primary-light);
+    }
+
+    h4 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--gray-800);
+      margin: 20px 0 8px;
+    }
+
+    p {
+      margin-bottom: 12px;
+      color: var(--gray-700);
+    }
+
+    /* ==================== TABLES ==================== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    thead {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+    }
+
+    th {
+      padding: 12px 16px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    tbody tr:nth-child(even) {
+      background: var(--gray-50);
+    }
+
+    tbody tr:hover {
+      background: rgba(59, 130, 246, 0.04);
+    }
+
+    /* ==================== CODE BLOCKS ==================== */
+    code {
+      background: var(--gray-100);
+      color: var(--red);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 12.5px;
+    }
+
+    pre {
+      background: var(--secondary);
+      color: #e2e8f0;
+      padding: 20px 24px;
+      border-radius: 12px;
+      overflow-x: auto;
+      margin: 16px 0;
+      font-family: 'JetBrains Mono', 'Fira Code', monospace;
+      font-size: 12.5px;
+      line-height: 1.6;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    pre code {
+      background: none;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* ==================== CARDS & BOXES ==================== */
+    .info-box {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border: 1px solid #93c5fd;
+      border-left: 4px solid var(--primary-light);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+
+    .info-box-title {
+      font-weight: 700;
+      color: var(--primary);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .info-box p {
+      font-size: 13px;
+      margin: 0;
+    }
+
+    .warning-box {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      border: 1px solid #fbbf24;
+      border-left: 4px solid var(--amber);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+
+    .success-box {
+      background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+      border: 1px solid #6ee7b7;
+      border-left: 4px solid var(--green);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+
+    /* ==================== BADGES ==================== */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-green { background: #d1fae5; color: #065f46; }
+    .badge-red { background: #fee2e2; color: #991b1b; }
+    .badge-amber { background: #fef3c7; color: #92400e; }
+    .badge-purple { background: #ede9fe; color: #5b21b6; }
+    .badge-gray { background: #f3f4f6; color: #374151; }
+
+    /* ==================== SCREENSHOT ==================== */
+    .screenshot-container {
+      margin: 20px 0;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      border: 1px solid var(--gray-200);
+    }
+
+    .screenshot-header {
+      background: var(--gray-100);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .screenshot-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .screenshot-dot.red { background: #ef4444; }
+    .screenshot-dot.yellow { background: #f59e0b; }
+    .screenshot-dot.green { background: #22c55e; }
+
+    .screenshot-url {
+      background: white;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--gray-500);
+      flex: 1;
+      text-align: center;
+      border: 1px solid var(--gray-200);
+    }
+
+    .screenshot-container img {
+      width: 100%;
+      display: block;
+    }
+
+    .screenshot-caption {
+      background: var(--gray-50);
+      padding: 10px 16px;
+      font-size: 12px;
+      color: var(--gray-600);
+      text-align: center;
+      font-style: italic;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    /* ==================== FLOW DIAGRAMS ==================== */
+    .flow-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 20px 0;
+      flex-wrap: wrap;
+    }
+
+    .flow-step {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      min-width: 100px;
+    }
+
+    .flow-arrow {
+      color: var(--gray-400);
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .flow-step.green {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .flow-step.amber {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    .flow-step.purple {
+      background: linear-gradient(135deg, #7c3aed, #6d28d9);
+    }
+
+    .flow-step.red {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+
+    /* ==================== LIST STYLES ==================== */
+    ul, ol {
+      margin: 8px 0 14px 24px;
+      color: var(--gray-700);
+    }
+
+    li {
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    /* ==================== ARCHITECTURE DIAGRAM ==================== */
+    .arch-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .arch-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .arch-card-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .arch-card-title {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--primary-dark);
+      margin-bottom: 4px;
+    }
+
+    .arch-card-desc {
+      font-size: 12px;
+      color: var(--gray-500);
+    }
+
+    /* ==================== SEPARATOR ==================== */
+    .page-break {
+      page-break-before: always;
+    }
+
+    hr {
+      border: none;
+      height: 1px;
+      background: var(--gray-200);
+      margin: 30px 0;
+    }
+
+    /* ==================== FOOTER ==================== */
+    .doc-footer {
+      text-align: center;
+      padding: 30px;
+      color: var(--gray-400);
+      font-size: 11px;
+      border-top: 1px solid var(--gray-200);
+      margin-top: 40px;
+    }
+
+    /* ==================== FEATURE GRID ==================== */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .feature-item {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .feature-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .feature-icon.blue { background: #dbeafe; }
+    .feature-icon.green { background: #d1fae5; }
+    .feature-icon.amber { background: #fef3c7; }
+    .feature-icon.purple { background: #ede9fe; }
+    .feature-icon.red { background: #fee2e2; }
+
+    .feature-text h4 {
+      margin: 0 0 4px 0;
+      font-size: 13px;
+    }
+
+    .feature-text p {
+      font-size: 12px;
+      margin: 0;
+      color: var(--gray-500);
+    }
+
+    /* ==================== PRINT STYLES ==================== */
+    @media print {
+      body { font-size: 12px; }
+      .container { padding: 20px 30px; }
+      .screenshot-container { box-shadow: none; border: 1px solid #ccc; }
+      pre { page-break-inside: avoid; }
+      .section { page-break-inside: avoid; }
+      table { page-break-inside: avoid; }
+    }
+
+    /* ==================== STEP TIMELINE ==================== */
+    .timeline {
+      position: relative;
+      padding-left: 40px;
+      margin: 20px 0;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--gray-200);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 20px;
+      padding: 14px 18px;
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+    }
+
+    .timeline-item::before {
+      content: attr(data-step);
+      position: absolute;
+      left: -34px;
+      top: 14px;
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .timeline-item h4 {
+      margin: 0 0 4px;
+      font-size: 14px;
+    }
+
+    .timeline-item p {
+      margin: 0;
+      font-size: 13px;
+    }
+
+    /* ==================== STAT CARDS ==================== */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 16px 0;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+
+    /* ==================== ENV TABLE ==================== */
+    .env-var {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--green);
+    }
+  </style>
+</head>
+<body>
+
+<!-- ========================================= -->
+<!-- COVER PAGE -->
+<!-- ========================================= -->
+<div class="cover-page">
+  <div class="cover-logo">SGR</div>
+  <div class="cover-title">Documentation Technique Complète</div>
+  <div class="cover-subtitle">Plateforme SGR-UNIKIN — Secrétariat Général à la Recherche</div>
+
+  <div class="cover-meta">
+    <div class="cover-meta-item"><strong>Plateforme :</strong> https://sgr.unikin.ac.cd</div>
+    <div class="cover-meta-item"><strong>Organisation :</strong> Université de Kinshasa — Secrétariat Général à la Recherche</div>
+    <div class="cover-meta-item"><strong>Développeur Full Stack :</strong> Mr Chris Ngozulu Kasongo</div>
+    <div class="cover-meta-item"><strong>Version :</strong> 1.0.0</div>
+    <div class="cover-meta-item"><strong>Date :</strong> 8 Mars 2026</div>
+  </div>
+
+  <div class="cover-badge">Document confidentiel</div>
+  <div class="cover-version">SGR-UNIKIN v0.1.0 • Next.js 16 • React 19 • PostgreSQL • Déployé sur VPS Debian</div>
+</div>
+
+<!-- ========================================= -->
+<!-- TABLE OF CONTENTS -->
+<!-- ========================================= -->
+<div class="toc-page container">
+  <div class="toc-title">Table des Matières</div>
+  <div class="toc-line"></div>
+
+  <ol class="toc-list">
+    <li><a href="#section-1">Présentation Générale de la Plateforme</a></li>
+    <li><a href="#section-2">Architecture Technique</a></li>
+    <li><a href="#section-3">Stack Technologique</a></li>
+    <li><a href="#section-4">Base de Données (PostgreSQL)</a></li>
+    <li><a href="#section-5">Système d'Authentification & Sécurité</a></li>
+    <li><a href="#section-6">Interface Publique (Frontend)</a></li>
+    <li><a href="#section-7">Tableau de Bord Étudiant</a></li>
+    <li><a href="#section-8">Panneau d'Administration</a></li>
+    <li><a href="#section-9">Système de Validation en 5 Étapes</a></li>
+    <li><a href="#section-10">API Backend — Routes & Endpoints</a></li>
+    <li><a href="#section-11">Système d'E-mails</a></li>
+    <li><a href="#section-12">Gestion des Rendez-vous</a></li>
+    <li><a href="#section-13">Progressive Web App (PWA)</a></li>
+    <li><a href="#section-14">Déploiement & Infrastructure</a></li>
+    <li><a href="#section-15">Migrations de Base de Données</a></li>
+    <li><a href="#section-16">SEO & Performance</a></li>
+    <li><a href="#section-17">Journal d'Activités (Audit)</a></li>
+    <li><a href="#section-18">Variables d'Environnement</a></li>
+    <li><a href="#section-19">Annexes & Références</a></li>
+  </ol>
+</div>
+
+<!-- ========================================= -->
+<!-- SECTION 1: PRESENTATION GENERALE -->
+<!-- ========================================= -->
+<div class="container">
+  <div class="section" id="section-1">
+    <div class="section-header">
+      <div class="section-number">01</div>
+      <div class="section-title">Présentation Générale de la Plateforme</div>
+    </div>
+
+    <p><strong>SGR-UNIKIN</strong> est une plateforme web de gestion des inscriptions au 3ème cycle (Master & Doctorat) développée pour le <strong>Secrétariat Général à la Recherche de l'Université de Kinshasa</strong>. Elle permet la numérisation complète du processus d'inscription, de soumission de dossiers, de validation multi-niveaux et de suivi administratif.</p>
+
+    <h3>Objectifs principaux</h3>
+    <ul>
+      <li><strong>Digitaliser</strong> le processus d'inscription en 3ème cycle (Doctorat & Master)</li>
+      <li><strong>Automatiser</strong> la validation des dossiers en 5 étapes avec double vérification technique</li>
+      <li><strong>Centraliser</strong> la gestion documentaire (upload, stockage, prévisualisation)</li>
+      <li><strong>Tracer</strong> toutes les actions administratives via un journal d'audit complet</li>
+      <li><strong>Faciliter</strong> la communication via rendez-vous, e-mails et notifications</li>
+      <li><strong>Sécuriser</strong> les données par contrôle d'accès multi-niveaux et chiffrement des mots de passe</li>
+    </ul>
+
+    <h3>L'écosystème SGR-UNIKIN en chiffres</h3>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-value">13</div>
+        <div class="stat-label">Facultés</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">89</div>
+        <div class="stat-label">Départements</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">5</div>
+        <div class="stat-label">Niveaux d'admin</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value">39</div>
+        <div class="stat-label">Endpoints API</div>
+      </div>
+    </div>
+
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd</div>
+      </div>
+      <img src="screenshots/01-homepage-hero.png" alt="Page d'accueil SGR-UNIKIN">
+      <div class="screenshot-caption">Figure 1.1 — Page d'accueil de la plateforme SGR-UNIKIN</div>
+    </div>
+
+    <h3>Devise</h3>
+    <p><em>« Excellence – Intégrité – Redevabilité »</em> — Scientia Splendet et Conscientia</p>
+
+    <h3>Types d'inscription supportés</h3>
+    <table>
+      <thead>
+        <tr><th>Type</th><th>Niveau</th><th>Description</th><th>Statut</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Inscription Thèse</td><td>Doctorat</td><td>Nouvelle inscription en thèse de doctorat</td><td><span class="badge badge-green">Actif</span></td></tr>
+        <tr><td>Soutenance Thèse</td><td>Doctorat</td><td>Demande de soutenance de thèse</td><td><span class="badge badge-green">Actif</span></td></tr>
+        <tr><td>Inscription Master</td><td>Master</td><td>Inscription en cycle de master</td><td><span class="badge badge-amber">Suspendu</span></td></tr>
+        <tr><td>Soutenance Master</td><td>Master</td><td>Demande de soutenance de mémoire</td><td><span class="badge badge-green">Actif</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 2: ARCHITECTURE TECHNIQUE -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-2">
+    <div class="section-header">
+      <div class="section-number">02</div>
+      <div class="section-title">Architecture Technique</div>
+    </div>
+
+    <p>SGR-UNIKIN repose sur une architecture <strong>full-stack monolithique</strong> basée sur Next.js, combinant le rendu côté serveur (SSR), le rendu statique (SSG) et des routes API intégrées. Le tout est déployé sur un serveur VPS dédié.</p>
+
+    <h3>Diagramme d'architecture</h3>
+
+    <div class="arch-grid">
+      <div class="arch-card">
+        <div class="arch-card-icon">🌐</div>
+        <div class="arch-card-title">Client (Navigateur)</div>
+        <div class="arch-card-desc">React 19 + Tailwind CSS 4<br>PWA avec Service Worker</div>
+      </div>
+      <div class="arch-card">
+        <div class="arch-card-icon">⚡</div>
+        <div class="arch-card-title">Next.js 16 (Server)</div>
+        <div class="arch-card-desc">App Router + API Routes<br>Middleware + SSR/SSG</div>
+      </div>
+      <div class="arch-card">
+        <div class="arch-card-icon">🗄️</div>
+        <div class="arch-card-title">PostgreSQL</div>
+        <div class="arch-card-desc">11 tables + JSONB<br>UUID + Triggers</div>
+      </div>
+    </div>
+
+    <div class="arch-grid">
+      <div class="arch-card">
+        <div class="arch-card-icon">🔐</div>
+        <div class="arch-card-title">NextAuth.js v5</div>
+        <div class="arch-card-desc">JWT Sessions (24h)<br>Credentials Provider</div>
+      </div>
+      <div class="arch-card">
+        <div class="arch-card-icon">📧</div>
+        <div class="arch-card-title">Resend API</div>
+        <div class="arch-card-desc">7 templates d'e-mails<br>Vérification + Notifications</div>
+      </div>
+      <div class="arch-card">
+        <div class="arch-card-icon">📁</div>
+        <div class="arch-card-title">Système de Fichiers</div>
+        <div class="arch-card-desc">Upload local (10 MB max)<br>PDF, JPG, PNG</div>
+      </div>
+    </div>
+
+    <h3>Flux de données principal</h3>
+    <div class="flow-container">
+      <div class="flow-step">Client<br><small>React/PWA</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step green">Nginx<br><small>Reverse Proxy</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step amber">Next.js<br><small>Port 3000</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step purple">PostgreSQL<br><small>Port 5432</small></div>
+    </div>
+
+    <h3>Structure du projet</h3>
+    <pre><code>sgr-unikin/
+├── src/
+│   ├── app/                    # Pages & API Routes (App Router)
+│   │   ├── page.tsx            # Homepage
+│   │   ├── layout.tsx          # Layout racine
+│   │   ├── login/              # Connexion étudiant
+│   │   ├── register/           # Inscription
+│   │   ├── dashboard/          # Espace étudiant
+│   │   │   ├── documents/      # Upload de documents
+│   │   │   ├── profil/         # Profil & paramètres
+│   │   │   └── rendez-vous/    # Rendez-vous étudiant
+│   │   ├── admin/              # Panneau d'administration
+│   │   │   ├── etudiants/      # Gestion des étudiants
+│   │   │   ├── documents/      # Vue documents
+│   │   │   ├── rendez-vous/    # Gestion rendez-vous
+│   │   │   ├── administrateurs/# Gestion admins (SUPER_ADMIN)
+│   │   │   ├── parametres/     # Paramètres système
+│   │   │   └── journal-activites/ # Journal d'audit
+│   │   └── api/                # 39 endpoints REST
+│   │       ├── admin/          # APIs d'administration
+│   │       ├── auth/           # Authentification
+│   │       ├── student/        # APIs étudiant
+│   │       └── ...             # APIs publiques
+│   ├── components/             # Composants réutilisables
+│   │   ├── layout/             # Navbar, Footer
+│   │   ├── student/            # Composants dossier
+│   │   └── ui/                 # Primitives UI
+│   ├── lib/                    # Logique métier
+│   │   ├── auth.ts             # Configuration NextAuth
+│   │   ├── db.ts               # Pool PostgreSQL
+│   │   ├── config.ts           # Configuration centralisée
+│   │   ├── email.ts            # Service d'e-mails
+│   │   ├── migrations.ts       # Migrations DB
+│   │   ├── repositories.ts     # Couche d'accès données
+│   │   └── validations.ts      # Schémas Zod
+│   └── types/                  # Typescript definitions
+├── public/                     # Assets statiques & PWA
+│   ├── sw.js                   # Service Worker
+│   └── manifest.json           # Manifeste PWA
+├── scripts/                    # Scripts de déploiement
+│   ├── init-db.sql             # Schéma initial DB
+│   ├── setup-vps.sh            # Installation VPS
+│   └── prepare-deploy.ps1      # Préparation build
+└── uploads/                    # Documents uploadés</code></pre>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 3: STACK TECHNOLOGIQUE -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-3">
+    <div class="section-header">
+      <div class="section-number">03</div>
+      <div class="section-title">Stack Technologique</div>
+    </div>
+
+    <h3>Frontend</h3>
+    <table>
+      <thead><tr><th>Technologie</th><th>Version</th><th>Rôle</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Next.js</strong></td><td>16.1.4</td><td>Framework React full-stack (App Router)</td></tr>
+        <tr><td><strong>React</strong></td><td>19.2.3</td><td>Bibliothèque UI composants</td></tr>
+        <tr><td><strong>Tailwind CSS</strong></td><td>4.x</td><td>Framework CSS utilitaire</td></tr>
+        <tr><td><strong>Lucide React</strong></td><td>0.469.0</td><td>Icônes SVG</td></tr>
+        <tr><td><strong>React Hook Form</strong></td><td>7.54.2</td><td>Gestion des formulaires</td></tr>
+        <tr><td><strong>Zod</strong></td><td>3.24.1</td><td>Validation de schémas</td></tr>
+        <tr><td><strong>Sonner</strong></td><td>1.7.4</td><td>Notifications toast</td></tr>
+        <tr><td><strong>Radix UI</strong></td><td>Various</td><td>Primitives UI accessibles</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Backend</h3>
+    <table>
+      <thead><tr><th>Technologie</th><th>Version</th><th>Rôle</th></tr></thead>
+      <tbody>
+        <tr><td><strong>NextAuth.js</strong></td><td>5.0.0-beta.30</td><td>Authentification (JWT, Sessions)</td></tr>
+        <tr><td><strong>PostgreSQL</strong></td><td>pg 8.13.3</td><td>Base de données relationnelle</td></tr>
+        <tr><td><strong>bcryptjs</strong></td><td>3.0.2</td><td>Hachage de mots de passe</td></tr>
+        <tr><td><strong>Resend</strong></td><td>4.1.2</td><td>Service d'envoi d'e-mails</td></tr>
+        <tr><td><strong>pdf-lib</strong></td><td>1.17.1</td><td>Génération de certificats PDF</td></tr>
+        <tr><td><strong>uuid</strong></td><td>11.1.0</td><td>Génération d'identifiants uniques</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Infrastructure & Déploiement</h3>
+    <table>
+      <thead><tr><th>Composant</th><th>Technologie</th><th>Configuration</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Serveur VPS</strong></td><td>Debian Linux</td><td>IP: 5.189.163.4</td></tr>
+        <tr><td><strong>Process Manager</strong></td><td>PM2</td><td>Auto-restart, monitoring</td></tr>
+        <tr><td><strong>Reverse Proxy</strong></td><td>Nginx</td><td>Port 80/443 → 3000</td></tr>
+        <tr><td><strong>SSL</strong></td><td>Let's Encrypt</td><td>Certificat HTTPS auto-renouvelé</td></tr>
+        <tr><td><strong>Node.js</strong></td><td>20.x LTS</td><td>Runtime JavaScript serveur</td></tr>
+        <tr><td><strong>Domaine</strong></td><td>sgr.unikin.ac.cd</td><td>DNS A record → VPS</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 4: BASE DE DONNEES -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-4">
+    <div class="section-header">
+      <div class="section-number">04</div>
+      <div class="section-title">Base de Données (PostgreSQL)</div>
+    </div>
+
+    <p>La base de données utilise <strong>PostgreSQL</strong> avec des UUID comme clés primaires, des types ENUM pour les statuts, et des triggers automatiques pour la mise à jour des horodatages.</p>
+
+    <h3>Schéma des tables</h3>
+
+    <h4>users — Comptes utilisateurs</h4>
+    <table>
+      <thead><tr><th>Colonne</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code></td><td>UUID (PK)</td><td>Identifiant unique</td></tr>
+        <tr><td><code>email</code></td><td>VARCHAR(255) UNIQUE</td><td>Adresse e-mail</td></tr>
+        <tr><td><code>password</code></td><td>VARCHAR(255)</td><td>Mot de passe haché (bcrypt)</td></tr>
+        <tr><td><code>name</code></td><td>VARCHAR(255)</td><td>Nom complet</td></tr>
+        <tr><td><code>role</code></td><td>ENUM</td><td>STUDENT, ADMIN, SUPER_ADMIN</td></tr>
+        <tr><td><code>admin_level</code></td><td>INTEGER</td><td>Niveau d'accès admin (1-5)</td></tr>
+        <tr><td><code>email_verified</code></td><td>BOOLEAN</td><td>E-mail vérifié ou non</td></tr>
+        <tr><td><code>verify_token</code></td><td>VARCHAR(255)</td><td>Token de vérification e-mail</td></tr>
+        <tr><td><code>reset_token</code></td><td>VARCHAR(255)</td><td>Token de réinitialisation</td></tr>
+        <tr><td><code>secret_question</code></td><td>VARCHAR(255)</td><td>Question secrète de récupération</td></tr>
+        <tr><td><code>secret_answer</code></td><td>VARCHAR(255)</td><td>Réponse hachée (bcrypt)</td></tr>
+        <tr><td><code>is_appointment_manager</code></td><td>BOOLEAN</td><td>Peut gérer les rendez-vous</td></tr>
+        <tr><td><code>created_at</code></td><td>TIMESTAMPTZ</td><td>Date de création</td></tr>
+      </tbody>
+    </table>
+
+    <h4>students — Profils étudiants</h4>
+    <table>
+      <thead><tr><th>Colonne</th><th>Type</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>id</code></td><td>UUID (PK)</td><td>Identifiant unique</td></tr>
+        <tr><td><code>user_id</code></td><td>UUID (FK → users)</td><td>Lien vers le compte</td></tr>
+        <tr><td><code>first_name, last_name</code></td><td>VARCHAR(255)</td><td>Nom & prénom</td></tr>
+        <tr><td><code>date_of_birth</code></td><td>DATE</td><td>Date de naissance</td></tr>
+        <tr><td><code>nationality</code></td><td>VARCHAR(100)</td><td>Nationalité (défaut: Congolaise)</td></tr>
+        <tr><td><code>faculty, department</code></td><td>VARCHAR(255)</td><td>Faculté et département</td></tr>
+        <tr><td><code>study_level</code></td><td>ENUM</td><td>LICENCE, MASTER, DOCTORAT</td></tr>
+        <tr><td><code>thesis_title</code></td><td>TEXT</td><td>Titre de la thèse/mémoire</td></tr>
+        <tr><td><code>supervisor, co_supervisor</code></td><td>VARCHAR(255)</td><td>Directeur(s) de thèse</td></tr>
+        <tr><td><code>current_step</code></td><td>INTEGER</td><td>Étape actuelle (0-4)</td></tr>
+        <tr><td><code>dossier_status</code></td><td>ENUM</td><td>DRAFT, SUBMITTED, VALIDATED, COMPLETED</td></tr>
+        <tr><td><code>dossier_type</code></td><td>VARCHAR(50)</td><td>INSCRIPTION ou SOUTENANCE</td></tr>
+        <tr><td><code>is_complete</code></td><td>BOOLEAN</td><td>Dossier entièrement validé</td></tr>
+      </tbody>
+    </table>
+
+    <h4>Autres tables</h4>
+    <table>
+      <thead><tr><th>Table</th><th>Colonnes principales</th><th>Rôle</th></tr></thead>
+      <tbody>
+        <tr><td><code>documents</code></td><td>student_id, name, type, url, size, mime_type</td><td>Fichiers uploadés par étudiant</td></tr>
+        <tr><td><code>validations</code></td><td>student_id, step, status, comment, validated_by</td><td>Validation de chaque étape (UNIQUE student_id+step)</td></tr>
+        <tr><td><code>technical_validations</code></td><td>student_id, step, admin_id, status</td><td>Double validation technique (étape 2)</td></tr>
+        <tr><td><code>appointments</code></td><td>student_id?, target_role, subject, status, guest_*</td><td>Rendez-vous (étudiants & visiteurs)</td></tr>
+        <tr><td><code>admin_reviews</code></td><td>student_id, admin_id, step, decision, comment</td><td>Avis des administrateurs</td></tr>
+        <tr><td><code>admin_activity_logs</code></td><td>admin_id, action_type, target_type, details (JSONB)</td><td>Journal d'audit complet</td></tr>
+        <tr><td><code>otp_codes</code></td><td>user_id, code, expires_at, used, attempts</td><td>Codes OTP de récupération</td></tr>
+        <tr><td><code>faculties</code></td><td>name, code</td><td>13 facultés de l'UNIKIN</td></tr>
+        <tr><td><code>departments</code></td><td>name, code, faculty_id</td><td>89 départements</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Relations entre tables</h3>
+    <pre><code>users ──── 1:1 ──── students ──── 1:N ──── documents
+                      │                       
+                      ├── 1:N ──── validations (UNIQUE student_id, step)
+                      ├── 1:N ──── technical_validations
+                      ├── 1:N ──── appointments (student_id nullable)
+                      └── 1:N ──── admin_reviews
+                      
+users ──── 1:N ──── admin_activity_logs
+users ──── 1:N ──── otp_codes
+faculties ── 1:N ──── departments</code></pre>
+
+    <h3>Triggers automatiques</h3>
+    <p>Un trigger <code>update_updated_at_column()</code> est appliqué sur les tables <code>users</code>, <code>students</code>, <code>validations</code>, <code>appointments</code> et <code>admin_reviews</code> pour mettre à jour automatiquement la colonne <code>updated_at</code> à chaque modification.</p>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 5: AUTHENTIFICATION & SECURITE -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-5">
+    <div class="section-header">
+      <div class="section-number">05</div>
+      <div class="section-title">Système d'Authentification & Sécurité</div>
+    </div>
+
+    <h3>Authentification NextAuth.js v5</h3>
+    <p>L'authentification est gérée par <strong>NextAuth.js v5</strong> (beta) en mode JWT avec des sessions de 24 heures. Le provider utilisé est <code>Credentials</code> (email + mot de passe).</p>
+
+    <h4>Flux de connexion</h4>
+    <div class="flow-container">
+      <div class="flow-step">Email +<br>Mot de passe</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step green">Vérification<br>bcrypt</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step amber">Vérification<br>e-mail</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step purple">Création<br>JWT (24h)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Session<br>Active</div>
+    </div>
+
+    <h4>Données de session JWT</h4>
+    <pre><code>{
+  id: "uuid",
+  email: "user@example.com",
+  role: "STUDENT" | "ADMIN" | "SUPER_ADMIN",
+  adminLevel: 1-5 | null,
+  studentId: "uuid" | null
+}</code></pre>
+
+    <h3>Middleware de protection des routes</h3>
+    <p>Le fichier <code>src/middleware.ts</code> intercepte toutes les requêtes pour :</p>
+    <table>
+      <thead><tr><th>Route</th><th>Protection</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><code>/dashboard/*</code></td><td>Session requise (STUDENT)</td><td>Redirige vers /login si non connecté</td></tr>
+        <tr><td><code>/admin/*</code></td><td>Session requise (ADMIN/SUPER_ADMIN)</td><td>Redirige vers /admin/login</td></tr>
+        <tr><td><code>/login, /register</code></td><td>Redirige si déjà connecté</td><td>Dashboard ou Admin selon rôle</td></tr>
+        <tr><td><code>/api/*</code></td><td>Vérification par endpoint</td><td>401/403 si non autorisé</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Hiérarchie des rôles administratifs</h3>
+    <table>
+      <thead><tr><th>Niveau</th><th>Rôle</th><th>Étapes autorisées</th><th>Capacités</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-gray">Niveau 1</span></td><td>Réception</td><td>Étapes 0-1</td><td>Réception dossiers + gestion RDV</td></tr>
+        <tr><td><span class="badge badge-blue">Niveau 2</span></td><td>Analyse technique</td><td>Étape 2</td><td>Vérification documents (double validation)</td></tr>
+        <tr><td><span class="badge badge-amber">Niveau 3</span></td><td>Décision</td><td>Étape 4</td><td>Approbation / Rejet final</td></tr>
+        <tr><td><span class="badge badge-purple">Niveau 4</span></td><td>Validation + Décision</td><td>Étapes 3-4</td><td>Validation SGR + Décision</td></tr>
+        <tr><td><span class="badge badge-green">Niveau 5</span></td><td>Direction (Accès complet)</td><td>Étapes 0-5</td><td>Toutes les fonctionnalités + gestion RDV</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Mesures de sécurité</h3>
+    <div class="feature-grid">
+      <div class="feature-item">
+        <div class="feature-icon blue">🔒</div>
+        <div class="feature-text">
+          <h4>Hachage bcrypt (12 rounds)</h4>
+          <p>Tous les mots de passe et réponses secrètes sont hachés avec bcryptjs</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon green">🛡️</div>
+        <div class="feature-text">
+          <h4>Requêtes paramétrées</h4>
+          <p>Toutes les requêtes SQL utilisent des paramètres ($1, $2...) contre l'injection SQL</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon amber">⏱️</div>
+        <div class="feature-text">
+          <h4>Rate Limiting</h4>
+          <p>OTP: 60s entre demandes • RDV: max 3 en attente par email • 5 tentatives OTP max</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon purple">🔑</div>
+        <div class="feature-text">
+          <h4>Verrouillage de comptes</h4>
+          <p>3 tentatives échouées → verrouillage 24h (récupération par question secrète)</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon red">📋</div>
+        <div class="feature-text">
+          <h4>En-têtes de sécurité</h4>
+          <p>X-Content-Type-Options, X-Frame-Options, X-XSS-Protection via Next.js config</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon blue">📝</div>
+        <div class="feature-text">
+          <h4>Journal d'audit (JSONB)</h4>
+          <p>Toutes les actions admin enregistrées avec IP, horodatage et détails</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Récupération de mot de passe</h3>
+    <p>Deux mécanismes de récupération sont disponibles :</p>
+    <h4>1. Par code OTP (6 chiffres)</h4>
+    <div class="flow-container">
+      <div class="flow-step">Saisie<br>e-mail</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step green">Génération<br>OTP (10 min)</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step amber">Vérification<br>6 chiffres</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step purple">Nouveau<br>mot de passe</div>
+    </div>
+
+    <h4>2. Par question secrète</h4>
+    <div class="flow-container">
+      <div class="flow-step">Saisie<br>e-mail</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step green">Affichage<br>question</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step amber">Vérification<br>réponse</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step purple">Nouveau<br>mot de passe</div>
+    </div>
+
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/forgot-password</div>
+      </div>
+      <img src="screenshots/09-forgot-password.png" alt="Récupération de mot de passe">
+      <div class="screenshot-caption">Figure 5.1 — Page de récupération de mot de passe par OTP</div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 6: INTERFACE PUBLIQUE -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-6">
+    <div class="section-header">
+      <div class="section-number">06</div>
+      <div class="section-title">Interface Publique (Frontend)</div>
+    </div>
+
+    <p>L'interface publique comprend toutes les pages accessibles sans authentification. Elle est conçue en <strong>responsive design</strong> avec support PWA pour une utilisation optimale sur mobile.</p>
+
+    <h3>6.1 — Page d'accueil</h3>
+    <p>La page d'accueil présente la plateforme, affiche les statistiques de l'université, les types de services offerts et les directions du SGR. Elle intègre un composant dynamique affichant la liste des étudiants déjà validés à toutes les étapes.</p>
+
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd</div>
+      </div>
+      <img src="screenshots/02-homepage-full.png" alt="Homepage complète">
+      <div class="screenshot-caption">Figure 6.1 — Page d'accueil complète avec toutes les sections</div>
+    </div>
+
+    <h4>Éléments principaux :</h4>
+    <ul>
+      <li><strong>Hero Section :</strong> Logo animé, titre, devise, 4 boutons d'action (inscription, soutenance, rendez-vous, contact)</li>
+      <li><strong>Statistiques :</strong> 13 facultés, 5 écoles, 89 départements, accès 24/7</li>
+      <li><strong>Services :</strong> Cartes colorées pour chaque type d'inscription</li>
+      <li><strong>Directions SGR :</strong> Direction des Recherches, Direction de Suivi, Secrétariat</li>
+      <li><strong>Étudiants Validés :</strong> Liste dynamique des candidats validés à toutes les étapes (données en temps réel)</li>
+      <li><strong>Section CTA :</strong> Appel à l'action avec boutons d'inscription</li>
+      <li><strong>WhatsApp :</strong> Bouton de contact flottant</li>
+    </ul>
+
+    <h3>6.2 — Page de connexion étudiant</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/login</div>
+      </div>
+      <img src="screenshots/03-login.png" alt="Page de connexion">
+      <div class="screenshot-caption">Figure 6.2 — Page de connexion avec formulaire d'authentification</div>
+    </div>
+
+    <h4>Fonctionnalités :</h4>
+    <ul>
+      <li>Champs email et mot de passe avec toggle de visibilité</li>
+      <li>Détection automatique des comptes admin (redirige vers /admin)</li>
+      <li>Gestion des erreurs : e-mail non vérifié → option de renvoi du lien</li>
+      <li>Liens vers inscription et mot de passe oublié</li>
+    </ul>
+
+    <h3>6.3 — Page d'inscription</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/register</div>
+      </div>
+      <img src="screenshots/04-register.png" alt="Page d'inscription">
+      <div class="screenshot-caption">Figure 6.3 — Sélection du type d'inscription (étape 1)</div>
+    </div>
+
+    <h4>Processus en 2 étapes :</h4>
+    <ol>
+      <li><strong>Choix du type :</strong> 4 options (Inscription Thèse, Soutenance Thèse, Inscription Master [suspendu], Soutenance Master)</li>
+      <li><strong>Formulaire :</strong> Informations personnelles, identifiants du compte, informations académiques (faculté, département, niveau, spécialisation, titre de thèse)</li>
+    </ol>
+
+    <h3>6.4 — Guide d'inscription en 3ème cycle</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/guide-inscription</div>
+      </div>
+      <img src="screenshots/05-guide-inscription.png" alt="Guide d'inscription">
+      <div class="screenshot-caption">Figure 6.4 — Guide pas-à-pas pour l'inscription en 3ème cycle</div>
+    </div>
+
+    <h3>6.5 — Guide de soutenance</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/guide-soutenance</div>
+      </div>
+      <img src="screenshots/06-guide-soutenance.png" alt="Guide de soutenance">
+      <div class="screenshot-caption">Figure 6.5 — Guide de soutenance avec liste des documents requis</div>
+    </div>
+
+    <h3>6.6 — Page de contact</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/contact</div>
+      </div>
+      <img src="screenshots/07-contact.png" alt="Contact">
+      <div class="screenshot-caption">Figure 6.6 — Page de contact avec formulaire et informations</div>
+    </div>
+
+    <h3>6.7 — Version mobile</h3>
+    <div class="screenshot-container" style="max-width: 400px; margin: 20px auto;">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">sgr.unikin.ac.cd (mobile)</div>
+      </div>
+      <img src="screenshots/11-homepage-mobile.png" alt="Version mobile">
+      <div class="screenshot-caption">Figure 6.7 — Version mobile responsive de la page d'accueil</div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 7: DASHBOARD ETUDIANT -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-7">
+    <div class="section-header">
+      <div class="section-number">07</div>
+      <div class="section-title">Tableau de Bord Étudiant</div>
+    </div>
+
+    <p>Le tableau de bord étudiant est l'espace principal pour gérer son dossier d'inscription. Il est protégé par authentification et ne s'affiche qu'après connexion.</p>
+
+    <h3>7.1 — Dashboard principal</h3>
+    <h4>Composants principaux :</h4>
+    <ul>
+      <li><strong>En-tête personnalisé :</strong> Nom de l'étudiant, badge de statut (Brouillon, En cours, Validé, Complété), date d'inscription</li>
+      <li><strong>Progression :</strong> Visualisation des 4 étapes de validation (cercles numérotés avec lignes de connexion)</li>
+      <li><strong>Carte de statut :</strong> Message dynamique selon l'état du dossier, bouton de téléchargement du certificat si dossier validé</li>
+      <li><strong>Informations :</strong> Niveau d'études, faculté, nombre de documents</li>
+      <li><strong>Actions rapides :</strong> Mes documents, Mon profil, Rendez-vous</li>
+      <li><strong>Nouvelle demande :</strong> Modal pour soumission d'un nouveau dossier après complétion</li>
+    </ul>
+
+    <h3>7.2 — Gestion des documents</h3>
+    <p>Page <code>/dashboard/documents</code> — Upload et gestion des pièces du dossier.</p>
+    <h4>Fonctionnalités :</h4>
+    <ul>
+      <li><strong>Upload :</strong> Glisser-déposer ou cliquer pour sélectionner (PDF, JPG, PNG — max 10 MB)</li>
+      <li><strong>Prévisualisation :</strong> Modal plein écran avec zoom (50-200%), navigation par flèches (clavier: ←→)</li>
+      <li><strong>Organisation :</strong> Catégories différentes selon le type de dossier (6+ catégories pour doctorat)</li>
+      <li><strong>Soumission :</strong> Bouton de soumission finale avec génération d'un numéro de référence (SGR-YYYY-XXXXX)</li>
+      <li><strong>Verrouillage :</strong> Documents non-modifiables après soumission</li>
+    </ul>
+
+    <h3>7.3 — Profil et paramètres</h3>
+    <p>Page <code>/dashboard/profil</code> — Gestion des informations personnelles et de sécurité.</p>
+    <h4>Sections :</h4>
+    <ul>
+      <li><strong>Informations personnelles :</strong> Nom, prénom, date/lieu de naissance, nationalité, genre, téléphone, adresse</li>
+      <li><strong>Informations académiques :</strong> Faculté, département, niveau, spécialisation, titre de thèse, directeur(s)</li>
+      <li><strong>Question secrète :</strong> Configuration d'une question/réponse pour récupération de compte</li>
+      <li><strong>Changement de mot de passe :</strong> Ancien mot de passe requis + indicateur de force</li>
+    </ul>
+
+    <h3>7.4 — Rendez-vous (étudiant)</h3>
+    <p>Page <code>/dashboard/rendez-vous</code> — Demande et suivi de rendez-vous avec l'administration.</p>
+    <ul>
+      <li>Création de nouvelles demandes avec sélection du destinataire</li>
+      <li>Suivi du statut (En attente, Approuvé, Rejeté) avec badges colorés</li>
+      <li>Affichage de la note admin et de la date approuvée si applicable</li>
+    </ul>
+
+    <h3>7.5 — Certificats générés</h3>
+    <table>
+      <thead><tr><th>Certificat</th><th>Disponibilité</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>Attestation de soumission</td><td>Après soumission du dossier</td><td>Preuve de dépôt avec numéro de référence</td></tr>
+        <tr><td>Certificat de validation</td><td>Après validation complète</td><td>Certificat officiel avec sceau de l'université</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 8: ADMINISTRATION -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-8">
+    <div class="section-header">
+      <div class="section-number">08</div>
+      <div class="section-title">Panneau d'Administration</div>
+    </div>
+
+    <p>L'interface d'administration est accessible via <code>/admin</code> et nécessite un compte avec le rôle ADMIN ou SUPER_ADMIN. Les fonctionnalités disponibles dépendent du niveau d'accès.</p>
+
+    <h3>8.1 — Connexion admin</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/admin/login</div>
+      </div>
+      <img src="screenshots/10-admin-login.png" alt="Admin Login">
+      <div class="screenshot-caption">Figure 8.1 — Page de connexion administrateur</div>
+    </div>
+
+    <h3>8.2 — Tableau de bord admin</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/admin</div>
+      </div>
+      <img src="screenshots/13-admin-dashboard.png" alt="Admin Dashboard">
+      <div class="screenshot-caption">Figure 8.2 — Tableau de bord principal de l'administration</div>
+    </div>
+
+    <h4>Cartes de statistiques :</h4>
+    <ul>
+      <li>Total des étudiants inscrits</li>
+      <li>Validations en attente</li>
+      <li>Inscriptions complétées</li>
+      <li>Taux de complétion (%)</li>
+    </ul>
+
+    <h3>8.3 — Gestion des étudiants</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/admin/etudiants</div>
+      </div>
+      <img src="screenshots/14-admin-etudiants.png" alt="Gestion étudiants">
+      <div class="screenshot-caption">Figure 8.3 — Liste paginée des étudiants avec filtres</div>
+    </div>
+
+    <h4>Fonctionnalités :</h4>
+    <ul>
+      <li><strong>Recherche :</strong> Par nom ou e-mail</li>
+      <li><strong>Filtres :</strong> Par étape (0-4), par niveau d'études</li>
+      <li><strong>Vue détaillée :</strong> Accès au dossier complet de chaque étudiant (informations personnelles, documents, historique de validation, avis des administrateurs)</li>
+      <li><strong>Actions :</strong> Valider/rejeter chaque étape, poster des commentaires, télécharger le PDF du dossier</li>
+      <li><strong>Pagination :</strong> 20 étudiants par page</li>
+    </ul>
+
+    <h3>8.4 — Gestion des documents</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/admin/documents</div>
+      </div>
+      <img src="screenshots/15-admin-documents.png" alt="Documents admin">
+      <div class="screenshot-caption">Figure 8.4 — Vue centralisée des documents de tous les étudiants</div>
+    </div>
+
+    <h3>8.5 — Gestion des rendez-vous</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/admin/rendez-vous</div>
+      </div>
+      <img src="screenshots/16-admin-rendez-vous.png" alt="Admin RDV">
+      <div class="screenshot-caption">Figure 8.5 — Gestion des demandes de rendez-vous</div>
+    </div>
+
+    <h3>8.6 — Gestion des administrateurs (SUPER_ADMIN)</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/admin/administrateurs</div>
+      </div>
+      <img src="screenshots/17-admin-administrateurs.png" alt="Gestion admins">
+      <div class="screenshot-caption">Figure 8.6 — Gestion des comptes administrateurs (SUPER_ADMIN uniquement)</div>
+    </div>
+
+    <h4>Fonctionnalités (SUPER_ADMIN uniquement) :</h4>
+    <ul>
+      <li>Création de nouveaux comptes admin avec niveau de rôle</li>
+      <li>Attribution du niveau d'accès (1-5)</li>
+      <li>Activation/désactivation du gestionnaire de rendez-vous</li>
+      <li>Modification des permissions</li>
+      <li>Réinitialisation des mots de passe</li>
+      <li>Suppression de comptes admin</li>
+    </ul>
+
+    <h3>8.7 — Paramètres système</h3>
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/admin/parametres</div>
+      </div>
+      <img src="screenshots/18-admin-parametres.png" alt="Paramètres">
+      <div class="screenshot-caption">Figure 8.7 — Page des paramètres système</div>
+    </div>
+
+    <h4>Sections :</h4>
+    <ul>
+      <li><strong>Gestion des facultés :</strong> Ajout/suppression de facultés avec code</li>
+      <li><strong>Changement de mot de passe :</strong> Avec indicateur de force</li>
+      <li><strong>Réinitialisation de compte (SUPER_ADMIN) :</strong> Débloquer les comptes verrouillés, réinitialiser les mots de passe</li>
+    </ul>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 9: VALIDATION 5 ETAPES -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-9">
+    <div class="section-header">
+      <div class="section-number">09</div>
+      <div class="section-title">Système de Validation en 5 Étapes</div>
+    </div>
+
+    <p>Le coeur du système repose sur un processus de validation en 5 étapes, chacune assignée à un niveau administratif spécifique. L'étape 2 (analyse technique) nécessite une <strong>double validation</strong> par deux administrateurs distincts.</p>
+
+    <div class="timeline">
+      <div class="timeline-item" data-step="0">
+        <h4>Étape 0 — Inscription</h4>
+        <p>L'étudiant crée son compte, remplit son profil et confirme son adresse e-mail. Cette étape est automatiquement validée lors de la création du compte.</p>
+        <p><span class="badge badge-gray">Admin Niveau 1+</span> <span class="badge badge-blue">Auto-validé</span></p>
+      </div>
+      <div class="timeline-item" data-step="1">
+        <h4>Étape 1 — Vérification des Documents</h4>
+        <p>L'étudiant uploade ses documents (PDF, images). L'administrateur de niveau 1 vérifie la complétude et l'authenticité des pièces du dossier.</p>
+        <p><span class="badge badge-gray">Admin Niveau 1</span> <span class="badge badge-amber">Validation simple</span></p>
+      </div>
+      <div class="timeline-item" data-step="2">
+        <h4>Étape 2 — Analyse Technique</h4>
+        <p>Examen technique approfondi par <strong>deux administrateurs indépendants</strong> de niveau 2. Les deux doivent approuver pour passer à l'étape suivante.</p>
+        <p><span class="badge badge-blue">Admin Niveau 2</span> <span class="badge badge-red">Double validation requise</span></p>
+      </div>
+      <div class="timeline-item" data-step="3">
+        <h4>Étape 3 — Validation SGR</h4>
+        <p>Le Secrétariat Général à la Recherche valide le dossier au niveau institutionnel. Cette étape est gérée par les administrateurs de niveau 4.</p>
+        <p><span class="badge badge-purple">Admin Niveau 4</span> <span class="badge badge-amber">Validation simple</span></p>
+      </div>
+      <div class="timeline-item" data-step="4">
+        <h4>Étape 4 — Décision Finale</h4>
+        <p>Approbation ou rejet définitif du dossier. Un certificat de validation est automatiquement généré et envoyé par e-mail en cas d'approbation.</p>
+        <p><span class="badge badge-purple">Admin Niveau 3-4</span> <span class="badge badge-green">Certificat PDF généré</span></p>
+      </div>
+    </div>
+
+    <h3>Double validation technique (Étape 2)</h3>
+    <div class="info-box">
+      <div class="info-box-title">Mécanisme de double validation</div>
+      <p>L'étape 2 utilise la table <code>technical_validations</code> avec une contrainte unique <code>(student_id, step, admin_id)</code>. Chaque administrateur de niveau 2 peut valider une seule fois. Le système vérifie que <strong>2 validations distinctes</strong> sont requises avant de passer à l'étape 3. L'API <code>/api/admin/students/[id]/technical-validations</code> retourne le compteur en temps réel.</p>
+    </div>
+
+    <h3>Cycle de vie d'un dossier</h3>
+    <div class="flow-container">
+      <div class="flow-step">DRAFT<br><small>Brouillon</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step green">SUBMITTED<br><small>Soumis</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step amber">VALIDATED<br><small>Validé</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step purple">COMPLETED<br><small>Terminé</small></div>
+    </div>
+
+    <p>Après complétion, l'étudiant peut soumettre une <strong>nouvelle demande</strong> (ex: soutenance après inscription) via le bouton « Nouvelle demande » qui archive les anciens documents et réinitialise le dossier.</p>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 10: API BACKEND -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-10">
+    <div class="section-header">
+      <div class="section-number">10</div>
+      <div class="section-title">API Backend — Routes & Endpoints</div>
+    </div>
+
+    <p>L'API REST est intégrée directement dans Next.js via les <strong>Route Handlers</strong> (App Router). Elle compte <strong>39 endpoints</strong> répartis en 5 catégories.</p>
+
+    <h3>10.1 — APIs d'administration (16 endpoints)</h3>
+    <table>
+      <thead><tr><th>Méthode</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/admin/stats</code></td><td>Statistiques du tableau de bord</td><td>ADMIN+</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/admin/students</code></td><td>Liste paginée des étudiants</td><td>ADMIN+</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/admin/students/[id]</code></td><td>Détail d'un étudiant</td><td>ADMIN+</td></tr>
+        <tr><td><span class="badge badge-purple">PUT</span></td><td><code>/api/admin/students/[id]</code></td><td>Modifier profil étudiant</td><td>ADMIN+</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/admin/students/[id]/validate</code></td><td>Valider/rejeter une étape</td><td>ADMIN+ (niveau vérifié)</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/admin/students/[id]/technical-validations</code></td><td>Compteur double validation</td><td>ADMIN+</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/admin/students/[id]/download-pdf</code></td><td>Télécharger PDF du dossier</td><td>ADMIN+</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/admin/reviews</code></td><td>Liste des avis</td><td>ADMIN+</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/admin/reviews</code></td><td>Poster un avis</td><td>ADMIN+</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/admin/appointments</code></td><td>Liste des rendez-vous</td><td>ADMIN+</td></tr>
+        <tr><td><span class="badge badge-purple">PUT</span></td><td><code>/api/admin/appointments/[id]</code></td><td>Approuver/rejeter RDV</td><td>ADMIN+</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/admin/appointments/access</code></td><td>Vérifier accès RDV</td><td>ADMIN+</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/admin/users</code></td><td>Liste des admins</td><td>SUPER_ADMIN</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/admin/users</code></td><td>Créer un admin</td><td>SUPER_ADMIN</td></tr>
+        <tr><td><span class="badge badge-purple">PUT</span></td><td><code>/api/admin/users/[id]</code></td><td>Modifier un admin</td><td>SUPER_ADMIN</td></tr>
+        <tr><td><span class="badge badge-red">DEL</span></td><td><code>/api/admin/users/[id]</code></td><td>Supprimer un admin</td><td>SUPER_ADMIN</td></tr>
+      </tbody>
+    </table>
+
+    <h3>10.2 — APIs d'authentification (5 endpoints)</h3>
+    <table>
+      <thead><tr><th>Méthode</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/auth/[...nextauth]</code></td><td>NextAuth handlers (login/logout)</td><td>Non</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/auth/change-password</code></td><td>Changer le mot de passe</td><td>Oui</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/auth/secret-question</code></td><td>Obtenir la question secrète</td><td>Oui</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/auth/secret-question</code></td><td>Définir question secrète</td><td>Oui</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/auth/recover-by-question</code></td><td>Récupération par question</td><td>Non</td></tr>
+      </tbody>
+    </table>
+
+    <h3>10.3 — APIs étudiant (9 endpoints)</h3>
+    <table>
+      <thead><tr><th>Méthode</th><th>Endpoint</th><th>Description</th><th>Auth</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/student/profile</code></td><td>Profil complet</td><td>STUDENT</td></tr>
+        <tr><td><span class="badge badge-purple">PUT</span></td><td><code>/api/student/profile</code></td><td>Mettre à jour profil</td><td>STUDENT</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/student/documents</code></td><td>Liste des documents</td><td>STUDENT</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/student/documents</code></td><td>Upload de fichier(s)</td><td>STUDENT</td></tr>
+        <tr><td><span class="badge badge-red">DEL</span></td><td><code>/api/student/documents/[id]</code></td><td>Supprimer un document</td><td>STUDENT</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/student/dossier</code></td><td>Statut du dossier</td><td>STUDENT</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/student/dossier</code></td><td>Soumettre / sauver brouillon</td><td>STUDENT</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/student/dossier/certificate</code></td><td>Certificat de validation</td><td>STUDENT</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/student/new-request</code></td><td>Nouvelle demande après complétion</td><td>STUDENT</td></tr>
+      </tbody>
+    </table>
+
+    <h3>10.4 — APIs publiques (7 endpoints)</h3>
+    <table>
+      <thead><tr><th>Méthode</th><th>Endpoint</th><th>Description</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/register</code></td><td>Inscription étudiant</td><td>E-mail de vérification</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/verify-email</code></td><td>Vérification du token e-mail</td><td>Expiration 24h</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/forgot-password</code></td><td>Demande OTP</td><td>Rate limit 60s</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/verify-otp</code></td><td>Vérification OTP</td><td>5 tentatives max</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/reset-password</code></td><td>Réinitialisation password</td><td>Token 1h / 15 min</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/contact</code></td><td>Formulaire de contact</td><td>E-mail au SGR</td></tr>
+        <tr><td><span class="badge badge-green">POST</span></td><td><code>/api/appointments</code></td><td>RDV visiteur (sans compte)</td><td>Rate limit 3 RDV/email</td></tr>
+      </tbody>
+    </table>
+
+    <h3>10.5 — APIs système (3 endpoints)</h3>
+    <table>
+      <thead><tr><th>Méthode</th><th>Endpoint</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/health</code></td><td>Vérification de santé (status: ok)</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/migrate</code></td><td>Exécution des migrations (auth par secret)</td></tr>
+        <tr><td><span class="badge badge-blue">GET</span></td><td><code>/api/uploads/[...path]</code></td><td>Serveur de fichiers uploadés (cache 1 an)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Codes d'erreur HTTP</h3>
+    <table>
+      <thead><tr><th>Code</th><th>Signification</th><th>Déclencheurs courants</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge badge-blue">400</span></td><td>Requête invalide</td><td>Validation échouée, champs manquants</td></tr>
+        <tr><td><span class="badge badge-amber">401</span></td><td>Non authentifié</td><td>Session expirée, token invalide</td></tr>
+        <tr><td><span class="badge badge-red">403</span></td><td>Accès refusé</td><td>Rôle insuffisant, compte verrouillé</td></tr>
+        <tr><td><span class="badge badge-gray">404</span></td><td>Non trouvé</td><td>Ressource inexistante</td></tr>
+        <tr><td><span class="badge badge-purple">423</span></td><td>Verrouillé</td><td>Compte bloqué (tentatives échouées)</td></tr>
+        <tr><td><span class="badge badge-amber">429</span></td><td>Trop de requêtes</td><td>Rate limiting OTP/RDV</td></tr>
+        <tr><td><span class="badge badge-red">500</span></td><td>Erreur serveur</td><td>Erreur DB, système de fichiers</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 11: SYSTEME D'EMAILS -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-11">
+    <div class="section-header">
+      <div class="section-number">11</div>
+      <div class="section-title">Système d'E-mails</div>
+    </div>
+
+    <p>Le service d'e-mails utilise l'API <strong>Resend</strong> comme provider principal. Tous les e-mails sont envoyés en HTML avec le design officiel de l'université (en-tête, pied de page, logo). En mode développement, les e-mails sont loggés dans la console.</p>
+
+    <h3>Templates d'e-mails (7 modèles)</h3>
+    <table>
+      <thead><tr><th>Template</th><th>Déclencheur</th><th>Contenu principal</th><th>Expiration</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Vérification e-mail</strong></td><td>Inscription</td><td>Lien de confirmation clickable</td><td>24 heures</td></tr>
+        <tr><td><strong>Dossier reçu</strong></td><td>Soumission dossier</td><td>Confirmation + lien de suivi</td><td>—</td></tr>
+        <tr><td><strong>Validation (Approuvé)</strong></td><td>Validation d'étape</td><td>Prochaines étapes + lien dashboard</td><td>—</td></tr>
+        <tr><td><strong>Validation (Rejeté)</strong></td><td>Rejet d'étape</td><td>Corrections requises + commentaire admin</td><td>—</td></tr>
+        <tr><td><strong>Réinitialisation MDP</strong></td><td>Mot de passe oublié</td><td>Lien de réinitialisation</td><td>1 heure</td></tr>
+        <tr><td><strong>Formulaire contact</strong></td><td>Soumission contact</td><td>Message transféré à l'admin</td><td>—</td></tr>
+        <tr><td><strong>Certificat</strong></td><td>Validation complète</td><td>Certificat PDF en pièce jointe</td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Configuration</h3>
+    <pre><code>// Expéditeur configuré
+EMAIL_FROM="SGR-UNIKIN &lt;onboarding@resend.dev&gt;"
+
+// Provider: Resend API
+RESEND_API_KEY=re_xxxxxxxxxx
+
+// destinataire contact
+NEXT_PUBLIC_CONTACT_EMAIL=sg.recherche@unikin.ac.cd</code></pre>
+
+    <div class="info-box">
+      <div class="info-box-title">Mode de fonctionnement</div>
+      <p>En <strong>production</strong>, les e-mails sont envoyés via l'API Resend. En <strong>développement</strong> (ou si la clé API est absente), les e-mails sont simplement loggés dans la console du serveur sans envoi réel.</p>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 12: RENDEZ-VOUS -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-12">
+    <div class="section-header">
+      <div class="section-number">12</div>
+      <div class="section-title">Gestion des Rendez-vous</div>
+    </div>
+
+    <p>Le système de rendez-vous permet aux <strong>étudiants inscrits</strong> et aux <strong>visiteurs non-inscrits</strong> de demander un rendez-vous avec l'administration du SGR.</p>
+
+    <h3>Deux modes d'accès</h3>
+    <table>
+      <thead><tr><th>Mode</th><th>URL</th><th>Auth requise</th><th>Informations demandées</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Étudiant</strong></td><td><code>/dashboard/rendez-vous</code></td><td>Oui (session)</td><td>Destinataire, sujet, message, date</td></tr>
+        <tr><td><strong>Visiteur</strong></td><td><code>/rendez-vous</code></td><td>Non</td><td>Nom, e-mail, téléphone + mêmes champs</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Destinataires disponibles</h3>
+    <table>
+      <thead><tr><th>Rôle</th><th>Responsable</th></tr></thead>
+      <tbody>
+        <tr><td>SGR (Secrétaire Général)</td><td>Prof. Paulin MUTWALE KAPEPULA</td></tr>
+        <tr><td>Assistant Principal</td><td>Prof. KAPEMBO Michel</td></tr>
+        <tr><td>Chargé des Publications</td><td>Direction des Publications</td></tr>
+        <tr><td>Chargé Anti-plagiat</td><td>Service Anti-plagiat</td></tr>
+        <tr><td>Chargé OIPR</td><td>Outil d'Inventaire et de Planification de la Recherche</td></tr>
+      </tbody>
+    </table>
+
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/rendez-vous</div>
+      </div>
+      <img src="screenshots/08-rendez-vous.png" alt="Rendez-vous public">
+      <div class="screenshot-caption">Figure 12.1 — Formulaire public de prise de rendez-vous (visiteurs)</div>
+    </div>
+
+    <h3>Flux de gestion</h3>
+    <div class="flow-container">
+      <div class="flow-step">Demande<br><small>Étudiant/Visiteur</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step amber">En attente<br><small>PENDING</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step green">Approuvé<br><small>+ date confirmée</small></div>
+    </div>
+    <div class="flow-container" style="margin-top: -5px;">
+      <div style="width: 240px;"></div>
+      <div class="flow-arrow" style="transform: rotate(90deg); margin: -5px 0;">↓</div>
+    </div>
+    <div class="flow-container" style="margin-top: -5px;">
+      <div style="width: 240px;"></div>
+      <div class="flow-step red">Rejeté<br><small>+ note admin</small></div>
+    </div>
+
+    <h3>Rate limiting visiteurs</h3>
+    <div class="warning-box">
+      <strong>Protection anti-spam :</strong> Maximum <strong>3 rendez-vous en attente</strong> par adresse e-mail. Au-delà, le système retourne une erreur 429 (Too Many Requests). Le format d'e-mail est validé par regex côté serveur.
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 13: PWA -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-13">
+    <div class="section-header">
+      <div class="section-number">13</div>
+      <div class="section-title">Progressive Web App (PWA)</div>
+    </div>
+
+    <p>SGR-UNIKIN est une <strong>Progressive Web App</strong> complète, installable sur mobile et desktop, avec support hors-ligne.</p>
+
+    <h3>Manifeste PWA</h3>
+    <pre><code>{
+  "name": "SGR-UNIKIN - Secrétariat Général à la Recherche",
+  "short_name": "SGR-UNIKIN",
+  "description": "Plateforme de gestion des inscriptions...",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1e3a8a",
+  "theme_color": "#1e3a8a",
+  "lang": "fr",
+  "icons": [72, 96, 128, 144, 152, 192, 384, 512]
+}</code></pre>
+
+    <h3>Stratégies de cache du Service Worker</h3>
+    <table>
+      <thead><tr><th>Type de ressource</th><th>Stratégie</th><th>Comportement</th></tr></thead>
+      <tbody>
+        <tr><td>Pages HTML</td><td><strong>Network First</strong></td><td>Toujours tenter le réseau, fallback vers le cache</td></tr>
+        <tr><td>Images & Polices</td><td><strong>Cache First</strong></td><td>Utiliser le cache d'abord, fallback vers le réseau</td></tr>
+        <tr><td>Assets Next.js (_next/)</td><td><strong>Cache First</strong></td><td>Immutable, cache de 1 an</td></tr>
+        <tr><td>Manifeste / SW</td><td><strong>Network Only</strong></td><td>Toujours du réseau (pas de cache)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Fonctionnalités hors-ligne</h3>
+    <ul>
+      <li><strong>Page offline :</strong> <code>/offline.html</code> affichée quand aucune version en cache n'est disponible</li>
+      <li><strong>Pré-cache :</strong> Icônes de 72x72 à 512x512 pixels</li>
+      <li><strong>Nettoyage automatique :</strong> Les anciens caches sont supprimés à l'activation d'un nouveau SW</li>
+      <li><strong>Notifications push :</strong> Support intégré avec actions personnalisées</li>
+    </ul>
+
+    <h3>Installation PWA</h3>
+    <p>Un composant <code>PWAInstallPrompt</code> détecte automatiquement si l'application peut être installée et affiche un prompt à l'utilisateur pour ajouter l'app à l'écran d'accueil.</p>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 14: DEPLOIEMENT -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-14">
+    <div class="section-header">
+      <div class="section-number">14</div>
+      <div class="section-title">Déploiement & Infrastructure</div>
+    </div>
+
+    <p>SGR-UNIKIN est actuellement déployé sur un <strong>VPS dédié (Debian Linux)</strong>. Le système supporte également le déploiement sur Vercel et Render comme alternatives.</p>
+
+    <h3>14.1 — Infrastructure VPS (Production)</h3>
+    <table>
+      <thead><tr><th>Composant</th><th>Détails</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Serveur</strong></td><td>VPS Debian Linux — IP: 5.189.163.4</td></tr>
+        <tr><td><strong>Domaine</strong></td><td>sgr.unikin.ac.cd (DNS A record)</td></tr>
+        <tr><td><strong>SSL</strong></td><td>Let's Encrypt (auto-renouvellement via Certbot)</td></tr>
+        <tr><td><strong>Reverse Proxy</strong></td><td>Nginx (port 443/80 → localhost:3000)</td></tr>
+        <tr><td><strong>Process Manager</strong></td><td>PM2 (auto-restart, monitoring, logs)</td></tr>
+        <tr><td><strong>Runtime</strong></td><td>Node.js 20.x LTS</td></tr>
+        <tr><td><strong>Base de données</strong></td><td>PostgreSQL local (user: sgr_user, db: sgr_unikin)</td></tr>
+        <tr><td><strong>Répertoire</strong></td><td><code>/var/www/sgr-unikin</code></td></tr>
+        <tr><td><strong>Uploads</strong></td><td><code>/var/www/sgr-unikin/uploads/</code></td></tr>
+        <tr><td><strong>Firewall</strong></td><td>UFW (SSH + Nginx Full autorisés)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>14.2 — Script de setup VPS</h3>
+    <p>Le script <code>scripts/setup-vps.sh</code> automatise l'installation complète en 10 étapes :</p>
+    <ol>
+      <li>Mise à jour du système Debian</li>
+      <li>Installation des essentiels (curl, git, nginx, certbot, PostgreSQL)</li>
+      <li>Installation de Node.js 20.x LTS</li>
+      <li>Installation de PM2 globalement</li>
+      <li>Configuration PostgreSQL (utilisateur, base, extensions UUID)</li>
+      <li>Configuration du firewall UFW</li>
+      <li>Clonage du dépôt GitHub</li>
+      <li>Création du fichier <code>.env</code></li>
+      <li>Installation des dépendances et build Next.js</li>
+      <li>Démarrage PM2 + configuration Nginx</li>
+    </ol>
+
+    <h3>14.3 — Processus de déploiement continu</h3>
+    <p>Le déploiement est orchestré par le script <code>quick-deploy.js</code> qui se connecte au VPS via SSH et exécute les 4 étapes suivantes :</p>
+
+    <div class="flow-container">
+      <div class="flow-step">1. Git Pull<br><small>Pull latest</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step green">2. npm install<br><small>Dépendances</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step amber">3. next build<br><small>Build prod</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step purple">4. PM2 restart<br><small>Redémarrage</small></div>
+    </div>
+
+    <pre><code># Commande de déploiement
+node quick-deploy.js
+
+# Étapes exécutées sur le VPS :
+cd /var/www/sgr-unikin && git pull origin main
+npm install --production=false
+npx next build
+pm2 restart sgr-unikin
+
+# Vérifications post-déploiement :
+curl -s http://localhost:3000/api/migrate   # Migrations
+curl -s http://localhost:3000/              # Health check (HTTP 200)
+pm2 status                                  # Vérification PM2</code></pre>
+
+    <h3>14.4 — Configuration Nginx</h3>
+    <pre><code>server {
+    listen 443 ssl;
+    server_name sgr.unikin.ac.cd;
+
+    ssl_certificate /etc/letsencrypt/live/sgr.unikin.ac.cd/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/sgr.unikin.ac.cd/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}</code></pre>
+
+    <h3>14.5 — Alternatives de déploiement</h3>
+    <div class="feature-grid">
+      <div class="feature-item">
+        <div class="feature-icon blue">▲</div>
+        <div class="feature-text">
+          <h4>Vercel</h4>
+          <p>Région CDG1 (Paris) • CORS configuré • Build automatique via Git</p>
+        </div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon purple">🔮</div>
+        <div class="feature-text">
+          <h4>Render</h4>
+          <p>PostgreSQL gratuit (Frankfurt) • Disk 1GB persistant • Health check automatique</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>14.6 — Sauvegardes PostgreSQL</h3>
+    <p>Le script VPS configure des sauvegardes quotidiennes automatiques avec une rétention de <strong>30 jours</strong> :</p>
+    <pre><code># Sauvegarde quotidienne (cron)
+pg_dump -U sgr_user sgr_unikin > /var/backups/postgresql/sgr_unikin_$(date +%Y%m%d).sql
+
+# Rétention : 30 jours (suppression automatique des anciens backups)
+find /var/backups/postgresql/ -name "*.sql" -mtime +30 -delete</code></pre>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 15: MIGRATIONS -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-15">
+    <div class="section-header">
+      <div class="section-number">15</div>
+      <div class="section-title">Migrations de Base de Données</div>
+    </div>
+
+    <p>Les migrations sont gérées programmatiquement via <code>src/lib/migrations.ts</code> et s'exécutent automatiquement au premier appel du health check ou manuellement via <code>/api/migrate?secret=...</code>.</p>
+
+    <h3>Liste des migrations</h3>
+    <table>
+      <thead><tr><th>#</th><th>Migration</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Secret question columns</td><td>Ajout de <code>secret_question</code>, <code>secret_answer</code>, <code>failed_reset_attempts</code>, <code>reset_locked_until</code> sur <code>users</code></td></tr>
+        <tr><td>2</td><td>Dossier type</td><td>Ajout de <code>dossier_type</code> (VARCHAR) sur <code>students</code></td></tr>
+        <tr><td>3</td><td>Technical validations</td><td>Création de la table <code>technical_validations</code> pour la double validation (étape 2)</td></tr>
+        <tr><td>4</td><td>Appointment manager</td><td>Ajout de <code>is_appointment_manager</code> (BOOLEAN) sur <code>users</code></td></tr>
+        <tr><td>5</td><td>Admin activity logs</td><td>Création de la table <code>admin_activity_logs</code> avec support JSONB</td></tr>
+        <tr><td>6</td><td>OTP codes</td><td>Création de la table <code>otp_codes</code> pour récupération par code OTP</td></tr>
+        <tr><td>7</td><td>Guest appointments</td><td><code>student_id</code> rendu nullable + ajout <code>guest_name</code>, <code>guest_email</code>, <code>guest_phone</code></td></tr>
+        <tr><td>8</td><td>Promote SUPER_ADMIN</td><td>Promotion automatique de comptes spécifiques en SUPER_ADMIN</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Mécanisme d'exécution</h3>
+    <p>Toutes les migrations utilisent <code>IF NOT EXISTS</code> et <code>ADD COLUMN IF NOT EXISTS</code>, ce qui les rend <strong>idempotentes</strong> — elles peuvent être exécutées plusieurs fois sans effet secondaire.</p>
+
+    <pre><code>// Exécution automatique au démarrage
+GET /api/health → runMigrations() (premier appel uniquement)
+
+// Exécution manuelle sécurisée
+GET /api/migrate?secret=NEXTAUTH_SECRET_VALUE</code></pre>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 16: SEO & PERFORMANCE -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-16">
+    <div class="section-header">
+      <div class="section-number">16</div>
+      <div class="section-title">SEO & Performance</div>
+    </div>
+
+    <h3>Optimisations Next.js</h3>
+    <table>
+      <thead><tr><th>Fonctionnalité</th><th>Configuration</th></tr></thead>
+      <tbody>
+        <tr><td>Format d'images</td><td>AVIF (prioritaire) + WebP (fallback)</td></tr>
+        <tr><td>Cache static</td><td>30 jours (immutable)</td></tr>
+        <tr><td>En-têtes de sécurité</td><td>X-Content-Type-Options, X-Frame-Options, X-XSS-Protection</td></tr>
+        <tr><td>Compression</td><td>Automatique via Next.js (gzip/brotli)</td></tr>
+        <tr><td>Rendu statique</td><td>Pages publiques pré-rendues au build (SSG)</td></tr>
+        <tr><td>Rendu dynamique</td><td>APIs et pages protégées rendues côté serveur (SSR)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Robots.txt</h3>
+    <pre><code>User-agent: *
+Allow: /
+Allow: /login
+Allow: /register
+Allow: /guide-inscription
+Allow: /guide-soutenance
+Allow: /contact
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+
+Sitemap: https://sgr.unikin.ac.cd/sitemap.xml</code></pre>
+
+    <h3>Sitemap.xml</h3>
+    <table>
+      <thead><tr><th>Page</th><th>Priorité</th><th>Fréquence</th></tr></thead>
+      <tbody>
+        <tr><td>/ (Accueil)</td><td>1.0</td><td>Hebdomadaire</td></tr>
+        <tr><td>/guide-inscription</td><td>0.7</td><td>Mensuelle</td></tr>
+        <tr><td>/guide-soutenance</td><td>0.7</td><td>Mensuelle</td></tr>
+        <tr><td>/login, /register</td><td>0.5</td><td>Mensuelle</td></tr>
+        <tr><td>/contact</td><td>0.6</td><td>Mensuelle</td></tr>
+        <tr><td>/forgot-password</td><td>0.3</td><td>Annuelle</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Metadata OpenGraph & Twitter</h3>
+    <p>Chaque page possède ses meta tags optimisés pour le partage sur les réseaux sociaux (titre, description, image, type de site, locale fr_CD).</p>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 17: JOURNAL D'ACTIVITES -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-17">
+    <div class="section-header">
+      <div class="section-number">17</div>
+      <div class="section-title">Journal d'Activités (Audit Trail)</div>
+    </div>
+
+    <p>Le journal d'activités est un <strong>audit trail complet</strong> accessible uniquement aux SUPER_ADMIN via <code>/admin/journal-activites</code>. Chaque action d'administration est enregistrée avec les détails complets.</p>
+
+    <div class="screenshot-container">
+      <div class="screenshot-header">
+        <div class="screenshot-dot red"></div>
+        <div class="screenshot-dot yellow"></div>
+        <div class="screenshot-dot green"></div>
+        <div class="screenshot-url">https://sgr.unikin.ac.cd/admin/journal-activites</div>
+      </div>
+      <img src="screenshots/19-admin-journal.png" alt="Journal d'activités">
+      <div class="screenshot-caption">Figure 17.1 — Page du journal d'activités (audit trail)</div>
+    </div>
+
+    <h3>Types d'actions enregistrées</h3>
+    <table>
+      <thead><tr><th>Action</th><th>Couleur</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td><code>VALIDATE_STEP</code></td><td><span class="badge badge-green">Vert</span></td><td>Validation d'une étape</td></tr>
+        <tr><td><code>REJECT_STEP</code></td><td><span class="badge badge-red">Rouge</span></td><td>Rejet d'une étape</td></tr>
+        <tr><td><code>CREATE_ADMIN</code></td><td><span class="badge badge-blue">Bleu</span></td><td>Création d'un compte admin</td></tr>
+        <tr><td><code>UPDATE_ADMIN</code></td><td><span class="badge badge-amber">Ambre</span></td><td>Modification d'un admin</td></tr>
+        <tr><td><code>DELETE_ADMIN</code></td><td><span class="badge badge-red">Rouge</span></td><td>Suppression d'un admin</td></tr>
+        <tr><td><code>RESET_USER_PASSWORD</code></td><td><span class="badge badge-purple">Violet</span></td><td>Réinitialisation de mot de passe</td></tr>
+        <tr><td><code>APPROVE_APPOINTMENT</code></td><td><span class="badge badge-green">Vert</span></td><td>Approbation d'un RDV</td></tr>
+        <tr><td><code>REJECT_APPOINTMENT</code></td><td><span class="badge badge-red">Rouge</span></td><td>Rejet d'un RDV</td></tr>
+        <tr><td><code>ADMIN_LOGIN</code></td><td><span class="badge badge-blue">Bleu</span></td><td>Connexion d'un administrateur</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Données enregistrées par action</h3>
+    <pre><code>{
+  admin_id: "uuid",           // Qui a effectué l'action
+  action_type: "VALIDATE_STEP",
+  target_type: "student",     // Type de cible
+  target_id: "uuid",          // ID de la cible
+  details: {                  // JSONB — détails spécifiques
+    "step": 2,
+    "status": "APPROVED",
+    "studentName": "Jean Dupont",
+    "comment": "Documents conformes"
+  },
+  ip_address: "41.243.x.x",  // Adresse IP
+  created_at: "2026-03-08T..."
+}</code></pre>
+
+    <h3>Filtres disponibles</h3>
+    <ul>
+      <li><strong>Par type d'action :</strong> Sélection parmi les 9 types</li>
+      <li><strong>Par administrateur :</strong> Filtrer par l'admin ayant effectué l'action</li>
+      <li><strong>Par type de cible :</strong> Student, Admin, Appointment, etc.</li>
+      <li><strong>Par plage de dates :</strong> Date de début et date de fin</li>
+      <li><strong>Pagination :</strong> 30 entrées par page</li>
+    </ul>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 18: VARIABLES D'ENVIRONNEMENT -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-18">
+    <div class="section-header">
+      <div class="section-number">18</div>
+      <div class="section-title">Variables d'Environnement</div>
+    </div>
+
+    <h3>Variables requises</h3>
+    <table>
+      <thead><tr><th>Variable</th><th>Description</th><th>Exemple</th></tr></thead>
+      <tbody>
+        <tr><td class="env-var">DATABASE_URL</td><td>URL de connexion PostgreSQL</td><td><code>postgresql://user:pass@host:5432/db</code></td></tr>
+        <tr><td class="env-var">NEXTAUTH_SECRET</td><td>Secret JWT (base64, 32+ chars)</td><td><code>MVUvJ+CWYEzSVb...</code></td></tr>
+        <tr><td class="env-var">NEXTAUTH_URL</td><td>URL publique de l'application</td><td><code>https://sgr.unikin.ac.cd</code></td></tr>
+        <tr><td class="env-var">AUTH_TRUST_HOST</td><td>Faire confiance au host (reverse proxy)</td><td><code>true</code></td></tr>
+        <tr><td class="env-var">NODE_ENV</td><td>Environnement d'exécution</td><td><code>production</code></td></tr>
+      </tbody>
+    </table>
+
+    <h3>Variables optionnelles</h3>
+    <table>
+      <thead><tr><th>Variable</th><th>Description</th><th>Défaut</th></tr></thead>
+      <tbody>
+        <tr><td class="env-var">RESEND_API_KEY</td><td>Clé API Resend pour les e-mails</td><td>Console log en dev</td></tr>
+        <tr><td class="env-var">EMAIL_FROM</td><td>Adresse d'expédition</td><td><code>SGR-UNIKIN &lt;onboarding@resend.dev&gt;</code></td></tr>
+        <tr><td class="env-var">UPLOAD_DIR</td><td>Répertoire d'upload</td><td><code>./uploads</code></td></tr>
+        <tr><td class="env-var">NEXT_PUBLIC_CONTACT_EMAIL</td><td>E-mail de contact public</td><td><code>sg.recherche@unikin.ac.cd</code></td></tr>
+        <tr><td class="env-var">NEXT_PUBLIC_CONTACT_PHONE</td><td>Téléphone de contact</td><td><code>+243 852024984</code></td></tr>
+        <tr><td class="env-var">NEXT_PUBLIC_CONTACT_ADDRESS</td><td>Adresse physique</td><td>Université de Kinshasa</td></tr>
+        <tr><td class="env-var">NEXT_PUBLIC_WEBSITE</td><td>URL du site pour les e-mails</td><td><code>https://sgr.unikin.ac.cd</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <hr>
+
+  <!-- ========================================= -->
+  <!-- SECTION 19: ANNEXES -->
+  <!-- ========================================= -->
+  <div class="section page-break" id="section-19">
+    <div class="section-header">
+      <div class="section-number">19</div>
+      <div class="section-title">Annexes & Références</div>
+    </div>
+
+    <h3>A. Liste des 13 Facultés de l'UNIKIN</h3>
+    <table>
+      <thead><tr><th>Code</th><th>Faculté</th></tr></thead>
+      <tbody>
+        <tr><td>DROIT</td><td>Faculté de Droit</td></tr>
+        <tr><td>MEDECINE</td><td>Faculté de Médecine</td></tr>
+        <tr><td>POLY</td><td>Faculté Polytechnique</td></tr>
+        <tr><td>SCIENCES</td><td>Faculté des Sciences</td></tr>
+        <tr><td>LETTRES</td><td>Faculté des Lettres et Sciences Humaines</td></tr>
+        <tr><td>SSPA</td><td>Faculté des Sciences Sociales, Politiques et Administratives</td></tr>
+        <tr><td>ECO</td><td>Faculté des Sciences Économiques et de Gestion</td></tr>
+        <tr><td>AGRO</td><td>Faculté des Sciences Agronomiques</td></tr>
+        <tr><td>PHARMA</td><td>Faculté des Sciences Pharmaceutiques</td></tr>
+        <tr><td>PSYCHO</td><td>Faculté de Psychologie et des Sciences de l'Éducation</td></tr>
+        <tr><td>PETROLE</td><td>Faculté de Pétrole et Gaz</td></tr>
+        <tr><td>THEOLOGIE</td><td>Faculté de Théologie</td></tr>
+        <tr><td>INFO</td><td>Faculté d'Informatique</td></tr>
+      </tbody>
+    </table>
+
+    <h3>B. Scripts utilitaires</h3>
+    <table>
+      <thead><tr><th>Script</th><th>Usage</th></tr></thead>
+      <tbody>
+        <tr><td><code>quick-deploy.js</code></td><td>Déploiement SSR via SSH → git pull → build → PM2 restart</td></tr>
+        <tr><td><code>scripts/setup-vps.sh</code></td><td>Installation complète du serveur VPS (10 étapes)</td></tr>
+        <tr><td><code>scripts/init-db.sql</code></td><td>Initialisation du schéma DB + données par défaut</td></tr>
+        <tr><td><code>scripts/prepare-deploy.ps1</code></td><td>Préparation du build en local (Windows PowerShell)</td></tr>
+        <tr><td><code>scripts/generate-icons.js</code></td><td>Génération des icônes PWA en 8 tailles</td></tr>
+        <tr><td><code>scripts/take-screenshots.js</code></td><td>Capture d'écran automatisée via Puppeteer</td></tr>
+      </tbody>
+    </table>
+
+    <h3>C. Commandes PM2 utiles</h3>
+    <pre><code># Voir le statut de l'application
+pm2 status
+
+# Voir les logs en temps réel
+pm2 logs sgr-unikin
+
+# Redémarrer l'application
+pm2 restart sgr-unikin
+
+# Monitoring en temps réel
+pm2 monit
+
+# Sauvegarder la config PM2
+pm2 save
+
+# Démarrage automatique au boot
+pm2 startup</code></pre>
+
+    <h3>D. Informations de contact</h3>
+    <table>
+      <thead><tr><th>Rôle</th><th>Contact</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Développeur Full Stack</strong></td><td>Mr Chris Ngozulu Kasongo</td></tr>
+        <tr><td><strong>Organisation</strong></td><td>Secrétariat Général à la Recherche — Université de Kinshasa</td></tr>
+        <tr><td><strong>E-mail SGR</strong></td><td>sg.recherche@unikin.ac.cd</td></tr>
+        <tr><td><strong>Téléphone</strong></td><td>+243 852024984</td></tr>
+        <tr><td><strong>Adresse</strong></td><td>Université de Kinshasa, Mont Amba, Kinshasa, RDC</td></tr>
+        <tr><td><strong>Site Web</strong></td><td>https://sgr.unikin.ac.cd</td></tr>
+      </tbody>
+    </table>
+
+    <h3>E. Licence & Propriété</h3>
+    <p>Cette plateforme est la propriété exclusive du <strong>Secrétariat Général à la Recherche de l'Université de Kinshasa</strong>. Développée par <strong>Mr Chris Ngozulu Kasongo</strong>.</p>
+
+    <div class="success-box">
+      <strong>Version de la documentation :</strong> 1.0.0 — 8 Mars 2026<br>
+      <strong>Dernière mise à jour du code :</strong> SGR-UNIKIN v0.1.0 — Next.js 16.1.4, React 19.2.3<br>
+      <strong>Pages générées :</strong> 56 pages (28 statiques + 28 dynamiques)<br>
+      <strong>Endpoints API :</strong> 39 routes REST
+    </div>
+  </div>
+
+  <!-- ========================================= -->
+  <!-- FOOTER -->
+  <!-- ========================================= -->
+  <div class="doc-footer">
+    <p><strong>SGR-UNIKIN</strong> — Documentation Technique Complète v1.0.0</p>
+    <p>Secrétariat Général à la Recherche • Université de Kinshasa • Mont Amba, Kinshasa, RDC</p>
+    <p>Développé par <strong>Mr Chris Ngozulu Kasongo</strong> • 8 Mars 2026</p>
+    <p style="color: #9ca3af; margin-top: 8px;">Ce document est confidentiel et destiné à un usage interne uniquement.</p>
+  </div>
+</div>
+
+</body>
+</html>

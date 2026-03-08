@@ -20,8 +20,8 @@ export async function GET() {
       return NextResponse.json({ hasAccess: true });
     }
 
-    // Check if user is the designated appointment manager
-    if (user.role === "ADMIN" && user.is_appointment_manager) {
+    // Check if user is the designated appointment manager or level 1 (Accueil/Rendez-vous)
+    if (user.role === "ADMIN" && (user.is_appointment_manager || user.admin_level === 1)) {
       return NextResponse.json({ hasAccess: true });
     }
 
