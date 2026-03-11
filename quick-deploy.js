@@ -48,7 +48,7 @@ async function main() {
         
         // 1. Git pull
         console.log('\n[1/4] Pulling latest code...');
-        await exec(conn, `cd ${APP_DIR} && git pull origin main 2>&1`);
+        await exec(conn, `cd ${APP_DIR} && git checkout -- package-lock.json 2>&1; git pull origin main 2>&1`);
         
         // 2. Install dependencies  
         console.log('\n[2/4] Installing dependencies...');
