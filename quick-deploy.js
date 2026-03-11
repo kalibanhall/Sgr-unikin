@@ -65,9 +65,11 @@ async function main() {
         // Wait for app to start
         await new Promise(r => setTimeout(r, 5000));
         
-        // Trigger migrations
+        // Trigger migrations via health endpoint (runs migrations on first call)
         console.log('\n[+] Running migrations...');
-        await exec(conn, `curl -s http://localhost:3000/api/migrate 2>&1 | head -20`);
+        await exec(conn, `curl -s http://localhost:3000/api/health 2>&1 | head -5`);
+        // Wait for async migrations to complete
+        await new Promise(r => setTimeout(r, 3000));
         
         // Health check
         console.log('\n[+] Health check...');

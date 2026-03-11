@@ -16,7 +16,7 @@ import { registerSchema, RegisterInput } from "@/lib/validations";
 import { FACULTIES, REGISTRATION_TYPES, MASTER_SUSPENSION_ALERT, DEPARTMENTS } from "@/lib/constants";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
-import { Loader2, AlertCircle, CheckCircle, ShieldAlert, FileCheck, ArrowLeft, Info, GraduationCap, Award, ScrollText, PenTool } from "lucide-react";
+import { Loader2, AlertCircle, CheckCircle, ShieldAlert, FileCheck, ArrowLeft, Info } from "lucide-react";
 
 function RegisterContent() {
   const { data: session, status } = useSession();
@@ -257,14 +257,6 @@ function RegisterContent() {
 
   // ÉTAPE 1 : Sélection du type d'inscription si pas encore choisi
   if (!selectedType) {
-    // Map des icônes
-    const iconMap: Record<string, React.ReactNode> = {
-      GraduationCap: <GraduationCap className="h-6 w-6" />,
-      Award: <Award className="h-6 w-6" />,
-      ScrollText: <ScrollText className="h-6 w-6" />,
-      PenTool: <PenTool className="h-6 w-6" />,
-    };
-
     return (
       <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 py-8 px-4">
         <div className="max-w-3xl mx-auto">
@@ -308,14 +300,6 @@ function RegisterContent() {
                       </span>
                     )}
                     <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-lg ${
-                        regType.color === "blue" ? "bg-blue-100 text-blue-600" :
-                        regType.color === "emerald" ? "bg-emerald-100 text-emerald-600" :
-                        regType.color === "violet" ? "bg-violet-100 text-violet-600" :
-                        "bg-amber-100 text-amber-600"
-                      }`}>
-                        {iconMap[regType.iconName]}
-                      </div>
                       <div className="flex-1 min-w-0">
                         <h3 className={`font-semibold text-sm mb-0.5 ${regType.suspended ? "text-gray-500" : "text-gray-900"}`}>
                           {regType.shortLabel}
@@ -356,14 +340,6 @@ function RegisterContent() {
     );
   }
 
-  // Map des icônes pour le formulaire
-  const formIconMap: Record<string, React.ReactNode> = {
-    GraduationCap: <GraduationCap className="h-4 w-4" />,
-    Award: <Award className="h-4 w-4" />,
-    ScrollText: <ScrollText className="h-4 w-4" />,
-    PenTool: <PenTool className="h-4 w-4" />,
-  };
-
   // ÉTAPE 2 : Formulaire d'inscription
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-blue-100 py-8 px-4">
@@ -387,7 +363,6 @@ function RegisterContent() {
                     ? "bg-amber-100 text-amber-700"
                     : "bg-violet-100 text-violet-700"
             }`}>
-              {currentRegType?.iconName && formIconMap[currentRegType.iconName]}
               {currentRegType?.shortLabel}
             </span>
           </div>
