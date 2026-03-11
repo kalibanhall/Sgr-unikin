@@ -261,33 +261,12 @@ export default function AdminUsersPage() {
   const handleToggleAppointmentManager = async (admin: AdminUser) => {
     const newValue = !admin.isAppointmentManager;
     try {
-      // If enabling, first disable all others
-      if (newValue) {
-        // Optimistic update: clear all others locally
-        setAdmins((prev) =>
-          prev.map((a) => ({
-            ...a,
-            isAppointmentManager: a.id === admin.id ? true : false,
-          }))
-        );
-        // Disable all others via API
-        const othersToDisable = admins.filter(
-          (a) => a.id !== admin.id && a.isAppointmentManager
-        );
-        for (const other of othersToDisable) {
-          await fetch(`/api/admin/users/${other.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ isAppointmentManager: false }),
-          });
-        }
-      } else {
-        setAdmins((prev) =>
-          prev.map((a) =>
-            a.id === admin.id ? { ...a, isAppointmentManager: false } : a
-          )
-        );
-      }
+      // Allow multiple appointment managers
+      setAdmins((prev) =>
+        prev.map((a) =>
+          a.id === admin.id ? { ...a, isAppointmentManager: newValue } : a
+        )
+      );
 
       const res = await fetch(`/api/admin/users/${admin.id}`, {
         method: "PUT",
@@ -302,7 +281,7 @@ export default function AdminUsersPage() {
           ? `${admin.name} est maintenant responsable des rendez-vous`
           : `${admin.name} n'est plus responsable des rendez-vous`
       );
-    } catch (error) {
+    } catch {
       fetchAdmins(); // Re-fetch on error
       toast.error("Erreur lors de la mise à jour");
     }

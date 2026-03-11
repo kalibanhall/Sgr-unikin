@@ -314,14 +314,16 @@ export const studentRepository = {
     thesisTitle?: string;
     supervisor?: string;
     coSupervisor?: string;
+    committeeMembers?: string;
   }): Promise<Student> {
     const id = generateId();
     const result = await query<Student>(
       `INSERT INTO students (
         id, user_id, first_name, last_name, date_of_birth, place_of_birth,
         nationality, gender, phone, address, matricule, faculty, department,
-        study_level, specialization, thesis_title, supervisor, co_supervisor
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
+        study_level, specialization, thesis_title, supervisor, co_supervisor,
+        committee_members
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
       RETURNING *`,
       [
         id,
@@ -341,7 +343,8 @@ export const studentRepository = {
         data.specialization || null,
         data.thesisTitle || null,
         data.supervisor || null,
-        data.coSupervisor || null
+        data.coSupervisor || null,
+        data.committeeMembers || null
       ]
     );
     return result.rows[0];

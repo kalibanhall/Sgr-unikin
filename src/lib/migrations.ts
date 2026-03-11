@@ -110,6 +110,13 @@ export async function runMigrations() {
     `);
     console.log('✅ Guest appointment columns added');
 
+    // Add committee_members column to students
+    await query(`
+      ALTER TABLE students 
+      ADD COLUMN IF NOT EXISTS committee_members TEXT
+    `);
+    console.log('✅ Committee members column added');
+
     // Promote Jonathan Mutwale to SUPER_ADMIN if exists
     const result = await query(`
       UPDATE users 

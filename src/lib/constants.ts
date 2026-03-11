@@ -379,6 +379,11 @@ export const DOCUMENT_CATEGORIES_MASTER = [
 // Liens vers les checklists PDF téléchargeables
 export const CHECKLIST_PDFS = {
   DOCTORAT: {
+    inscription: {
+      label: "Checklist Inscription Thèse 2026",
+      url: "/checklists/Checklist-Inscription-These-2026.pdf",
+      filename: "Checklist-Inscription-These-2026.pdf",
+    },
     soutenance: {
       label: "Checklist Soutenance de Thèse 2026",
       url: "/checklists/Checklist-Soutenance-These-2026.pdf",
@@ -390,6 +395,25 @@ export const CHECKLIST_PDFS = {
       label: "Checklist Soutenance DEA/DES 2026",
       url: "/checklists/Checklist-Soutenance-DEA-DES-2026.pdf",
       filename: "Checklist-Soutenance-DEA-DES-2026.pdf",
+    },
+  },
+};
+
+export const CERTIFICATE_TEMPLATES = {
+  DOCTORAT: {
+    inscription: {
+      label: "Certificat Inscription Thèse (modèle)",
+      url: "/certificates/Certificat-Inscription-These.docx",
+    },
+    soutenance: {
+      label: "Certificat Soutenance Thèse (modèle)",
+      url: "/certificates/Certificat-Soutenance-These.docx",
+    },
+  },
+  MASTER: {
+    soutenance: {
+      label: "Certificat Soutenance DEA (modèle)",
+      url: "/certificates/Certificat-Soutenance-DEA.docx",
     },
   },
 };

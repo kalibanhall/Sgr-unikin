@@ -19,7 +19,8 @@ import {
   UserX,
   Mail,
   Phone,
-  GraduationCap
+  GraduationCap,
+  Eye
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
@@ -67,6 +68,7 @@ export default function AdminAppointmentsPage() {
   const [adminNote, setAdminNote] = useState("");
   const [approvedDate, setApprovedDate] = useState("");
   const [accessDenied, setAccessDenied] = useState(false);
+  const [canManage, setCanManage] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -85,12 +87,13 @@ export default function AdminAppointmentsPage() {
         // Check if current user is allowed to manage appointments
         const checkRes = await fetch("/api/admin/appointments/access");
         if (checkRes.ok) {
-          const { hasAccess } = await checkRes.json();
-          if (!hasAccess) {
+          const data = await checkRes.json();
+          if (!data.hasAccess) {
             setAccessDenied(true);
             setLoading(false);
             return;
           }
+          setCanManage(data.canManage);
         }
 
         const res = await fetch("/api/admin/appointments");
@@ -197,6 +200,16 @@ export default function AdminAppointmentsPage() {
             </p>
           </div>
         </div>
+
+        {/* Bannière lecture seule pour la réception */}
+        {!canManage && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 flex items-center gap-3">
+            <Eye className="h-5 w-5 text-blue-600 shrink-0" />
+            <p className="text-sm text-blue-800">
+              <strong>Mode consultation :</strong> Vous pouvez voir les demandes de rendez-vous mais pas les traiter. Contactez le responsable des rendez-vous pour toute action.
+            </p>
+          </div>
+        )}
 
         {/* Filtres */}
         <div className="flex gap-2 mb-6">
@@ -309,7 +322,7 @@ export default function AdminAppointmentsPage() {
                       </div>
                     </div>
 
-                    {appointment.status === "PENDING" && (
+                    {appointment.status === "PENDING" && canManage && (
                       <div className="flex flex-col gap-2">
                         {selectedAppointment?.id === appointment.id ? (
                           <div className="space-y-3 p-4 bg-gray-50 rounded-lg min-w-[300px]">

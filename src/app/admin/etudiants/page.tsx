@@ -28,6 +28,7 @@ interface Student {
   faculty: string;
   currentStep: number;
   isComplete: boolean;
+  dossierStatus: string;
   createdAt: string;
   user: {
     email: string;
@@ -58,6 +59,7 @@ export default function AdminStudentsPage() {
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [stepFilter, setStepFilter] = useState(searchParams.get("step") || "");
   const [levelFilter, setLevelFilter] = useState(searchParams.get("level") || "");
+  const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "");
 
   const fetchStudents = useCallback(async () => {
     setLoading(true);
@@ -67,6 +69,7 @@ export default function AdminStudentsPage() {
     if (search) params.set("search", search);
     if (stepFilter) params.set("step", stepFilter);
     if (levelFilter) params.set("studyLevel", levelFilter);
+    if (statusFilter) params.set("dossierStatus", statusFilter);
 
     try {
       const res = await fetch(`/api/admin/students?${params}`);
@@ -80,7 +83,7 @@ export default function AdminStudentsPage() {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, search, stepFilter, levelFilter]);
+  }, [pagination.page, search, stepFilter, levelFilter, statusFilter]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -100,6 +103,7 @@ export default function AdminStudentsPage() {
     setSearch("");
     setStepFilter("");
     setLevelFilter("");
+    setStatusFilter("");
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
@@ -111,7 +115,7 @@ export default function AdminStudentsPage() {
       }, 300); // Debounce de 300ms
       return () => clearTimeout(timer);
     }
-  }, [search, stepFilter, levelFilter, pagination.page, session, fetchStudents]);
+  }, [search, stepFilter, levelFilter, statusFilter, pagination.page, session, fetchStudents]);
 
   if (status === "loading") {
     return (
@@ -176,6 +180,19 @@ export default function AdminStudentsPage() {
                 </SelectContent>
               </Select>
 
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-full md:w-48">
+                  <SelectValue placeholder="Statut dossier" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les statuts</SelectItem>
+                  <SelectItem value="DRAFT">Non soumis</SelectItem>
+                  <SelectItem value="SUBMITTED">Soumis</SelectItem>
+                  <SelectItem value="VALIDATED">Validé</SelectItem>
+                  <SelectItem value="COMPLETED">Complété</SelectItem>
+                </SelectContent>
+              </Select>
+
               <Button type="submit">Rechercher</Button>
               <Button type="button" variant="outline" onClick={resetFilters}>
                 Réinitialiser
@@ -210,6 +227,7 @@ export default function AdminStudentsPage() {
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Faculté</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Documents</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Étape</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Statut</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Date</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Actions</th>
                       </tr>
@@ -246,6 +264,23 @@ export default function AdminStudentsPage() {
                               variant={student.isComplete ? "success" : "pending"}
                             >
                               {student.currentStep}/4
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Badge
+                              variant={
+                                student.dossierStatus === "VALIDATED" || student.dossierStatus === "COMPLETED"
+                                  ? "success"
+                                  : student.dossierStatus === "SUBMITTED"
+                                  ? "pending"
+                                  : "secondary"
+                              }
+                            >
+                              {student.dossierStatus === "DRAFT" ? "Non soumis" 
+                                : student.dossierStatus === "SUBMITTED" ? "Soumis"
+                                : student.dossierStatus === "VALIDATED" ? "Validé"
+                                : student.dossierStatus === "COMPLETED" ? "Complété"
+                                : student.dossierStatus}
                             </Badge>
                           </td>
                           <td className="py-3 px-4 text-gray-900 text-sm">

@@ -15,6 +15,7 @@ export const registerSchema = z.object({
   studyLevel: z.enum(["LICENCE", "MASTER", "DOCTORAT"]),
   faculty: z.string().min(1, "Veuillez sélectionner une faculté"),
   department: z.string().optional(),
+  committeeMembers: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas",
   path: ["confirmPassword"],

@@ -264,12 +264,55 @@ export default function DashboardPage() {
                   </div>
                 </div>
               ) : (profile.dossierStatus === "VALIDATED" || profile.dossierStatus === "COMPLETED") ? (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle className="h-6 w-6 text-green-600" />
+                    <div className="flex-1">
+                      <p className="font-medium text-green-800">Dossier validé !</p>
+                      <p className="text-green-700 text-sm">
+                        Votre dossier a été validé. Imprimez votre certificat et déposez-le à votre faculté.
+                      </p>
+                    </div>
+                    <a
+                      href="/api/student/dossier/certificate"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shrink-0"
+                    >
+                      <Printer className="h-4 w-4" />
+                      Imprimer le certificat
+                    </a>
+                  </div>
+                  <div className="pt-4 border-t border-green-200">
+                    <p className="text-green-700 text-sm mb-3">
+                      Vous pouvez maintenant soumettre une nouvelle demande (ex: soutenance de thèse).
+                    </p>
+                    <button
+                      onClick={() => setShowNewRequestModal(true)}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    >
+                      <PlusCircle className="h-4 w-4" />
+                      Nouvelle demande
+                    </button>
+                  </div>
+                </div>
+              ) : profile.currentStep === 1 && profile.validations.length === 0 ? (
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+                  <Upload className="h-6 w-6 text-blue-600" />
+                  <div>
+                    <p className="font-medium text-blue-800">Documents requis</p>
+                    <p className="text-blue-700 text-sm">
+                      Veuillez téléverser tous les documents requis pour passer à l&apos;étape suivante.
+                    </p>
+                  </div>
+                </div>
+              ) : profile.dossierStatus === "SUBMITTED" && profile.currentStep >= 2 ? (
+                <div className="flex items-center gap-3">
+                  <Clock className="h-6 w-6 text-orange-600" />
                   <div className="flex-1">
-                    <p className="font-medium text-green-800">Dossier validé !</p>
-                    <p className="text-green-700 text-sm">
-                      Votre dossier a été validé. Imprimez votre certificat et déposez-le à votre faculté.
+                    <p className="font-medium text-orange-800">Dossier en cours de validation (étape {profile.currentStep}/{profile.maxSteps})</p>
+                    <p className="text-orange-700 text-sm">
+                      Votre dossier a passé la première validation. Vous pouvez imprimer votre certificat.
                     </p>
                   </div>
                   <a
@@ -281,16 +324,6 @@ export default function DashboardPage() {
                     <Printer className="h-4 w-4" />
                     Imprimer le certificat
                   </a>
-                </div>
-              ) : profile.currentStep === 1 && profile.validations.length === 0 ? (
-                <div className="flex items-center gap-3">
-                  <Upload className="h-6 w-6 text-blue-600" />
-                  <div>
-                    <p className="font-medium text-blue-800">Documents requis</p>
-                    <p className="text-blue-700 text-sm">
-                      Veuillez téléverser tous les documents requis pour passer à l&apos;étape suivante.
-                    </p>
-                  </div>
                 </div>
               ) : profile.dossierStatus === "SUBMITTED" ? (
                 <div className="flex items-center gap-3">

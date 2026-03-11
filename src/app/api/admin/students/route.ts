@@ -49,6 +49,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search") || "";
     const step = searchParams.get("step");
     const studyLevel = searchParams.get("studyLevel");
+    const dossierStatus = searchParams.get("dossierStatus");
 
     let sql = `
       SELECT s.*, u.email, u.created_at as user_created_at,
@@ -83,6 +84,12 @@ export async function GET(request: NextRequest) {
       paramIndex++;
     }
 
+    if (dossierStatus) {
+      sql += ` AND s.dossier_status = $${paramIndex}`;
+      params.push(dossierStatus);
+      paramIndex++;
+    }
+
     sql += ` GROUP BY s.id, u.email, u.created_at ORDER BY s.created_at DESC`;
     sql += ` LIMIT ${limit} OFFSET ${(page - 1) * limit}`;
 
@@ -112,6 +119,13 @@ export async function GET(request: NextRequest) {
     if (studyLevel) {
       countSql += ` AND s.study_level = $${countParamIndex}`;
       countParams.push(studyLevel);
+      countParamIndex++;
+    }
+
+    if (dossierStatus) {
+      countSql += ` AND s.dossier_status = $${countParamIndex}`;
+      countParams.push(dossierStatus);
+      countParamIndex++;
     }
 
     const countResult = await query<{ count: string }>(countSql, countParams);

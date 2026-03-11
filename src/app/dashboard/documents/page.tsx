@@ -12,7 +12,8 @@ import {
   DOCTORAT_SOUTENANCE_DOCS,
   MASTER_INSCRIPTION_DOCS,
   MASTER_SOUTENANCE_DOCS,
-  CHECKLIST_PDFS
+  CHECKLIST_PDFS,
+  CERTIFICATE_TEMPLATES
 } from "@/lib/constants";
 import { 
   Loader2,
@@ -50,6 +51,7 @@ interface StudentProfile {
   address: string;
   phone: string;
   studyLevel: string;
+  dossierType?: string;
   photoUrl?: string;
   user?: { email: string };
 }
@@ -360,11 +362,28 @@ function getDocsByCategory(categoryId: string): DocType[] {
 
 // Obtenir le lien de la checklist pour une catégorie
 function getChecklistForCategory(categoryId: string, studyLevel: string): { label: string; url: string } | null {
+  if (categoryId === "inscription_these" && studyLevel === "DOCTORAT") {
+    return CHECKLIST_PDFS.DOCTORAT.inscription;
+  }
   if (categoryId === "soutenance_these" && studyLevel === "DOCTORAT") {
     return CHECKLIST_PDFS.DOCTORAT.soutenance;
   }
   if (categoryId === "soutenance_master" && studyLevel === "MASTER") {
     return CHECKLIST_PDFS.MASTER.soutenance;
+  }
+  return null;
+}
+
+// Obtenir le lien du certificat modèle pour une catégorie
+function getCertificateForCategory(categoryId: string, studyLevel: string): { label: string; url: string } | null {
+  if (categoryId === "inscription_these" && studyLevel === "DOCTORAT") {
+    return CERTIFICATE_TEMPLATES.DOCTORAT.inscription;
+  }
+  if (categoryId === "soutenance_these" && studyLevel === "DOCTORAT") {
+    return CERTIFICATE_TEMPLATES.DOCTORAT.soutenance;
+  }
+  if (categoryId === "soutenance_master" && studyLevel === "MASTER") {
+    return CERTIFICATE_TEMPLATES.MASTER.soutenance;
   }
   return null;
 }
@@ -391,6 +410,7 @@ function DocumentCategory({
 }) {
   const categoryDocs = getDocsByCategory(category.id);
   const checklist = getChecklistForCategory(category.id, studyLevel);
+  const certificate = getCertificateForCategory(category.id, studyLevel);
 
   const colorClasses: Record<string, string> = {
     amber: "from-amber-500 to-orange-500",
@@ -420,6 +440,21 @@ function DocumentCategory({
           >
             <Download className="h-4 w-4" />
             {checklist.label}
+          </a>
+        )}
+        {certificate && (
+          <a
+            href={certificate.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            download
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl 
+              bg-emerald-50 text-emerald-700 border border-emerald-200 
+              hover:bg-emerald-100 hover:border-emerald-300 transition-all duration-200
+              shadow-sm hover:shadow"
+          >
+            <Download className="h-4 w-4" />
+            {certificate.label}
           </a>
         )}
       </div>
@@ -585,13 +620,23 @@ export default function DocumentsPage() {
 
   const canEdit = !dossierStatus || dossierStatus.dossierStatus === "DRAFT";
   const isDoctorat = profile?.studyLevel === "DOCTORAT";
-  const categories = isDoctorat ? DOCUMENT_CATEGORIES_DOCTORAT : DOCUMENT_CATEGORIES_MASTER;
+  const dossierType = (profile as StudentProfile)?.dossierType || "INSCRIPTION";
+  
+  // Filter categories based on dossier_type to only show relevant upload sections
+  const allCategories = isDoctorat ? DOCUMENT_CATEGORIES_DOCTORAT : DOCUMENT_CATEGORIES_MASTER;
+  const categories = allCategories.filter((cat) => {
+    if (dossierType === "INSCRIPTION") {
+      return cat.id.includes("inscription");
+    }
+    if (dossierType === "SOUTENANCE") {
+      return cat.id.includes("soutenance");
+    }
+    return true; // AUTRE: show all
+  });
   const photoDoc = documents.find(d => d.type === "photo");
 
-  // Compter les documents requis
-  const allDocs = isDoctorat 
-    ? [...DOCTORAT_INSCRIPTION_DOCS, ...DOCTORAT_SOUTENANCE_DOCS]
-    : [...MASTER_SOUTENANCE_DOCS];
+  // Count only documents from visible categories
+  const allDocs = categories.flatMap((cat) => getDocsByCategory(cat.id));
   const requiredCount = allDocs.filter((d) => d.required).length;
   const uploadedRequiredCount = allDocs.filter((d) => 
     d.required && documents.some(doc => doc.type === d.type)

@@ -40,8 +40,8 @@ export async function POST(request: Request) {
 
     const student = studentResult.rows[0];
 
-    // Only allow new request if current dossier is COMPLETED
-    if (student.dossier_status !== 'COMPLETED' || !student.is_complete) {
+    // Only allow new request if current dossier is VALIDATED or COMPLETED
+    if (!['VALIDATED', 'COMPLETED'].includes(student.dossier_status)) {
       return NextResponse.json(
         { error: 'Votre dossier actuel doit être validé avant de pouvoir faire une nouvelle demande' },
         { status: 400 }

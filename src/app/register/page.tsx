@@ -14,6 +14,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { registerSchema, RegisterInput } from "@/lib/validations";
 import { FACULTIES, REGISTRATION_TYPES, MASTER_SUSPENSION_ALERT, DEPARTMENTS } from "@/lib/constants";
+import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
 import { Loader2, AlertCircle, CheckCircle, ShieldAlert, FileCheck, ArrowLeft, Info, GraduationCap, Award, ScrollText, PenTool } from "lucide-react";
 
@@ -548,6 +549,19 @@ function RegisterContent() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="committeeMembers">Membres du comité de gestion</Label>
+                <Textarea
+                  id="committeeMembers"
+                  placeholder="Noms des membres du comité de gestion (un par ligne)"
+                  rows={3}
+                  {...register("committeeMembers")}
+                />
+                <p className="text-xs text-gray-500">
+                  Indiquez les noms des membres du comité de gestion impliqués dans votre dossier.
+                </p>
               </div>
             </div>
 

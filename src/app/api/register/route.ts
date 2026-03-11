@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
       faculty: validatedData.faculty,
       department: validatedData.department || undefined,
       studyLevel: validatedData.studyLevel as 'LICENCE' | 'MASTER' | 'DOCTORAT',
+      committeeMembers: validatedData.committeeMembers || undefined,
     });
     
     // Envoyer l'email de vérification

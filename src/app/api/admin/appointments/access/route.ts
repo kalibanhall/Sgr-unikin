@@ -7,27 +7,32 @@ export async function GET() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ hasAccess: false }, { status: 401 });
+      return NextResponse.json({ hasAccess: false, canManage: false }, { status: 401 });
     }
 
     const user = await userRepository.findById(session.user.id);
     if (!user) {
-      return NextResponse.json({ hasAccess: false });
+      return NextResponse.json({ hasAccess: false, canManage: false });
     }
 
-    // SUPER_ADMIN always has access
+    // SUPER_ADMIN always has full access
     if (user.role === "SUPER_ADMIN") {
-      return NextResponse.json({ hasAccess: true });
+      return NextResponse.json({ hasAccess: true, canManage: true });
     }
 
-    // Check if user is the designated appointment manager or level 1 (Accueil/Rendez-vous)
-    if (user.role === "ADMIN" && (user.is_appointment_manager || user.admin_level === 1)) {
-      return NextResponse.json({ hasAccess: true });
+    // Appointment manager can manage
+    if (user.role === "ADMIN" && user.is_appointment_manager) {
+      return NextResponse.json({ hasAccess: true, canManage: true });
     }
 
-    return NextResponse.json({ hasAccess: false });
+    // Level 1 (Accueil/Réception) can VIEW but not manage
+    if (user.role === "ADMIN" && user.admin_level === 1) {
+      return NextResponse.json({ hasAccess: true, canManage: false });
+    }
+
+    return NextResponse.json({ hasAccess: false, canManage: false });
   } catch (error) {
     console.error("Erreur:", error);
-    return NextResponse.json({ hasAccess: false }, { status: 500 });
+    return NextResponse.json({ hasAccess: false, canManage: false }, { status: 500 });
   }
 }
