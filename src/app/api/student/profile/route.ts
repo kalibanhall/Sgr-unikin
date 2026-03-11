@@ -25,6 +25,7 @@ interface StudentProfile {
   thesis_title: string | null;
   supervisor: string | null;
   co_supervisor: string | null;
+  committee_members: string | null;
   current_step: number;
   max_steps: number;
   dossier_status: string;
@@ -99,6 +100,7 @@ export async function GET() {
       thesisTitle: student.thesis_title || "",
       supervisor: student.supervisor || "",
       coSupervisor: student.co_supervisor || "",
+      committeeMembers: student.committee_members || "",
       currentStep: student.current_step,
       maxSteps: student.max_steps,
       dossierStatus: student.dossier_status || "",
@@ -183,6 +185,7 @@ export async function PUT(request: NextRequest) {
       thesisTitle: body.thesisTitle,
       supervisor: body.supervisor,
       coSupervisor: body.coSupervisor,
+      committeeMembers: body.committeeMembers || null,
     });
 
     // Mettre à jour le nom de l'utilisateur

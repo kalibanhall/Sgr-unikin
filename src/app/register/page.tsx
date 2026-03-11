@@ -527,15 +527,15 @@ function RegisterContent() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="committeeMembers">Membres du comité de gestion</Label>
+                <Label htmlFor="committeeMembers">Membres du comité d&apos;encadrement</Label>
                 <Textarea
                   id="committeeMembers"
-                  placeholder="Noms des membres du comité de gestion (un par ligne)"
+                  placeholder="Noms des membres du comité d'encadrement (un par ligne)"
                   rows={3}
                   {...register("committeeMembers")}
                 />
                 <p className="text-xs text-gray-500">
-                  Indiquez les noms des membres du comité de gestion impliqués dans votre dossier.
+                  Indiquez les noms des membres du comité d&apos;encadrement impliqués dans votre dossier.
                 </p>
               </div>
             </div>

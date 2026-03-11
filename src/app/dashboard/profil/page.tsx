@@ -41,6 +41,7 @@ interface StudentProfile {
   thesisTitle: string | null;
   supervisor: string | null;
   coSupervisor: string | null;
+  committeeMembers: string | null;
   user: {
     email: string;
   };
@@ -95,6 +96,7 @@ export default function ProfilePage() {
     thesisTitle: string;
     supervisor: string;
     coSupervisor: string;
+    committeeMembers: string;
   }>({
     defaultValues: {
       firstName: "",
@@ -112,6 +114,7 @@ export default function ProfilePage() {
       thesisTitle: "",
       supervisor: "",
       coSupervisor: "",
+      committeeMembers: "",
     },
   });
 
@@ -168,6 +171,7 @@ export default function ProfilePage() {
             thesisTitle: data.thesisTitle || "",
             supervisor: data.supervisor || "",
             coSupervisor: data.coSupervisor || "",
+            committeeMembers: data.committeeMembers || "",
           });
         }
       } catch (error) {
@@ -464,6 +468,11 @@ export default function ProfilePage() {
                   <Label htmlFor="coSupervisor">Co-directeur (optionnel)</Label>
                   <Input id="coSupervisor" {...register("coSupervisor")} />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="committeeMembers">Membres du comité d&apos;encadrement</Label>
+                <Textarea id="committeeMembers" {...register("committeeMembers")} rows={3} placeholder="Noms des membres du comité d'encadrement (un par ligne)" />
               </div>
             </CardContent>
           </Card>

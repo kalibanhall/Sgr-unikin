@@ -367,6 +367,7 @@ export const studentRepository = {
     thesisTitle: string | null;
     supervisor: string | null;
     coSupervisor: string | null;
+    committeeMembers: string | null;
     currentStep: number;
     isComplete: boolean;
     dossierStatus: 'DRAFT' | 'SUBMITTED' | 'VALIDATED' | 'COMPLETED';
@@ -381,6 +382,7 @@ export const studentRepository = {
       studyLevel: 'study_level',
       thesisTitle: 'thesis_title',
       coSupervisor: 'co_supervisor',
+      committeeMembers: 'committee_members',
       currentStep: 'current_step',
       isComplete: 'is_complete',
       dossierStatus: 'dossier_status',
