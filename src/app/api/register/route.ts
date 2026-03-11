@@ -16,10 +16,16 @@ export async function POST(request: NextRequest) {
     const existingUser = await userRepository.findByEmail(validatedData.email);
 
     if (existingUser) {
-      return NextResponse.json(
-        { error: "Cet email est déjà utilisé" },
-        { status: 400 }
-      );
+      // Vérifier si l'utilisateur a un profil étudiant (inscription incomplète)
+      const existingStudent = await studentRepository.findByUserId(existingUser.id);
+      if (existingStudent) {
+        return NextResponse.json(
+          { error: "Cet email est déjà utilisé" },
+          { status: 400 }
+        );
+      }
+      // Utilisateur orphelin (inscription échouée) — supprimer pour recommencer
+      await userRepository.delete(existingUser.id);
     }
 
     // Hasher le mot de passe
