@@ -1,8 +1,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, FileText, Calendar, ClipboardCheck, Award, BookOpen, Users, GraduationCap, LogIn, Upload, Printer, AlertCircle, Clock } from "lucide-react";
+import { CheckCircle, FileText, Calendar, ClipboardCheck, Award, BookOpen, Users, GraduationCap, LogIn, Upload, Printer, AlertCircle, Clock, Download } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { CHECKLIST_PDFS } from "@/lib/constants";
 
 export default function GuideSoutenancePage() {
   const steps = [
@@ -66,17 +67,10 @@ export default function GuideSoutenancePage() {
     purple: { bg: "bg-purple-600", border: "border-purple-600", text: "text-purple-600", light: "bg-purple-50" },
   };
 
-  const requiredDocuments = [
-    { name: "Lettre de transmission du dossier par le Doyen", category: "Administratif", required: true },
-    { name: "Notification ou décision rectorale d'inscription", category: "Académique", required: true },
-    { name: "PV d'approbation du jury par le Conseil de Faculté", category: "Académique", required: true },
-    { name: "PV de constitution du jury par le Conseil de Département", category: "Académique", required: true },
-    { name: "Avis favorable du Comité d'encadrement", category: "Académique", required: true },
-    { name: "Bordereaux de paiement des frais académiques", category: "Financier", required: true },
-    { name: "Publications requises", category: "Académique", required: true },
-    { name: "Volumes de dissertation avec synthèses", category: "Académique", required: true },
-    { name: "Certificat d'analyse anti-plagiat (max 15% similitude)", category: "Académique", required: true },
-    { name: "CV actualisé", category: "Personnel", required: true },
+  const checklists = [
+    { ...CHECKLIST_PDFS.DOCTORAT.inscription, color: "blue" },
+    { ...CHECKLIST_PDFS.DOCTORAT.soutenance, color: "emerald" },
+    { ...CHECKLIST_PDFS.MASTER.soutenance, color: "amber" },
   ];
 
   return (
@@ -146,48 +140,40 @@ export default function GuideSoutenancePage() {
           </div>
         </div>
 
-        {/* Documents requis */}
+        {/* Checklists téléchargeables */}
         <Card className="mt-12 border-2 border-slate-200">
           <CardHeader className="bg-slate-100">
             <CardTitle className="flex items-center gap-3 text-slate-900">
               <ClipboardCheck className="h-6 w-6 text-slate-700" />
-              Documents requis pour la soutenance
+              Checklists des documents requis
             </CardTitle>
           </CardHeader>
           <CardContent className="pt-6">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b border-slate-200">
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">Document</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">Catégorie</th>
-                    <th className="text-left py-3 px-4 font-semibold text-slate-900">Statut</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {requiredDocuments.map((doc, index) => (
-                    <tr key={index} className="border-b border-slate-100 last:border-b-0 hover:bg-slate-50">
-                      <td className="py-3 px-4 text-slate-800 font-medium">{doc.name}</td>
-                      <td className="py-3 px-4">
-                        <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-700">
-                          {doc.category}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4">
-                        {doc.required ? (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700">
-                            Obligatoire
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600">
-                            Optionnel
-                          </span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <p className="text-slate-600 mb-6">
+              Téléchargez la checklist correspondant à votre type de demande pour connaître la liste complète des documents requis.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {checklists.map((checklist, index) => {
+                const colorMap: Record<string, { bg: string; border: string; text: string; hover: string }> = {
+                  blue: { bg: "bg-blue-50", border: "border-blue-200", text: "text-blue-700", hover: "hover:bg-blue-100 hover:border-blue-300" },
+                  emerald: { bg: "bg-emerald-50", border: "border-emerald-200", text: "text-emerald-700", hover: "hover:bg-emerald-100 hover:border-emerald-300" },
+                  amber: { bg: "bg-amber-50", border: "border-amber-200", text: "text-amber-700", hover: "hover:bg-amber-100 hover:border-amber-300" },
+                };
+                const colors = colorMap[checklist.color];
+                return (
+                  <a
+                    key={index}
+                    href={checklist.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    download
+                    className={`flex flex-col items-center gap-3 p-6 rounded-xl border-2 ${colors.bg} ${colors.border} ${colors.text} ${colors.hover} transition-all duration-200 shadow-sm hover:shadow-md`}
+                  >
+                    <Download className="h-8 w-8" />
+                    <span className="text-sm font-semibold text-center">{checklist.label}</span>
+                  </a>
+                );
+              })}
             </div>
           </CardContent>
         </Card>

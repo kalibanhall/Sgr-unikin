@@ -242,3 +242,111 @@ export async function POST(
     return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
   }
 }
+
+// DELETE - Annuler une validation (Admin L1 peut annuler avant que L2 ne valide)
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
+    const user = await userRepository.findById(session.user.id);
+    if (user?.role !== "ADMIN" && user?.role !== "SUPER_ADMIN") {
+      return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
+    }
+
+    const { id } = await params;
+    const { searchParams } = new URL(request.url);
+    const stepToCancel = parseInt(searchParams.get("step") || "0");
+
+    if (!stepToCancel) {
+      return NextResponse.json({ error: "Étape manquante" }, { status: 400 });
+    }
+
+    // Vérifier que l'admin a le niveau requis pour cette étape
+    if (user.role !== "SUPER_ADMIN") {
+      const adminLevel = user.admin_level || 1;
+      const levelConfig = ADMIN_LEVELS.find(l => l.level === adminLevel);
+      if (!levelConfig || !levelConfig.allowedSteps.includes(stepToCancel)) {
+        return NextResponse.json(
+          { error: `Vous n'avez pas les droits pour annuler l'étape ${stepToCancel}` },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Récupérer l'étudiant
+    const student = await studentRepository.findWithUser(id);
+    if (!student) {
+      return NextResponse.json({ error: "Étudiant non trouvé" }, { status: 404 });
+    }
+
+    // On ne peut annuler que si l'étudiant est exactement à l'étape suivante
+    // (signifiant que l'étape suivante n'a pas encore été validée)
+    if (student.current_step !== stepToCancel + 1) {
+      return NextResponse.json(
+        { error: "Impossible d'annuler : l'étape suivante a déjà été validée ou le dossier n'est pas à l'étape attendue" },
+        { status: 400 }
+      );
+    }
+
+    // Vérifier qu'il n'y a pas de validation à l'étape suivante
+    const nextStepValidation = await query(
+      `SELECT * FROM validations WHERE student_id = $1 AND step = $2 AND status = 'APPROVED'`,
+      [id, stepToCancel + 1]
+    );
+
+    if (nextStepValidation.rows.length > 0) {
+      return NextResponse.json(
+        { error: "Impossible d'annuler : l'étape suivante a déjà été validée" },
+        { status: 400 }
+      );
+    }
+
+    // Supprimer la validation de cette étape
+    await query(
+      `DELETE FROM validations WHERE student_id = $1 AND step = $2`,
+      [id, stepToCancel]
+    );
+
+    // Si c'est l'étape de double validation, supprimer aussi les validations techniques
+    if (stepToCancel === DOUBLE_VALIDATION_STEP) {
+      await query(
+        `DELETE FROM technical_validations WHERE student_id = $1 AND step = $2`,
+        [id, stepToCancel]
+      );
+    }
+
+    // Remettre l'étudiant à l'étape précédente
+    await studentRepository.update(id, {
+      currentStep: stepToCancel,
+      isComplete: false,
+    });
+
+    // Log activity
+    await logActivity({
+      adminId: session.user.id,
+      actionType: ACTION_TYPES.VALIDATE_STEP,
+      targetType: 'STUDENT',
+      targetId: id,
+      details: {
+        studentName: `${student.first_name} ${student.last_name}`,
+        step: stepToCancel,
+        decision: 'CANCELLED',
+        comment: 'Validation annulée',
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: `Validation de l'étape ${stepToCancel} annulée`,
+    });
+  } catch (error) {
+    console.error("Erreur annulation:", error);
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 });
+  }
+}

@@ -13,7 +13,6 @@ import {
   MASTER_INSCRIPTION_DOCS,
   MASTER_SOUTENANCE_DOCS,
   CHECKLIST_PDFS,
-  CERTIFICATE_TEMPLATES
 } from "@/lib/constants";
 import { 
   Loader2,
@@ -374,20 +373,6 @@ function getChecklistForCategory(categoryId: string, studyLevel: string): { labe
   return null;
 }
 
-// Obtenir le lien du certificat modèle pour une catégorie
-function getCertificateForCategory(categoryId: string, studyLevel: string): { label: string; url: string } | null {
-  if (categoryId === "inscription_these" && studyLevel === "DOCTORAT") {
-    return CERTIFICATE_TEMPLATES.DOCTORAT.inscription;
-  }
-  if (categoryId === "soutenance_these" && studyLevel === "DOCTORAT") {
-    return CERTIFICATE_TEMPLATES.DOCTORAT.soutenance;
-  }
-  if (categoryId === "soutenance_master" && studyLevel === "MASTER") {
-    return CERTIFICATE_TEMPLATES.MASTER.soutenance;
-  }
-  return null;
-}
-
 // Section de catégorie de documents
 function DocumentCategory({
   category,
@@ -410,7 +395,6 @@ function DocumentCategory({
 }) {
   const categoryDocs = getDocsByCategory(category.id);
   const checklist = getChecklistForCategory(category.id, studyLevel);
-  const certificate = getCertificateForCategory(category.id, studyLevel);
 
   const colorClasses: Record<string, string> = {
     amber: "from-amber-500 to-orange-500",
@@ -440,21 +424,6 @@ function DocumentCategory({
           >
             <Download className="h-4 w-4" />
             {checklist.label}
-          </a>
-        )}
-        {certificate && (
-          <a
-            href={certificate.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            download
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl 
-              bg-emerald-50 text-emerald-700 border border-emerald-200 
-              hover:bg-emerald-100 hover:border-emerald-300 transition-all duration-200
-              shadow-sm hover:shadow"
-          >
-            <Download className="h-4 w-4" />
-            {certificate.label}
           </a>
         )}
       </div>

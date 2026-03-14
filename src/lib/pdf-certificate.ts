@@ -1,6 +1,7 @@
 import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import { readFile } from "fs/promises";
 import { join } from "path";
+import { existsSync } from "fs";
 
 /**
  * Coordonnées extraites du template Certificat.pdf (US Letter 612x792)
@@ -44,6 +45,16 @@ export async function generateCertificatePDF(data: CertificateData): Promise<Uin
   const page = pdfDoc.getPage(0);
   const fontSize = 12;
   const color = rgb(0, 0, 0);
+
+  // --- Masquer "Ministère de l'ESURES" dans l'en-tête ---
+  // Couvrir la zone du texte ministériel avec un rectangle blanc
+  page.drawRectangle({
+    x: 160,
+    y: 735,
+    width: 300,
+    height: 20,
+    color: rgb(1, 1, 1), // blanc
+  });
 
   // --- Référence ---
   // "Réf. :" est à x:51 y:609, la valeur va après
@@ -137,6 +148,22 @@ export async function generateCertificatePDF(data: CertificateData): Promise<Uin
     font: fontBold,
     color,
   });
+
+  // --- Cachet / Stamp ---
+  // Superposer l'image du cachet si elle existe
+  const stampPath = join(process.cwd(), "public", "stamp.png");
+  if (existsSync(stampPath)) {
+    const stampBytes = await readFile(stampPath);
+    const stampImage = await pdfDoc.embedPng(stampBytes);
+    const stampDims = stampImage.scale(0.4);
+    page.drawImage(stampImage, {
+      x: 400,
+      y: 180,
+      width: stampDims.width,
+      height: stampDims.height,
+      opacity: 0.85,
+    });
+  }
 
   // Sauvegarder le PDF
   const pdfBytes = await pdfDoc.save();

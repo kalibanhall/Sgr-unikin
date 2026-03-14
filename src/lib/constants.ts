@@ -12,6 +12,13 @@ export const FACULTIES = [
   { code: "PSYCHO", name: "Psychologie et Sciences de l'Éducation" },
   { code: "DROIT", name: "Droit" },
   { code: "MEDECINE", name: "Médecine" },
+  { code: "ONEHEALTH", name: "École Régionale One Health" },
+  { code: "ESP", name: "École de Santé Publique" },
+  { code: "ERAIFT", name: "ERAIFT" },
+  { code: "EAU", name: "École Régionale de l'Eau" },
+  { code: "UNESCO", name: "Chaire Unesco" },
+  { code: "ESPD", name: "École des Sciences de Population et Développement" },
+  { code: "CRIMINO", name: "École de Criminologie" },
 ];
 
 // Départements par faculté (89 départements au total)
@@ -123,6 +130,13 @@ export const DEPARTMENTS: Record<string, string[]> = {
     "Médecine physique et réadaptation",
     "Médecine tropicale",
   ],
+  ONEHEALTH: [],
+  ESP: [],
+  ERAIFT: [],
+  EAU: [],
+  UNESCO: [],
+  ESPD: [],
+  CRIMINO: [],
 };
 
 // Types d'inscription/demande disponibles

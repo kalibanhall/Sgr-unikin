@@ -29,6 +29,7 @@ interface StudentRow {
   current_step: number;
   max_steps: number;
   dossier_status: string;
+  dossier_type: string;
   is_complete: boolean;
   submitted_at: Date | null;
   created_at: Date;
@@ -101,6 +102,7 @@ export async function GET(
       maxSteps: student.max_steps,
       isComplete: student.is_complete,
       dossierStatus: student.dossier_status,
+      dossierType: student.dossier_type,
       submittedAt: student.submitted_at,
       createdAt: student.created_at,
       user: {
