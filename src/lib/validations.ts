@@ -16,6 +16,7 @@ export const registerSchema = z.object({
   faculty: z.string().min(1, "Veuillez sélectionner une faculté"),
   department: z.string().optional(),
   committeeMembers: z.string().optional(),
+  registrationType: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Les mots de passe ne correspondent pas",
   path: ["confirmPassword"],

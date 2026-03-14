@@ -46,6 +46,15 @@ export async function POST(request: NextRequest) {
       verifyExpires: verifyExpires,
     });
 
+    // Déterminer le type de dossier à partir du type d'inscription
+    const dossierTypeMap: Record<string, string> = {
+      'INSCRIPTION_THESE': 'INSCRIPTION',
+      'SOUTENANCE_THESE': 'SOUTENANCE',
+      'INSCRIPTION_MASTER': 'INSCRIPTION',
+      'SOUTENANCE_MASTER': 'SOUTENANCE',
+    };
+    const dossierType = dossierTypeMap[validatedData.registrationType || ''] || 'INSCRIPTION';
+
     // Créer le profil étudiant
     const student = await studentRepository.create({
       userId: user.id,
@@ -56,6 +65,7 @@ export async function POST(request: NextRequest) {
       department: validatedData.department || undefined,
       studyLevel: validatedData.studyLevel as 'LICENCE' | 'MASTER' | 'DOCTORAT',
       committeeMembers: validatedData.committeeMembers || undefined,
+      dossierType: dossierType as 'INSCRIPTION' | 'SOUTENANCE' | 'AUTRE',
     });
     
     // Envoyer l'email de vérification

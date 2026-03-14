@@ -315,6 +315,7 @@ export const studentRepository = {
     supervisor?: string;
     coSupervisor?: string;
     committeeMembers?: string;
+    dossierType?: 'INSCRIPTION' | 'SOUTENANCE' | 'AUTRE';
   }): Promise<Student> {
     const id = generateId();
     const result = await query<Student>(
@@ -322,8 +323,8 @@ export const studentRepository = {
         id, user_id, first_name, last_name, date_of_birth, place_of_birth,
         nationality, gender, phone, address, matricule, faculty, department,
         study_level, specialization, thesis_title, supervisor, co_supervisor,
-        committee_members
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19)
+        committee_members, dossier_type
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20)
       RETURNING *`,
       [
         id,
@@ -344,7 +345,8 @@ export const studentRepository = {
         data.thesisTitle || null,
         data.supervisor || null,
         data.coSupervisor || null,
-        data.committeeMembers || null
+        data.committeeMembers || null,
+        data.dossierType || 'INSCRIPTION'
       ]
     );
     return result.rows[0];
