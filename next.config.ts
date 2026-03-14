@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Build standalone pour déploiement Docker/VPS
+  output: 'standalone',
+  
   // Optimisations de performance
   reactStrictMode: true,
   
