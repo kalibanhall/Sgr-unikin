@@ -624,7 +624,7 @@ export default function DocumentsPage() {
   
   // Filter categories based on dossier_type to only show relevant upload sections
   const allCategories = isDoctorat ? DOCUMENT_CATEGORIES_DOCTORAT : DOCUMENT_CATEGORIES_MASTER;
-  const categories = allCategories.filter((cat) => {
+  const filteredCategories = allCategories.filter((cat) => {
     if (dossierType === "INSCRIPTION") {
       return cat.id.includes("inscription");
     }
@@ -633,6 +633,9 @@ export default function DocumentsPage() {
     }
     return true; // AUTRE: show all
   });
+  // Si aucune catégorie ne correspond (ex: MASTER avec dossier_type INSCRIPTION mais
+  // seule soutenance_master existe), afficher toutes les catégories disponibles
+  const categories = filteredCategories.length > 0 ? filteredCategories : allCategories;
   const photoDoc = documents.find(d => d.type === "photo");
 
   // Count only documents from visible categories
@@ -676,7 +679,7 @@ export default function DocumentsPage() {
         )}
 
         {/* Alerte suspension pour Master */}
-        {!isDoctorat && <SuspensionAlert />}
+        {!isDoctorat && dossierType === "INSCRIPTION" && <SuspensionAlert />}
 
         {/* Catégories de documents */}
         {categories.map((category) => (
