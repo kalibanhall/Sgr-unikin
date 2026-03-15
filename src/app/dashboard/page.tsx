@@ -17,7 +17,8 @@ import {
   Loader2,
   ArrowRight,
   Printer,
-  PlusCircle
+  PlusCircle,
+  Download
 } from "lucide-react";
 import Link from "next/link";
 import { getStudyLevelLabel, formatDate } from "@/lib/utils";
@@ -240,12 +241,11 @@ export default function DashboardPage() {
                     </div>
                     <a
                       href="/api/student/dossier/certificate"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      download
                       className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shrink-0"
                     >
-                      <Printer className="h-4 w-4" />
-                      Imprimer le certificat
+                      <Download className="h-4 w-4" />
+                      Télécharger le certificat
                     </a>
                   </div>
                   
@@ -275,12 +275,11 @@ export default function DashboardPage() {
                     </div>
                     <a
                       href="/api/student/dossier/certificate"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                      download
                       className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shrink-0"
                     >
-                      <Printer className="h-4 w-4" />
-                      Imprimer le certificat
+                      <Download className="h-4 w-4" />
+                      Télécharger le certificat
                     </a>
                   </div>
                   <div className="pt-4 border-t border-green-200">
@@ -317,12 +316,11 @@ export default function DashboardPage() {
                   </div>
                   <a
                     href="/api/student/dossier/certificate"
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    download
                     className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shrink-0"
                   >
-                    <Printer className="h-4 w-4" />
-                    Imprimer le certificat
+                    <Download className="h-4 w-4" />
+                    Télécharger le certificat
                   </a>
                 </div>
               ) : profile.dossierStatus === "SUBMITTED" ? (

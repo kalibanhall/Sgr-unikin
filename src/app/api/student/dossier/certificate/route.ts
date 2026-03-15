@@ -97,7 +97,7 @@ export async function GET() {
     return new NextResponse(Buffer.from(pdfBytes), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `inline; filename="Certificat_${referenceNumber.replace(/\//g, '_')}.pdf"`,
+        "Content-Disposition": `attachment; filename="Certificat_${referenceNumber.replace(/\//g, '_')}.pdf"`,
       },
     });
   } catch (error) {
