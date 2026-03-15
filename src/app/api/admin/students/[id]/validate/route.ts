@@ -189,6 +189,8 @@ export async function POST(
             thesisTitle,
             submissionDate,
             emissionDate: validationDate,
+            studyLevel: student.study_level,
+            dossierType: student.dossier_type || undefined,
           });
         } catch (pdfErr) {
           console.error("Erreur génération certificat PDF:", pdfErr);
