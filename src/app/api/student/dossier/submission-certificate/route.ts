@@ -250,8 +250,6 @@ export async function GET() {
   <button class="print-btn no-print" onclick="window.print()">🖨️ Imprimer</button>
 
   <div class="header">
-    <p class="ministere">République Démocratique du Congo<br>
-    Ministère de l'Enseignement Supérieur et Universitaire</p>
     <p class="universite">UNIVERSITÉ DE KINSHASA</p>
     <p class="sgr">Secrétariat Général chargé de la Recherche</p>
   </div>
@@ -289,7 +287,7 @@ export async function GET() {
           <td>${student.study_level || "Doctorat"}</td>
         </tr>
         <tr>
-          <td>Sujet de thèse :</td>
+          <td>${student.study_level === "DOCTORAT" ? "Sujet de thèse" : "Sujet du mémoire"} :</td>
           <td>${thesisTitle}</td>
         </tr>
         <tr>

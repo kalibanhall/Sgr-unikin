@@ -11,6 +11,8 @@ interface CertificateStudent {
   last_name: string;
   faculty: string | null;
   department: string | null;
+  study_level: string;
+  dossier_type: string | null;
   thesis_title: string | null;
   dossier_status: string;
   submitted_at: Date | null;
@@ -29,7 +31,7 @@ export async function GET() {
     // Récupérer l'étudiant avec la date de dernière validation
     const result = await query<CertificateStudent>(
       `SELECT s.id, s.first_name, s.last_name, s.faculty, s.department,
-              s.thesis_title, s.dossier_status, s.submitted_at, s.is_complete,
+              s.study_level, s.dossier_type, s.thesis_title, s.dossier_status, s.submitted_at, s.is_complete,
               (SELECT MAX(v.validated_at) FROM validations v WHERE v.student_id = s.id AND v.status = 'APPROVED') as validated_at
        FROM students s
        JOIN users u ON s.user_id = u.id
@@ -63,6 +65,12 @@ export async function GET() {
     const studentName = `${(student.last_name || "").toUpperCase()} ${student.first_name}`;
     const department = student.department || "Non spécifié";
     const thesisTitle = student.thesis_title || "Non spécifié";
+
+    // Adapter le libellé selon le niveau d'études
+    const isDoctorat = student.study_level === "DOCTORAT";
+    const dossierLabel = isDoctorat ? "Thèse" : "Mémoire (DEA/DES)";
+    const intituleLabel = isDoctorat ? "Intitulé de la thèse" : "Intitulé du mémoire";
+    const dossierDeLabel = isDoctorat ? "dossier de thèse" : "dossier de mémoire (DEA/DES)";
 
     // Formater les dates
     const submissionDate = student.submitted_at
@@ -223,24 +231,23 @@ export async function GET() {
     <div class="header-logos">
       <img src="/logo-unikin.png" alt="UNIKIN" class="logo" />
     </div>
-    <p class="ministere">Ministère de l'Enseignement Supérieur, Universitaire,<br>Recherche Scientifique et Innovations</p>
     <p class="universite">UNIVERSITÉ DE KINSHASA</p>
     <p class="sgr">Secrétaire Général chargé de la Recherche UNIKIN</p>
   </div>
 
   <div class="titre">
-    <h2>Certificat de Validation de Dossier de Thèse</h2>
+    <h2>Certificat de Validation de Dossier de ${dossierLabel}</h2>
     <p class="ref">Réf. : <strong>${referenceNumber}</strong></p>
   </div>
 
   <div class="corps">
-    <p>Le Secrétariat Général à la Recherche de l'Université de Kinshasa certifie par la présente que le dossier de thèse de :</p>
+    <p>Le Secrétariat Général à la Recherche de l'Université de Kinshasa certifie par la présente que le ${dossierDeLabel} de :</p>
 
     <div class="infos">
       <p><strong>Nom et Prénom :</strong> ${studentName}</p>
       <p><strong>Faculté / École / Institut :</strong> ${facultyName}</p>
       <p><strong>Département :</strong> ${department}</p>
-      <p><strong>Intitulé de la thèse :</strong> ${thesisTitle}</p>
+      <p><strong>${intituleLabel} :</strong> ${thesisTitle}</p>
     </div>
 
     <p>a été soumis via la plateforme officielle du Secrétariat Général à la Recherche en date du ${submissionDate}.</p>
