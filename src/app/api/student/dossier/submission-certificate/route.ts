@@ -265,7 +265,7 @@ export async function GET() {
   <div class="corps">
     <p>
       Le Secrétariat Général chargé de la Recherche de l'Université de Kinshasa
-      accuse réception du dossier d'inscription au troisième cycle soumis par :
+      accuse réception du dossier de ${student.study_level === "DOCTORAT" ? "thèse" : "mémoire (DEA/DES)"} soumis par :
     </p>
 
     <div class="info-box">

@@ -305,42 +305,36 @@ export default function DashboardPage() {
                     </p>
                   </div>
                 </div>
-              ) : profile.dossierStatus === "SUBMITTED" && profile.currentStep >= 2 ? (
-                <div className="flex items-center gap-3">
-                  <Clock className="h-6 w-6 text-orange-600" />
-                  <div className="flex-1">
-                    <p className="font-medium text-orange-800">Dossier en cours de validation (étape {profile.currentStep}/{profile.maxSteps})</p>
-                    <p className="text-orange-700 text-sm">
-                      Votre dossier a passé la première validation. Vous pouvez imprimer votre certificat.
-                    </p>
-                  </div>
-                  <a
-                    href="/api/student/dossier/certificate"
-                    download
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shrink-0"
-                  >
-                    <Download className="h-4 w-4" />
-                    Télécharger le certificat
-                  </a>
-                </div>
               ) : profile.dossierStatus === "SUBMITTED" ? (
-                <div className="flex items-center gap-3">
-                  <Clock className="h-6 w-6 text-orange-600" />
-                  <div className="flex-1">
-                    <p className="font-medium text-orange-800">Dossier soumis — en attente de validation</p>
-                    <p className="text-orange-700 text-sm">
-                      Votre dossier est en cours d&apos;examen. Vous pouvez imprimer votre certificat de soumission.
-                    </p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <Clock className="h-6 w-6 text-orange-600" />
+                    <div className="flex-1">
+                      <p className="font-medium text-orange-800">Dossier soumis — en attente de validation{profile.currentStep >= 2 ? ` (étape ${profile.currentStep}/${profile.maxSteps})` : ""}</p>
+                      <p className="text-orange-700 text-sm">
+                        Votre dossier est en cours d&apos;examen. Téléchargez votre certificat ci-dessous.
+                      </p>
+                    </div>
                   </div>
-                  <a
-                    href="/api/student/dossier/submission-certificate"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium shrink-0"
-                  >
-                    <Printer className="h-4 w-4" />
-                    Certificat de soumission
-                  </a>
+                  <div className="flex flex-wrap gap-2">
+                    <a
+                      href="/api/student/dossier/certificate"
+                      download
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+                    >
+                      <Download className="h-4 w-4" />
+                      Télécharger le certificat PDF
+                    </a>
+                    <a
+                      href="/api/student/dossier/submission-certificate"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm font-medium"
+                    >
+                      <Printer className="h-4 w-4" />
+                      Accusé de réception
+                    </a>
+                  </div>
                 </div>
               ) : (
                 <div className="flex items-center gap-3">

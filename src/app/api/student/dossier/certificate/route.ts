@@ -44,15 +44,10 @@ export async function GET() {
 
     const student = result.rows[0];
 
-    // Le certificat est disponible après la première validation (étape 1 approuvée)
-    const stepResult = await query<{ current_step: number }>(
-      `SELECT current_step FROM students WHERE id = $1`,
-      [student.id]
-    );
-    const currentStep = stepResult.rows[0]?.current_step ?? 0;
-    if (currentStep < 2 && student.dossier_status !== "VALIDATED" && student.dossier_status !== "COMPLETED") {
+    // Le certificat est disponible dès que le dossier est soumis (step 0 auto-validé)
+    if (student.dossier_status === "DRAFT") {
       return NextResponse.json(
-        { error: "Le certificat n'est disponible qu'après la première validation du dossier." },
+        { error: "Le certificat n'est disponible qu'après la soumission du dossier." },
         { status: 403 }
       );
     }
