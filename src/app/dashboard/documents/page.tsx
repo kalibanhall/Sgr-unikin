@@ -587,7 +587,7 @@ export default function DocumentsPage() {
     );
   }
 
-  const canEdit = !dossierStatus || dossierStatus.dossierStatus === "DRAFT";
+  const canEdit = !dossierStatus || dossierStatus.dossierStatus === "DRAFT" || dossierStatus.dossierStatus === "REJECTED";
   const isDoctorat = profile?.studyLevel === "DOCTORAT";
   const dossierType = (profile as StudentProfile)?.dossierType || "INSCRIPTION";
   

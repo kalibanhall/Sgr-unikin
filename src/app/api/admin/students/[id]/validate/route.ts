@@ -149,8 +149,15 @@ export async function POST(
       });
     }
 
-    // Mettre à jour l'étape de l'étudiant si validé
-    if (status === "APPROVED") {
+    // Mettre à jour l'étape de l'étudiant
+    if (status === "REJECTED") {
+      // Rejet : remettre le dossier en mode brouillon pour correction
+      await studentRepository.update(id, {
+        currentStep: 0,
+        isComplete: false,
+        dossierStatus: "DRAFT",
+      });
+    } else if (status === "APPROVED") {
       const newStep = Math.max(student.current_step, parseInt(step) + 1);
       const isComplete = newStep >= student.max_steps;
 
@@ -159,6 +166,20 @@ export async function POST(
         isComplete: isComplete,
         dossierStatus: isComplete ? "VALIDATED" : student.dossier_status,
       });
+
+      // Attribuer un numéro de référence unique à la réception du dossier physique (étape 1)
+      if (stepNumber === 1 && !student.reference_number) {
+        const now = new Date();
+        const year = now.getFullYear();
+        // Compter les dossiers reçus cette année pour un numéro séquentiel
+        const seqResult = await query<{ count: string }>(
+          `SELECT COUNT(*) as count FROM students WHERE reference_number IS NOT NULL AND reference_number LIKE $1`,
+          [`SGR/${year}/%`]
+        );
+        const seq = (parseInt(seqResult.rows[0].count) + 1).toString().padStart(4, '0');
+        const refNumber = `SGR/${year}/${seq}`;
+        await query(`UPDATE students SET reference_number = $1 WHERE id = $2`, [refNumber, id]);
+      }
 
       // Si dossier complet, envoyer le certificat de validation en PDF
       if (isComplete) {
@@ -169,9 +190,12 @@ export async function POST(
         const thesisTitle = student.thesis_title || "Non spécifié";
 
         const now = new Date();
-        const year = now.getFullYear();
-        const idPart = student.id.replace(/-/g, "").substring(0, 7).toUpperCase();
-        const referenceNumber = `SGR/${idPart}/${year}`;
+        // Utiliser le numéro de référence stocké ou en générer un
+        const refResult = await query<{ reference_number: string | null }>(
+          `SELECT reference_number FROM students WHERE id = $1`,
+          [id]
+        );
+        const referenceNumber = refResult.rows[0]?.reference_number || `SGR/${now.getFullYear()}/${student.id.replace(/-/g, "").substring(0, 4).toUpperCase()}`;
 
         const submissionDate = student.submitted_at
           ? new Date(student.submitted_at).toLocaleDateString("fr-CD", { day: "2-digit", month: "2-digit", year: "numeric" })

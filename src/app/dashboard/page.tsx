@@ -295,6 +295,30 @@ export default function DashboardPage() {
                     </button>
                   </div>
                 </div>
+              ) : profile.validations.some(v => v.status === "REJECTED") && profile.dossierStatus === "DRAFT" ? (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <AlertCircle className="h-6 w-6 text-red-600" />
+                    <div className="flex-1">
+                      <p className="font-medium text-red-800">Dossier rejeté — corrections requises</p>
+                      <p className="text-red-700 text-sm">
+                        Votre dossier a été retourné pour correction. Veuillez corriger les éléments mentionnés, puis resoumettre.
+                      </p>
+                    </div>
+                  </div>
+                  {profile.validations.filter(v => v.status === "REJECTED" && v.comment).map((v, i) => (
+                    <div key={i} className="bg-red-50 border border-red-200 rounded-lg p-3">
+                      <p className="text-red-800 text-sm"><strong>Motif :</strong> {v.comment}</p>
+                    </div>
+                  ))}
+                  <Link
+                    href="/dashboard/documents"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                  >
+                    <Upload className="h-4 w-4" />
+                    Corriger mon dossier
+                  </Link>
+                </div>
               ) : profile.currentStep === 1 && profile.validations.length === 0 ? (
                 <div className="flex items-center gap-3">
                   <Upload className="h-6 w-6 text-blue-600" />

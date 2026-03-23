@@ -17,6 +17,7 @@ interface CertificateStudent {
   submitted_at: Date | null;
   is_complete: boolean;
   validated_at: Date | null;
+  reference_number: string | null;
 }
 
 // GET - Générer le certificat de validation (HTML imprimable)
@@ -31,6 +32,7 @@ export async function GET() {
     const result = await query<CertificateStudent>(
       `SELECT s.id, s.first_name, s.last_name, s.faculty, s.department,
               s.study_level, s.dossier_type, s.thesis_title, s.dossier_status, s.submitted_at, s.is_complete,
+              s.reference_number,
               (SELECT MAX(v.validated_at) FROM validations v WHERE v.student_id = s.id AND v.status = 'APPROVED') as validated_at
        FROM students s
        JOIN users u ON s.user_id = u.id
@@ -74,7 +76,8 @@ export async function GET() {
       ? new Date(student.validated_at).getFullYear()
       : new Date().getFullYear();
     const idPart = student.id.replace(/-/g, "").substring(0, 7).toUpperCase();
-    const referenceNumber = `SGR/${idPart}/${year}`;
+    // Utiliser le numéro de référence stocké en base, ou un fallback
+    const referenceNumber = student.reference_number || `SGR/${year}/${idPart}`;
 
     // Générer le certificat PDF avec le template approprié
     const pdfBytes = await generateCertificatePDF({

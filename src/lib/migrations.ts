@@ -117,6 +117,13 @@ export async function runMigrations() {
     `);
     console.log('✅ Committee members column added');
 
+    // Add reference_number column to students (assigned at physical reception)
+    await query(`
+      ALTER TABLE students 
+      ADD COLUMN IF NOT EXISTS reference_number VARCHAR(50)
+    `);
+    console.log('✅ Reference number column added');
+
     // Promote Jonathan Mutwale to SUPER_ADMIN if exists
     const result = await query(`
       UPDATE users 

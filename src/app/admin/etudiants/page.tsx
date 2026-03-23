@@ -15,7 +15,8 @@ import {
   ChevronLeft, 
   ChevronRight,
   Eye,
-  FileText
+  FileText,
+  Download
 } from "lucide-react";
 import Link from "next/link";
 import { getStudyLevelLabel, formatDate } from "@/lib/utils";
@@ -29,11 +30,17 @@ interface Student {
   currentStep: number;
   isComplete: boolean;
   dossierStatus: string;
+  dossierType: string;
   createdAt: string;
   user: {
     email: string;
   };
   documents: Array<{ id: string }>;
+  validations: Array<{
+    step: number;
+    status: string;
+    comment: string | null;
+  }>;
 }
 
 interface Pagination {
@@ -60,6 +67,7 @@ export default function AdminStudentsPage() {
   const [stepFilter, setStepFilter] = useState(searchParams.get("step") || "");
   const [levelFilter, setLevelFilter] = useState(searchParams.get("level") || "");
   const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "");
+  const [typeFilter, setTypeFilter] = useState(searchParams.get("type") || "");
 
   const fetchStudents = useCallback(async () => {
     setLoading(true);
@@ -70,6 +78,7 @@ export default function AdminStudentsPage() {
     if (stepFilter) params.set("step", stepFilter);
     if (levelFilter) params.set("studyLevel", levelFilter);
     if (statusFilter) params.set("dossierStatus", statusFilter);
+    if (typeFilter) params.set("dossierType", typeFilter);
 
     try {
       const res = await fetch(`/api/admin/students?${params}`);
@@ -83,7 +92,7 @@ export default function AdminStudentsPage() {
     } finally {
       setLoading(false);
     }
-  }, [pagination.page, search, stepFilter, levelFilter, statusFilter]);
+  }, [pagination.page, search, stepFilter, levelFilter, statusFilter, typeFilter]);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -104,6 +113,7 @@ export default function AdminStudentsPage() {
     setStepFilter("");
     setLevelFilter("");
     setStatusFilter("");
+    setTypeFilter("");
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
@@ -115,7 +125,7 @@ export default function AdminStudentsPage() {
       }, 300); // Debounce de 300ms
       return () => clearTimeout(timer);
     }
-  }, [search, stepFilter, levelFilter, statusFilter, pagination.page, session, fetchStudents]);
+  }, [search, stepFilter, levelFilter, statusFilter, typeFilter, pagination.page, session, fetchStudents]);
 
   if (status === "loading") {
     return (
@@ -128,12 +138,24 @@ export default function AdminStudentsPage() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Gestion des candidats</h1>
-          <p className="text-gray-900 mt-1">
-            {pagination.total} candidat(s) inscrit(s)
-          </p>
+        <div className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Gestion des candidats</h1>
+            <p className="text-gray-900 mt-1">
+              {pagination.total} candidat(s) inscrit(s)
+            </p>
+          </div>
+          <a
+            href={`/api/admin/students/export?${new URLSearchParams({
+              ...(levelFilter && levelFilter !== "all" ? { studyLevel: levelFilter } : {}),
+              ...(statusFilter && statusFilter !== "all" ? { dossierStatus: statusFilter } : {}),
+              ...(typeFilter && typeFilter !== "all" ? { dossierType: typeFilter } : {}),
+            }).toString()}`}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
+          >
+            <Download className="h-4 w-4" />
+            Exporter CSV
+          </a>
         </div>
 
         {/* Filters */}
@@ -193,6 +215,17 @@ export default function AdminStudentsPage() {
                 </SelectContent>
               </Select>
 
+              <Select value={typeFilter} onValueChange={setTypeFilter}>
+                <SelectTrigger className="w-full md:w-52">
+                  <SelectValue placeholder="Type de dossier" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Tous les types</SelectItem>
+                  <SelectItem value="INSCRIPTION">Inscription en thèse</SelectItem>
+                  <SelectItem value="SOUTENANCE">Soutenance</SelectItem>
+                </SelectContent>
+              </Select>
+
               <Button type="submit">Rechercher</Button>
               <Button type="button" variant="outline" onClick={resetFilters}>
                 Réinitialiser
@@ -224,6 +257,7 @@ export default function AdminStudentsPage() {
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Nom</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Email</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Niveau</th>
+                        <th className="text-left py-3 px-4 font-medium text-gray-900">Type</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Faculté</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Documents</th>
                         <th className="text-left py-3 px-4 font-medium text-gray-900">Étape</th>
@@ -233,8 +267,19 @@ export default function AdminStudentsPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {students.map((student) => (
-                        <tr key={student.id} className="border-b last:border-b-0 hover:bg-gray-50">
+                      {students.map((student) => {
+                        // Indicateur visuel : fond coloré selon l'état de validation
+                        const hasRejection = student.validations?.some(v => v.status === "REJECTED");
+                        const isValidatedStep1 = student.validations?.some(v => v.step === 1 && v.status === "APPROVED");
+                        const rowBg = hasRejection
+                          ? "bg-red-50 hover:bg-red-100"
+                          : student.dossierStatus === "VALIDATED" || student.dossierStatus === "COMPLETED"
+                          ? "bg-green-50 hover:bg-green-100"
+                          : isValidatedStep1
+                          ? "bg-blue-50 hover:bg-blue-100"
+                          : "hover:bg-gray-50";
+                        return (
+                        <tr key={student.id} className={`border-b last:border-b-0 ${rowBg}`}>
                           <td className="py-3 px-4 font-medium text-gray-900">
                             {student.firstName} {student.lastName}
                           </td>
@@ -244,6 +289,11 @@ export default function AdminStudentsPage() {
                           <td className="py-3 px-4">
                             <Badge variant="secondary">
                               {getStudyLevelLabel(student.studyLevel)}
+                            </Badge>
+                          </td>
+                          <td className="py-3 px-4">
+                            <Badge variant={student.dossierType === "SOUTENANCE" ? "pending" : "secondary"} className="text-xs">
+                              {student.dossierType === "INSCRIPTION" ? "Inscription" : student.dossierType === "SOUTENANCE" ? "Soutenance" : student.dossierType || "—"}
                             </Badge>
                           </td>
                           <td className="py-3 px-4 text-gray-900">
@@ -295,7 +345,8 @@ export default function AdminStudentsPage() {
                             </Link>
                           </td>
                         </tr>
-                      ))}
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

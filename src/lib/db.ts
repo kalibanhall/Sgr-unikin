@@ -115,6 +115,7 @@ export interface Student {
   is_complete: boolean;
   dossier_status: 'DRAFT' | 'SUBMITTED' | 'VALIDATED' | 'COMPLETED';
   dossier_type: 'INSCRIPTION' | 'SOUTENANCE' | 'AUTRE';
+  reference_number: string | null;
   submitted_at: Date | null;
   draft_expires_at: Date | null;
   created_at: Date;

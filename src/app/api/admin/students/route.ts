@@ -18,6 +18,7 @@ interface StudentListRow {
   max_steps: number;
   is_complete: boolean;
   dossier_status: string;
+  dossier_type: string;
   created_at: Date;
 }
 
@@ -50,6 +51,7 @@ export async function GET(request: NextRequest) {
     const step = searchParams.get("step");
     const studyLevel = searchParams.get("studyLevel");
     const dossierStatus = searchParams.get("dossierStatus");
+    const dossierType = searchParams.get("dossierType");
 
     let sql = `
       SELECT s.*, u.email, u.created_at as user_created_at,
@@ -87,6 +89,12 @@ export async function GET(request: NextRequest) {
     if (dossierStatus) {
       sql += ` AND s.dossier_status = $${paramIndex}`;
       params.push(dossierStatus);
+      paramIndex++;
+    }
+
+    if (dossierType) {
+      sql += ` AND s.dossier_type = $${paramIndex}`;
+      params.push(dossierType);
       paramIndex++;
     }
 
@@ -128,6 +136,12 @@ export async function GET(request: NextRequest) {
       countParamIndex++;
     }
 
+    if (dossierType) {
+      countSql += ` AND s.dossier_type = $${countParamIndex}`;
+      countParams.push(dossierType);
+      countParamIndex++;
+    }
+
     const countResult = await query<{ count: string }>(countSql, countParams);
     const total = parseInt(countResult.rows[0].count);
 
@@ -149,6 +163,7 @@ export async function GET(request: NextRequest) {
           maxSteps: student.max_steps,
           isComplete: student.is_complete,
           dossierStatus: student.dossier_status,
+          dossierType: student.dossier_type,
           createdAt: student.created_at,
           user: {
             email: student.email,
