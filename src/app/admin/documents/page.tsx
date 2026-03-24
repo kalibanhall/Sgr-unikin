@@ -43,7 +43,7 @@ export default function AdminDocumentsPage() {
   const fetchStudents = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/students?limit=100`);
+      const res = await fetch(`/api/admin/students?limit=100&includeDocuments=true`);
       if (res.ok) {
         const data = await res.json();
         // Filtrer uniquement les étudiants avec des documents

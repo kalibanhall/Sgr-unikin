@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { userRepository } from "@/lib/repositories";
-import { FACULTIES } from "@/lib/constants";
+import { FACULTIES, ADMIN_LEVELS } from "@/lib/constants";
 
 interface ExportRow {
   first_name: string;
@@ -38,6 +38,12 @@ export async function GET(request: NextRequest) {
     const dossierType = searchParams.get("dossierType");
     const studyLevel = searchParams.get("studyLevel");
 
+    // Filtrage par niveau admin
+    const adminLevel = user.admin_level || 1;
+    const isSuperAdmin = user.role === "SUPER_ADMIN";
+    const levelConfig = ADMIN_LEVELS.find(l => l.level === adminLevel);
+    const allowedSteps = isSuperAdmin ? null : (levelConfig?.allowedSteps ?? [0, 1]);
+
     let sql = `
       SELECT s.first_name, s.last_name, u.email, s.faculty, s.department,
              s.study_level, s.dossier_type, s.dossier_status, s.current_step,
@@ -65,6 +71,13 @@ export async function GET(request: NextRequest) {
       sql += ` AND s.study_level = $${paramIndex}`;
       params.push(studyLevel);
       paramIndex++;
+    }
+
+    if (allowedSteps) {
+      const placeholders = allowedSteps.map((_, i) => `$${paramIndex + i}`).join(', ');
+      sql += ` AND s.current_step IN (${placeholders})`;
+      allowedSteps.forEach(s => params.push(s));
+      paramIndex += allowedSteps.length;
     }
 
     sql += ` ORDER BY s.submitted_at DESC`;

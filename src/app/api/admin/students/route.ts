@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { query } from "@/lib/db";
 import { userRepository } from "@/lib/repositories";
+import { ADMIN_LEVELS } from "@/lib/constants";
 
 interface StudentListRow {
   id: string;
@@ -52,6 +53,13 @@ export async function GET(request: NextRequest) {
     const studyLevel = searchParams.get("studyLevel");
     const dossierStatus = searchParams.get("dossierStatus");
     const dossierType = searchParams.get("dossierType");
+    const includeDocuments = searchParams.get("includeDocuments") === "true";
+
+    // Filtrage par niveau admin: chaque admin ne voit que les dossiers à son niveau
+    const adminLevel = user.admin_level || 1;
+    const isSuperAdmin = user.role === "SUPER_ADMIN";
+    const levelConfig = ADMIN_LEVELS.find(l => l.level === adminLevel);
+    const allowedSteps = isSuperAdmin ? null : (levelConfig?.allowedSteps ?? [0, 1]);
 
     let sql = `
       SELECT s.*, u.email, u.created_at as user_created_at,
@@ -98,6 +106,14 @@ export async function GET(request: NextRequest) {
       paramIndex++;
     }
 
+    // Filtrer par les étapes autorisées pour ce niveau admin
+    if (allowedSteps) {
+      const placeholders = allowedSteps.map((_, i) => `$${paramIndex + i}`).join(', ');
+      sql += ` AND s.current_step IN (${placeholders})`;
+      allowedSteps.forEach(s => params.push(s));
+      paramIndex += allowedSteps.length;
+    }
+
     sql += ` GROUP BY s.id, u.email, u.created_at ORDER BY s.created_at DESC`;
     sql += ` LIMIT ${limit} OFFSET ${(page - 1) * limit}`;
 
@@ -142,6 +158,14 @@ export async function GET(request: NextRequest) {
       countParamIndex++;
     }
 
+    // Même filtre par étapes autorisées pour le count
+    if (allowedSteps) {
+      const placeholders = allowedSteps.map((_, i) => `$${countParamIndex + i}`).join(', ');
+      countSql += ` AND s.current_step IN (${placeholders})`;
+      allowedSteps.forEach(s => countParams.push(s));
+      countParamIndex += allowedSteps.length;
+    }
+
     const countResult = await query<{ count: string }>(countSql, countParams);
     const total = parseInt(countResult.rows[0].count);
 
@@ -169,7 +193,18 @@ export async function GET(request: NextRequest) {
             email: student.email,
             createdAt: student.user_created_at,
           },
-          documents: [],
+          documents: includeDocuments ? await query(
+            'SELECT id, name, type, url, size, uploaded_at FROM documents WHERE student_id = $1 ORDER BY uploaded_at DESC',
+            [student.id]
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          ).then(r => r.rows.map((d: any) => ({
+            id: d.id,
+            name: d.name,
+            type: d.type,
+            url: d.url,
+            size: d.size,
+            uploadedAt: d.uploaded_at,
+          }))) : [],
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           validations: validationsResult.rows.map((v: any) => ({
             step: v.step,
