@@ -77,7 +77,7 @@ export async function GET() {
       : new Date().getFullYear();
     const idPart = student.id.replace(/-/g, "").substring(0, 7).toUpperCase();
     // Utiliser le numéro de référence stocké en base, ou un fallback
-    const referenceNumber = student.reference_number || `SGR/${year}/${idPart}`;
+    const referenceNumber = student.reference_number || `SGR/${idPart}/${year}`;
 
     // Générer le certificat PDF avec le template approprié
     const pdfBytes = await generateCertificatePDF({

@@ -171,13 +171,13 @@ export async function POST(
       if (stepNumber === 1 && !student.reference_number) {
         const now = new Date();
         const year = now.getFullYear();
-        // Compter les dossiers reçus cette année pour un numéro séquentiel
+        // Compter les dossiers reçus pour un numéro séquentiel
         const seqResult = await query<{ count: string }>(
-          `SELECT COUNT(*) as count FROM students WHERE reference_number IS NOT NULL AND reference_number LIKE $1`,
-          [`SGR/${year}/%`]
+          `SELECT COUNT(*) as count FROM students WHERE reference_number IS NOT NULL`,
+          []
         );
-        const seq = (parseInt(seqResult.rows[0].count) + 1).toString().padStart(4, '0');
-        const refNumber = `SGR/${year}/${seq}`;
+        const seq = (parseInt(seqResult.rows[0].count) + 1).toString().padStart(7, '0');
+        const refNumber = `SGR/${seq}/${year}`;
         await query(`UPDATE students SET reference_number = $1 WHERE id = $2`, [refNumber, id]);
       }
 
@@ -195,7 +195,7 @@ export async function POST(
           `SELECT reference_number FROM students WHERE id = $1`,
           [id]
         );
-        const referenceNumber = refResult.rows[0]?.reference_number || `SGR/${now.getFullYear()}/${student.id.replace(/-/g, "").substring(0, 4).toUpperCase()}`;
+        const referenceNumber = refResult.rows[0]?.reference_number || `SGR/${student.id.replace(/-/g, "").substring(0, 7).toUpperCase()}/${now.getFullYear()}`;
 
         const submissionDate = student.submitted_at
           ? new Date(student.submitted_at).toLocaleDateString("fr-CD", { day: "2-digit", month: "2-digit", year: "numeric" })

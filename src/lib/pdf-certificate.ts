@@ -28,6 +28,7 @@ interface CertificateData {
 // Coordonnées des champs pour chaque template
 interface TemplateCoords {
   file: string;
+  reference: { x: number; y: number; maskX: number; maskWidth: number; maskHeight: number };
   name: { x: number; y: number };
   faculty: { x: number; y: number };
   department: { x: number; y: number };
@@ -40,6 +41,7 @@ const TEMPLATES: Record<string, TemplateCoords> = {
   // DOCTORAT + INSCRIPTION
   "inscription-these": {
     file: "certificat-inscription-these.pdf",
+    reference:      { x: 51.275, y: 583.92, maskX: 50, maskWidth: 140, maskHeight: 16 },
     name:           { x: 175, y: 511 },
     faculty:        { x: 137, y: 495 },
     department:     { x: 150, y: 479 },
@@ -50,6 +52,7 @@ const TEMPLATES: Record<string, TemplateCoords> = {
   // DOCTORAT + SOUTENANCE
   "soutenance-these": {
     file: "certificat-soutenance-these.pdf",
+    reference:      { x: 51.275, y: 583.92, maskX: 50, maskWidth: 140, maskHeight: 16 },
     name:           { x: 175, y: 511 },
     faculty:        { x: 137, y: 495 },
     department:     { x: 150, y: 479 },
@@ -60,6 +63,7 @@ const TEMPLATES: Record<string, TemplateCoords> = {
   // MASTER (DEA/DES) — tout type
   "soutenance-dea": {
     file: "certificat-soutenance-dea.pdf",
+    reference:      { x: 51.275, y: 585.42, maskX: 50, maskWidth: 140, maskHeight: 16 },
     name:           { x: 175, y: 512 },
     faculty:        { x: 137, y: 496 },
     department:     { x: 150, y: 480 },
@@ -102,6 +106,24 @@ export async function generateCertificatePDF(data: CertificateData): Promise<Uin
   const fontSize = 11;
   const color = rgb(0, 0, 0);
   const white = rgb(1, 1, 1);
+
+  // --- Numéro de référence ---
+  if (data.referenceNumber) {
+    page.drawRectangle({
+      x: coords.reference.maskX,
+      y: coords.reference.y - 4,
+      width: coords.reference.maskWidth,
+      height: coords.reference.maskHeight,
+      color: white,
+    });
+    page.drawText(`Réf. : ${data.referenceNumber}`, {
+      x: coords.reference.x,
+      y: coords.reference.y,
+      size: 9,
+      font: fontRegular,
+      color,
+    });
+  }
 
   // --- Nom et Prénom ---
   page.drawText(data.studentName, {
