@@ -148,6 +148,15 @@ export async function runMigrations() {
     `);
     console.log('✅ Password reset requests table created');
 
+    // Fix: étudiants non soumis doivent être au step 0
+    const fixResult = await query(`
+      UPDATE students SET current_step = 0 
+      WHERE dossier_status = 'DRAFT' AND current_step > 0
+    `);
+    if (fixResult.rowCount && fixResult.rowCount > 0) {
+      console.log(`✅ ${fixResult.rowCount} étudiant(s) non soumis remis au niveau 0`);
+    }
+
     // Promote Jonathan Mutwale to SUPER_ADMIN if exists
     const result = await query(`
       UPDATE users 

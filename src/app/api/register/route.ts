@@ -80,17 +80,7 @@ export async function POST(request: NextRequest) {
       text: emailTemplate.text,
     });
 
-    // Créer la première validation (étape 0 complétée)
-    await validationRepository.create({
-      studentId: student.id,
-      step: 0,
-      status: "APPROVED",
-      validatedAt: new Date(),
-      comment: "Inscription initiale complétée",
-    });
-
-    // Mettre à jour le current_step à 1
-    await studentRepository.update(student.id, { currentStep: 1 });
+    // L'étudiant reste à currentStep=0 (niveau 0) tant qu'il n'a pas soumis son dossier
 
     return NextResponse.json(
       {

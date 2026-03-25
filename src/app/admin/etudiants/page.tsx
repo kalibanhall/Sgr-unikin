@@ -145,17 +145,39 @@ export default function AdminStudentsPage() {
               {pagination.total} candidat(s) inscrit(s)
             </p>
           </div>
-          <a
-            href={`/api/admin/students/export?${new URLSearchParams({
-              ...(levelFilter && levelFilter !== "all" ? { studyLevel: levelFilter } : {}),
-              ...(statusFilter && statusFilter !== "all" ? { dossierStatus: statusFilter } : {}),
-              ...(typeFilter && typeFilter !== "all" ? { dossierType: typeFilter } : {}),
-            }).toString()}`}
+          <button
+            onClick={async () => {
+              try {
+                const params = new URLSearchParams({
+                  ...(levelFilter && levelFilter !== "all" ? { studyLevel: levelFilter } : {}),
+                  ...(statusFilter && statusFilter !== "all" ? { dossierStatus: statusFilter } : {}),
+                  ...(typeFilter && typeFilter !== "all" ? { dossierType: typeFilter } : {}),
+                });
+                const res = await fetch(`/api/admin/students/export?${params}`);
+                if (!res.ok) {
+                  const err = await res.json().catch(() => ({ error: "Erreur export" }));
+                  alert(err.error || "Erreur lors de l'export");
+                  return;
+                }
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                const now = new Date().toISOString().slice(0, 10);
+                a.download = `SGR_Export_${now}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+              } catch {
+                alert("Erreur de connexion lors de l'export");
+              }
+            }}
             className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
           >
             <Download className="h-4 w-4" />
             Exporter CSV
-          </a>
+          </button>
         </div>
 
         {/* Filters */}
