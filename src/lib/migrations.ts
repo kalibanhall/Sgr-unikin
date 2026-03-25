@@ -124,6 +124,30 @@ export async function runMigrations() {
     `);
     console.log('✅ Reference number column added');
 
+    // Create password_reset_requests table for admin-approved password resets
+    await query(`
+      CREATE TABLE IF NOT EXISTS password_reset_requests (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+        token VARCHAR(255),
+        expires_at TIMESTAMP WITH TIME ZONE,
+        approved_by UUID REFERENCES users(id),
+        approved_at TIMESTAMP WITH TIME ZONE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+      )
+    `);
+    await query(`
+      CREATE INDEX IF NOT EXISTS idx_password_reset_requests_user ON password_reset_requests(user_id);
+    `);
+    await query(`
+      CREATE INDEX IF NOT EXISTS idx_password_reset_requests_status ON password_reset_requests(status);
+    `);
+    await query(`
+      CREATE INDEX IF NOT EXISTS idx_password_reset_requests_token ON password_reset_requests(token);
+    `);
+    console.log('✅ Password reset requests table created');
+
     // Promote Jonathan Mutwale to SUPER_ADMIN if exists
     const result = await query(`
       UPDATE users 

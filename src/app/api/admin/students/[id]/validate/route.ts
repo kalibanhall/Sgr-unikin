@@ -226,38 +226,46 @@ export async function POST(
           validationDate,
         );
 
-        await sendEmail({
-          to: student.user.email,
-          subject: certTemplate.subject,
-          html: certTemplate.html,
-          text: certTemplate.text,
-          ...(pdfBytes ? {
-            attachments: [{
-              filename: `Certificat_Validation_${referenceNumber.replace(/\//g, '_')}.pdf`,
-              content: pdfBytes,
-              contentType: 'application/pdf',
-            }],
-          } : {}),
-        });
+        try {
+          await sendEmail({
+            to: student.user.email,
+            subject: certTemplate.subject,
+            html: certTemplate.html,
+            text: certTemplate.text,
+            ...(pdfBytes ? {
+              attachments: [{
+                filename: `Certificat_Validation_${referenceNumber.replace(/\//g, '_')}.pdf`,
+                content: pdfBytes,
+                contentType: 'application/pdf',
+              }],
+            } : {}),
+          });
+        } catch (certEmailErr) {
+          console.error("Erreur envoi certificat email (non bloquant):", certEmailErr);
+        }
       }
     }
 
-    // Envoyer un email de notification
-    const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-    const dashboardUrl = `${baseUrl}/dashboard`;
-    const emailTemplate = getValidationEmailTemplate(
-      student.first_name,
-      status === "APPROVED" ? "approved" : "rejected",
-      comment || "",
-      dashboardUrl
-    );
+    // Envoyer un email de notification (ne pas bloquer la validation si l'email échoue)
+    try {
+      const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+      const dashboardUrl = `${baseUrl}/dashboard`;
+      const emailTemplate = getValidationEmailTemplate(
+        student.first_name,
+        status === "APPROVED" ? "approved" : "rejected",
+        comment || "",
+        dashboardUrl
+      );
 
-    await sendEmail({
-      to: student.user.email,
-      subject: emailTemplate.subject,
-      html: emailTemplate.html,
-      text: emailTemplate.text,
-    });
+      await sendEmail({
+        to: student.user.email,
+        subject: emailTemplate.subject,
+        html: emailTemplate.html,
+        text: emailTemplate.text,
+      });
+    } catch (emailErr) {
+      console.error("Erreur envoi email notification (non bloquant):", emailErr);
+    }
 
     return NextResponse.json({
       success: true,

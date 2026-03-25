@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { userRepository, otpCodeRepository } from '@/lib/repositories';
+import { query } from '@/lib/db';
 
 function generateOTP(): string {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -25,7 +26,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({
         success: true,
         message: 'Si un compte existe avec cet email, un code OTP sera généré.',
-        // En mode direct, on indique qu'il n'y a pas de code (l'utilisateur ne saura pas si l'email existe)
         directMode: true,
         otpCode: null,
       });
@@ -43,6 +43,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Créer aussi une demande de réinitialisation pour approbation admin
+    // Vérifier qu'il n'y a pas déjà une demande en attente
+    const existingRequest = await query(
+      `SELECT id FROM password_reset_requests WHERE user_id = $1 AND status = 'PENDING'`,
+      [user.id]
+    );
+    if (existingRequest.rows.length === 0) {
+      await query(
+        `INSERT INTO password_reset_requests (id, user_id, status) VALUES (uuid_generate_v4(), $1, 'PENDING')`,
+        [user.id]
+      );
+    }
+
     // Générer un code OTP à 6 chiffres
     const otpCode = generateOTP();
     
@@ -56,19 +69,15 @@ export async function POST(request: NextRequest) {
       expiresAt,
     });
 
-    // TODO: Quand les APIs WhatsApp/SMS seront configurées, envoyer le code via ces canaux
-    // Pour l'instant, on utilise le mode direct: le code est affiché à l'écran
-
     console.log(`[OTP] Code généré pour ${user.email}: ${otpCode}`);
 
     return NextResponse.json({
       success: true,
-      message: 'Code OTP généré avec succès.',
+      message: 'Code OTP généré avec succès. Une demande de réinitialisation a aussi été envoyée à l\'administrateur.',
       userId: user.id,
-      // Mode direct: on renvoie le code pour l'afficher à l'écran
-      // À retirer quand WhatsApp/SMS sera configuré
       directMode: true,
       otpCode: otpCode,
+      adminRequestSent: true,
     });
 
   } catch (error) {

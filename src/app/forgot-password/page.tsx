@@ -435,6 +435,14 @@ export default function ForgotPasswordPage() {
                 </div>
               )}
 
+              {/* Info about admin approval alternative */}
+              <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                <p className="text-xs text-blue-700">
+                  <strong>Alternative :</strong> Une demande a aussi été envoyée à l&apos;administrateur. 
+                  Si vous n&apos;arrivez pas avec le code OTP, contactez le SGR pour recevoir un lien de réinitialisation.
+                </p>
+              </div>
+
               <p className="text-sm text-gray-600 text-center">
                 Entrez le code à 6 chiffres{directOtpCode ? ' affiché ci-dessus' : ' envoyé à votre numéro'}
               </p>

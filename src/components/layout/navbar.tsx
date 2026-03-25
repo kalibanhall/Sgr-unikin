@@ -12,7 +12,8 @@ import {
   FileText,
   Calendar,
   Settings,
-  Users
+  Users,
+  KeyRound
 } from "lucide-react";
 import { useState } from "react";
 import { LogoutButton } from "@/components/ui/logout-dialog";
@@ -50,6 +51,7 @@ export function Navbar() {
     { href: "/admin/documents", label: "Documents", icon: FileText },
     { href: "/admin/rendez-vous", label: "Rendez-vous", icon: Calendar },
     ...(isSuperAdmin ? [{ href: "/admin/administrateurs", label: "Admins", icon: Users }] : []),
+    ...(isSuperAdmin ? [{ href: "/admin/reinitialisation-mdp", label: "Demandes MDP", icon: KeyRound }] : []),
     { href: "/admin/parametres", label: "Paramètres", icon: Settings },
   ];
 
