@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,49 +22,20 @@ import {
   AlertCircle
 } from "lucide-react";
 
-// Destinataires des rendez-vous avec leurs informations
-const destinataires = [
-  { 
-    id: "SGR", 
-    nom: "Prof. Paulin MUTWALE KAPEPULA", 
-    fonction: "SGR", 
-    description: "Secrétaire Général à la Recherche",
-    initiales: "PMK"
-  },
-  { 
-    id: "AP", 
-    nom: "Prof. KAPEMBO Michel", 
-    fonction: "Assistant Principal", 
-    description: "Assistant Principal du SGR",
-    initiales: "KM"
-  },
-  { 
-    id: "CHARGE_PUBLICATIONS", 
-    nom: "Chargé des Publications", 
-    fonction: "Publications et Recherche", 
-    description: "Publications et recherche scientifique",
-    initiales: "CP"
-  },
-  { 
-    id: "CHARGE_ANTIPLAGIAT", 
-    nom: "Chargé Anti-plagiat", 
-    fonction: "Check Anti-plagiat", 
-    description: "Vérification anti-plagiat des travaux",
-    initiales: "CA"
-  },
-  { 
-    id: "CHARGE_OIPR", 
-    nom: "Chargé de l'OIPR", 
-    fonction: "OIPR", 
-    description: "Outil d'Inventaire et de Planification de la Recherche",
-    initiales: "CO"
-  },
-];
+interface Authority {
+  id: string;
+  value: string;
+  nom: string;
+  fonction: string;
+  description: string | null;
+  initiales: string | null;
+}
 
 export default function PublicAppointmentPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [destinataires, setDestinataires] = useState<Authority[]>([]);
   
   // Form state
   const [guestName, setGuestName] = useState("");
@@ -74,6 +45,13 @@ export default function PublicAppointmentPage() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [requestedDate, setRequestedDate] = useState("");
+
+  useEffect(() => {
+    fetch("/api/rdv-authorities")
+      .then(res => res.ok ? res.json() : [])
+      .then(data => setDestinataires(data))
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -191,23 +169,23 @@ export default function PublicAppointmentPage() {
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
               {destinataires.map((dest) => (
                 <button
-                  key={dest.id}
+                  key={dest.value}
                   type="button"
-                  onClick={() => setTargetRole(dest.id)}
+                  onClick={() => setTargetRole(dest.value)}
                   className={`rounded-xl p-4 text-center transition-all cursor-pointer border-2 ${
-                    targetRole === dest.id
+                    targetRole === dest.value
                       ? "bg-blue-50 border-blue-500 ring-2 ring-blue-300 ring-offset-1"
                       : "bg-white border-gray-200 hover:border-blue-300 hover:shadow-md"
                   }`}
                 >
                   <div className={`mx-auto w-14 h-14 rounded-full flex items-center justify-center mb-2 shadow-md ${
-                    targetRole === dest.id 
+                    targetRole === dest.value 
                       ? "bg-gradient-to-br from-blue-600 to-blue-800" 
                       : "bg-gradient-to-br from-blue-500 to-blue-700"
                   }`}>
                     <span className="text-lg font-bold text-white">{dest.initiales}</span>
                   </div>
-                  <h3 className={`font-semibold text-xs ${targetRole === dest.id ? 'text-blue-800' : 'text-gray-900'}`}>{dest.fonction}</h3>
+                  <h3 className={`font-semibold text-xs ${targetRole === dest.value ? 'text-blue-800' : 'text-gray-900'}`}>{dest.fonction}</h3>
                   <p className="text-blue-600 text-[10px] italic mt-1 leading-tight">{dest.description}</p>
                 </button>
               ))}
@@ -296,7 +274,7 @@ export default function PublicAppointmentPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {destinataires.map((dest) => (
-                          <SelectItem key={dest.id} value={dest.id}>
+                          <SelectItem key={dest.value} value={dest.value}>
                             {dest.nom} ({dest.fonction})
                           </SelectItem>
                         ))}

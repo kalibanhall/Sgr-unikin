@@ -34,49 +34,20 @@ interface Appointment {
   createdAt: string;
 }
 
-// Destinataires des rendez-vous avec leurs informations
-const destinataires = [
-  { 
-    id: "SGR", 
-    nom: "Prof. Paulin MUTWALE KAPEPULA", 
-    fonction: "SGR", 
-    description: "Secrétaire Général à la Recherche",
-    initiales: "PMK"
-  },
-  { 
-    id: "AP", 
-    nom: "Prof. KAPEMBO Michel", 
-    fonction: "Assistant Principal", 
-    description: "Assistant Principal du SGR",
-    initiales: "KM"
-  },
-  { 
-    id: "CHARGE_PUBLICATIONS", 
-    nom: "Chargé des Publications", 
-    fonction: "Publications et Recherche", 
-    description: "Publications et recherche scientifique",
-    initiales: "CP"
-  },
-  { 
-    id: "CHARGE_ANTIPLAGIAT", 
-    nom: "Chargé Anti-plagiat", 
-    fonction: "Check Anti-plagiat", 
-    description: "Vérification anti-plagiat des travaux",
-    initiales: "CA"
-  },
-  { 
-    id: "CHARGE_OIPR", 
-    nom: "Chargé de l'OIPR", 
-    fonction: "OIPR", 
-    description: "Outil d'Inventaire et de Planification de la Recherche",
-    initiales: "CO"
-  },
-];
+interface Authority {
+  id: string;
+  value: string;
+  nom: string;
+  fonction: string;
+  description: string | null;
+  initiales: string | null;
+}
 
 export default function AppointmentsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [destinataires, setDestinataires] = useState<Authority[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -92,6 +63,13 @@ export default function AppointmentsPage() {
       router.push("/login");
     }
   }, [status, router]);
+
+  useEffect(() => {
+    fetch("/api/rdv-authorities")
+      .then(res => res.ok ? res.json() : [])
+      .then(data => setDestinataires(data))
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     const fetchAppointments = async () => {
@@ -157,7 +135,7 @@ export default function AppointmentsPage() {
   };
 
   const getDestinataire = (value: string) => {
-    return destinataires.find(d => d.id === value);
+    return destinataires.find(d => d.value === value);
   };
 
   if (status === "loading" || loading) {
@@ -235,7 +213,7 @@ export default function AppointmentsPage() {
                       </SelectTrigger>
                       <SelectContent>
                         {destinataires.map((dest) => (
-                          <SelectItem key={dest.id} value={dest.id}>
+                          <SelectItem key={dest.value} value={dest.value}>
                             {dest.nom}
                           </SelectItem>
                         ))}

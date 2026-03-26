@@ -353,9 +353,9 @@ export default function AdminDashboardPage() {
                       </td>
                       <td className="py-3 px-4">
                         <Badge 
-                          variant={student.currentStep === 4 ? "success" : "pending"}
+                          variant={student.currentStep >= 4 ? "success" : "pending"}
                         >
-                          {student.currentStep}/4
+                          {Math.min(student.currentStep, 4)}/4
                         </Badge>
                       </td>
                       <td className="py-3 px-4 text-gray-900">

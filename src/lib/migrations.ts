@@ -157,6 +157,37 @@ export async function runMigrations() {
       console.log(`✅ ${fixResult.rowCount} étudiant(s) non soumis remis au niveau 0`);
     }
 
+    // Create rdv_authorities table for configurable RDV authorities
+    await query(`
+      CREATE TABLE IF NOT EXISTS rdv_authorities (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+        value VARCHAR(50) NOT NULL UNIQUE,
+        nom VARCHAR(255) NOT NULL,
+        fonction VARCHAR(255) NOT NULL,
+        description VARCHAR(500),
+        initiales VARCHAR(10),
+        display_order INTEGER DEFAULT 0,
+        active BOOLEAN DEFAULT TRUE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+      )
+    `);
+    console.log('✅ RDV authorities table created');
+
+    // Seed default authorities if empty
+    const existingAuth = await query('SELECT COUNT(*) as count FROM rdv_authorities');
+    if (parseInt(existingAuth.rows[0].count) === 0) {
+      await query(`
+        INSERT INTO rdv_authorities (value, nom, fonction, description, initiales, display_order) VALUES
+        ('SGR', 'Prof. Paulin MUTWALE KAPEPULA', 'SGR', 'Secrétaire Général à la Recherche', 'PMK', 1),
+        ('AP', 'Prof. KAPEMBO Michel', 'Assistant Principal', 'Assistant Principal du SGR', 'KM', 2),
+        ('CHARGE_PUBLICATIONS', 'Chargé des Publications', 'Publications et Recherche', 'Publications et recherche scientifique', 'CP', 3),
+        ('CHARGE_ANTIPLAGIAT', 'Chargé Anti-plagiat', 'Check Anti-plagiat', 'Vérification anti-plagiat des travaux', 'CA', 4),
+        ('CHARGE_OIPR', 'Chargé de l''OIPR', 'OIPR', 'Outil d''Inventaire et de Planification de la Recherche', 'CO', 5)
+      `);
+      console.log('✅ Default RDV authorities seeded');
+    }
+
     // Promote Jonathan Mutwale to SUPER_ADMIN if exists
     const result = await query(`
       UPDATE users 

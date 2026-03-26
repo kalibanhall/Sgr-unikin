@@ -335,7 +335,7 @@ export default function AdminStudentsPage() {
                             <Badge
                               variant={student.isComplete ? "success" : "pending"}
                             >
-                              {student.currentStep}/4
+                              {Math.min(student.currentStep, 4)}/4
                             </Badge>
                           </td>
                           <td className="py-3 px-4">

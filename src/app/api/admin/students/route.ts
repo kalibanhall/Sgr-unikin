@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
       paramIndex += allowedSteps.length;
     }
 
-    sql += ` GROUP BY s.id, u.email, u.created_at ORDER BY s.created_at DESC`;
+    sql += ` GROUP BY s.id, u.email, u.created_at, s.submitted_at ORDER BY s.submitted_at ASC NULLS LAST, s.created_at ASC`;
     sql += ` LIMIT ${limit} OFFSET ${(page - 1) * limit}`;
 
     const studentsResult = await query<StudentListRow>(sql, params);

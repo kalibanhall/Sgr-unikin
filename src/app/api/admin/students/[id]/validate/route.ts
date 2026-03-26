@@ -158,8 +158,8 @@ export async function POST(
         dossierStatus: "DRAFT",
       });
     } else if (status === "APPROVED") {
-      const newStep = Math.max(student.current_step, parseInt(step) + 1);
-      const isComplete = newStep >= student.max_steps;
+      const newStep = Math.min(Math.max(student.current_step, parseInt(step) + 1), student.max_steps - 1);
+      const isComplete = parseInt(step) >= student.max_steps - 1;
 
       await studentRepository.update(id, {
         currentStep: newStep,

@@ -27,7 +27,8 @@ import {
   Shield,
   Clock,
   AlertTriangle,
-  FolderOpen
+  FolderOpen,
+  Trash2
 } from "lucide-react";
 import { getStudyLevelLabel, formatDate } from "@/lib/utils";
 import { 
@@ -112,6 +113,8 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
   const [reviewComment, setReviewComment] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [technicalValidations, setTechnicalValidations] = useState<{
     count: number;
     requiredValidations: number;
@@ -289,6 +292,27 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
     }
   };
 
+  const handleDelete = async () => {
+    if (!student) return;
+    setDeleting(true);
+    try {
+      const res = await fetch(`/api/admin/students/${student.id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        router.push("/admin/etudiants");
+      } else {
+        const data = await res.json();
+        alert(data.error || "Erreur lors de la suppression");
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+    } finally {
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   // Determine if admin can cancel the previous step
   // L1 can cancel steps they validated if the next step hasn't been validated
   const previousStep = student ? student.currentStep - 1 : -1;
@@ -333,6 +357,16 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
               <p className="text-gray-900 mt-1">{student.user.email}</p>
             </div>
             <div className="flex items-center gap-3">
+              {isSuperAdmin && (
+                <Button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  variant="destructive"
+                  className="flex items-center gap-2"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Supprimer
+                </Button>
+              )}
               <Button
                 onClick={() => window.open(`/api/admin/students/${student.id}/download-pdf`, '_blank')}
                 variant="outline"
@@ -342,7 +376,7 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
                 Télécharger le dossier PDF
               </Button>
               <Badge variant={student.isComplete ? "success" : "pending"} className="text-lg px-4 py-2">
-                Étape {student.currentStep}/{student.maxSteps}
+                Étape {Math.min(student.currentStep, student.maxSteps - 1)}/{student.maxSteps - 1}
               </Badge>
             </div>
           </div>
@@ -830,6 +864,35 @@ export default function StudentDetailPage({ params }: { params: Promise<{ id: st
           </Card>
         )}
       </div>
+
+      {/* Modal de confirmation de suppression */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <Card className="max-w-md mx-4">
+            <CardHeader>
+              <CardTitle className="text-red-600 flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" />
+                Confirmer la suppression
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-gray-700">
+                Êtes-vous sûr de vouloir supprimer le dossier de <strong>{student.firstName} {student.lastName}</strong> ?
+                Cette action est irréversible et supprimera toutes les données associées.
+              </p>
+              <div className="flex gap-3 justify-end">
+                <Button variant="outline" onClick={() => setShowDeleteConfirm(false)} disabled={deleting}>
+                  Annuler
+                </Button>
+                <Button variant="destructive" onClick={handleDelete} disabled={deleting}>
+                  {deleting ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Trash2 className="h-4 w-4 mr-2" />}
+                  Supprimer définitivement
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Modal de prévisualisation des documents */}
       {showPreview && student.documents.length > 0 && (

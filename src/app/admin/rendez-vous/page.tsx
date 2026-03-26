@@ -20,7 +20,11 @@ import {
   Mail,
   Phone,
   GraduationCap,
-  Eye
+  Eye,
+  Plus,
+  Pencil,
+  Trash2,
+  Users
 } from "lucide-react";
 import { formatDate } from "@/lib/utils";
 
@@ -49,18 +53,21 @@ interface Appointment {
   } | null;
 }
 
-const targetRoles = [
-  { value: "SGR", label: "Prof. Paulin MUTWALE KAPEPULA (SGR)" },
-  { value: "AP", label: "Prof. KAPEMBO Michel (Assistant Principal)" },
-  { value: "CHARGE_PUBLICATIONS", label: "Chargé des Publications et Recherche" },
-  { value: "CHARGE_ANTIPLAGIAT", label: "Chargé du Check Anti-plagiat" },
-  { value: "CHARGE_OIPR", label: "Chargé de l'OIPR" },
-];
+interface Authority {
+  id: string;
+  value: string;
+  nom: string;
+  fonction: string;
+  description: string | null;
+  initiales: string | null;
+  display_order: number;
+}
 
 export default function AdminAppointmentsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [authorities, setAuthorities] = useState<Authority[]>([]);
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("all");
@@ -69,6 +76,11 @@ export default function AdminAppointmentsPage() {
   const [approvedDate, setApprovedDate] = useState("");
   const [accessDenied, setAccessDenied] = useState(false);
   const [canManage, setCanManage] = useState(false);
+  // Authority management state
+  const [showAuthForm, setShowAuthForm] = useState(false);
+  const [editingAuth, setEditingAuth] = useState<Authority | null>(null);
+  const [authForm, setAuthForm] = useState({ value: "", nom: "", fonction: "", description: "", initiales: "" });
+  const [savingAuth, setSavingAuth] = useState(false);
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -96,10 +108,15 @@ export default function AdminAppointmentsPage() {
           setCanManage(data.canManage);
         }
 
-        const res = await fetch("/api/admin/appointments");
-        if (res.ok) {
-          const data = await res.json();
-          setAppointments(data);
+        const [apptRes, authRes] = await Promise.all([
+          fetch("/api/admin/appointments"),
+          fetch("/api/rdv-authorities"),
+        ]);
+        if (apptRes.ok) {
+          setAppointments(await apptRes.json());
+        }
+        if (authRes.ok) {
+          setAuthorities(await authRes.json());
         }
       } catch (error) {
         console.error("Erreur:", error);
@@ -154,7 +171,8 @@ export default function AdminAppointmentsPage() {
   };
 
   const getTargetRoleLabel = (value: string) => {
-    return targetRoles.find(r => r.value === value)?.label || value;
+    const auth = authorities.find(r => r.value === value);
+    return auth ? `${auth.nom} (${auth.fonction})` : value;
   };
 
   const filteredAppointments = appointments.filter(a => {
@@ -163,6 +181,72 @@ export default function AdminAppointmentsPage() {
   });
 
   const pendingCount = appointments.filter(a => a.status === "PENDING").length;
+
+  const isSuperAdmin = session?.user?.role === "SUPER_ADMIN";
+
+  const fetchAuthorities = async () => {
+    const res = await fetch("/api/rdv-authorities");
+    if (res.ok) setAuthorities(await res.json());
+  };
+
+  const handleSaveAuthority = async () => {
+    setSavingAuth(true);
+    try {
+      if (editingAuth) {
+        const res = await fetch("/api/rdv-authorities", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: editingAuth.id, ...authForm }),
+        });
+        if (res.ok) {
+          await fetchAuthorities();
+          resetAuthForm();
+        }
+      } else {
+        const res = await fetch("/api/rdv-authorities", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(authForm),
+        });
+        if (res.ok) {
+          await fetchAuthorities();
+          resetAuthForm();
+        }
+      }
+    } catch (error) {
+      console.error("Erreur:", error);
+    } finally {
+      setSavingAuth(false);
+    }
+  };
+
+  const handleDeleteAuthority = async (id: string) => {
+    if (!confirm("Supprimer cette autorité ?")) return;
+    try {
+      const res = await fetch(`/api/rdv-authorities?id=${id}`, { method: "DELETE" });
+      if (res.ok) await fetchAuthorities();
+    } catch (error) {
+      console.error("Erreur:", error);
+    }
+  };
+
+  const resetAuthForm = () => {
+    setShowAuthForm(false);
+    setEditingAuth(null);
+    setAuthForm({ value: "", nom: "", fonction: "", description: "", initiales: "" });
+  };
+
+  const startEditAuth = (auth: Authority) => {
+    setEditingAuth(auth);
+    setAuthForm({
+      value: auth.value,
+      nom: auth.nom,
+      fonction: auth.fonction,
+      description: auth.description || "",
+      initiales: auth.initiales || "",
+    });
+    setShowAuthForm(true);
+  };
 
   if (status === "loading" || loading) {
     return (
@@ -209,6 +293,105 @@ export default function AdminAppointmentsPage() {
               <strong>Mode consultation :</strong> Vous pouvez voir les demandes de rendez-vous mais pas les traiter. Contactez le responsable des rendez-vous pour toute action.
             </p>
           </div>
+        )}
+
+        {/* Gestion des autorités (Super Admin) */}
+        {isSuperAdmin && (
+          <Card className="mb-6 border-2 border-purple-200">
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <Users className="h-5 w-5 text-purple-600" />
+                  Autorités / Personnes à contacter
+                </h3>
+                <Button size="sm" onClick={() => { resetAuthForm(); setShowAuthForm(true); }}>
+                  <Plus className="h-4 w-4 mr-1" /> Ajouter
+                </Button>
+              </div>
+
+              <div className="space-y-2">
+                {authorities.map((auth) => (
+                  <div key={auth.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div>
+                      <span className="font-medium text-gray-900">{auth.nom}</span>
+                      <span className="text-gray-500 ml-2">({auth.fonction})</span>
+                      {auth.description && <p className="text-xs text-gray-500">{auth.description}</p>}
+                    </div>
+                    <div className="flex gap-1">
+                      <Button size="sm" variant="ghost" onClick={() => startEditAuth(auth)}>
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                      <Button size="sm" variant="ghost" className="text-red-600 hover:text-red-700" onClick={() => handleDeleteAuthority(auth.id)}>
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {showAuthForm && (
+                <div className="mt-4 p-4 border rounded-lg bg-white space-y-3">
+                  <h4 className="font-medium text-gray-900">
+                    {editingAuth ? "Modifier l'autorité" : "Nouvelle autorité"}
+                  </h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Code *</Label>
+                      <Input
+                        value={authForm.value}
+                        onChange={(e) => setAuthForm({ ...authForm, value: e.target.value })}
+                        placeholder="SGR"
+                        disabled={!!editingAuth}
+                      />
+                    </div>
+                    <div>
+                      <Label>Initiales</Label>
+                      <Input
+                        value={authForm.initiales}
+                        onChange={(e) => setAuthForm({ ...authForm, initiales: e.target.value })}
+                        placeholder="PMK"
+                      />
+                    </div>
+                    <div>
+                      <Label>Nom complet *</Label>
+                      <Input
+                        value={authForm.nom}
+                        onChange={(e) => setAuthForm({ ...authForm, nom: e.target.value })}
+                        placeholder="Prof. Nom PRENOM"
+                      />
+                    </div>
+                    <div>
+                      <Label>Fonction *</Label>
+                      <Input
+                        value={authForm.fonction}
+                        onChange={(e) => setAuthForm({ ...authForm, fonction: e.target.value })}
+                        placeholder="SGR"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <Label>Description</Label>
+                    <Input
+                      value={authForm.description}
+                      onChange={(e) => setAuthForm({ ...authForm, description: e.target.value })}
+                      placeholder="Secrétaire Général à la Recherche"
+                    />
+                  </div>
+                  <div className="flex gap-2 justify-end">
+                    <Button size="sm" variant="outline" onClick={resetAuthForm}>Annuler</Button>
+                    <Button
+                      size="sm"
+                      onClick={handleSaveAuthority}
+                      disabled={savingAuth || !authForm.value || !authForm.nom || !authForm.fonction}
+                    >
+                      {savingAuth && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
+                      {editingAuth ? "Enregistrer" : "Ajouter"}
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
 
         {/* Filtres */}

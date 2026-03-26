@@ -33,9 +33,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validation des rôles autorisés
-    const allowedRoles = ["SGR", "AP", "CHARGE_PUBLICATIONS", "CHARGE_ANTIPLAGIAT", "CHARGE_OIPR"];
-    if (!allowedRoles.includes(targetRole)) {
+    // Validation des rôles autorisés (depuis la DB)
+    const { query } = await import("@/lib/db");
+    const authResult = await query(
+      'SELECT value FROM rdv_authorities WHERE active = TRUE AND value = $1',
+      [targetRole]
+    );
+    if (authResult.rows.length === 0) {
       return NextResponse.json(
         { error: "Destinataire invalide" },
         { status: 400 }
@@ -44,7 +48,6 @@ export async function POST(request: NextRequest) {
 
     // Rate limiting basique : max 3 RDV en attente par email
     // (On vérifie via une requête directe car pas de méthode dédiée)
-    const { query } = await import("@/lib/db");
     const existing = await query(
       `SELECT COUNT(*) as count FROM appointments WHERE guest_email = $1 AND status = 'PENDING'`,
       [guestEmail]

@@ -140,8 +140,8 @@ export default function AdminDocumentsPage() {
                       <p className="text-sm text-gray-500">{student.user.email}</p>
                     </div>
                     <div className="flex items-center gap-4">
-                      <Badge variant={student.currentStep === 4 ? "success" : "pending"}>
-                        Étape {student.currentStep}/4
+                      <Badge variant={student.currentStep >= 4 ? "success" : "pending"}>
+                        Étape {Math.min(student.currentStep, 4)}/4
                       </Badge>
                       <Link href={`/admin/etudiants/${student.id}`}>
                         <Button size="sm" variant="outline">

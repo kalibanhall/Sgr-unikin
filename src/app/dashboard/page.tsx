@@ -334,7 +334,7 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-3">
                     <Clock className="h-6 w-6 text-orange-600" />
                     <div className="flex-1">
-                      <p className="font-medium text-orange-800">Dossier soumis — en attente de validation{profile.currentStep >= 2 ? ` (étape ${profile.currentStep}/${profile.maxSteps})` : ""}</p>
+                      <p className="font-medium text-orange-800">Dossier soumis — en attente de validation{profile.currentStep >= 2 ? ` (étape ${Math.min(profile.currentStep, profile.maxSteps - 1)}/${profile.maxSteps - 1})` : ""}</p>
                       <p className="text-orange-700 text-sm">
                         Votre dossier est en cours d&apos;examen. Téléchargez votre certificat ci-dessous.
                       </p>
