@@ -46,10 +46,10 @@ export async function GET() {
 
     const student = result.rows[0];
 
-    // Le certificat est disponible dès que le dossier est soumis (step 0 auto-validé)
+    // Le certificat n'est disponible qu'à partir du niveau 1 (dossier soumis)
     if (student.dossier_status === "DRAFT") {
       return NextResponse.json(
-        { error: "Le certificat n'est disponible qu'après la soumission du dossier." },
+        { error: "Le certificat n'est disponible qu'après la soumission de votre dossier." },
         { status: 403 }
       );
     }
