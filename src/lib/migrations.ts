@@ -98,10 +98,14 @@ export async function runMigrations() {
     console.log('✅ OTP codes index created');
 
     // Allow guest appointments (no student account required)
-    await query(`
-      ALTER TABLE appointments 
-      ALTER COLUMN student_id DROP NOT NULL
-    `);
+    try {
+      await query(`
+        ALTER TABLE appointments 
+        ALTER COLUMN student_id DROP NOT NULL
+      `);
+    } catch {
+      // Column may already be nullable
+    }
     await query(`
       ALTER TABLE appointments 
       ADD COLUMN IF NOT EXISTS guest_name VARCHAR(255),
