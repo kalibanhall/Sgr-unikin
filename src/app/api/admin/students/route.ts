@@ -114,7 +114,13 @@ export async function GET(request: NextRequest) {
       paramIndex += allowedSteps.length;
     }
 
-    sql += ` GROUP BY s.id, u.email, u.created_at, s.submitted_at ORDER BY s.submitted_at ASC NULLS LAST, s.created_at ASC`;
+    sql += ` GROUP BY s.id, u.email, u.created_at, s.submitted_at
+      ORDER BY
+        COALESCE(
+          (SELECT MAX(v.validated_at) FROM validations v WHERE v.student_id = s.id AND v.status = 'APPROVED'),
+          s.submitted_at
+        ) ASC NULLS LAST,
+        s.submitted_at ASC NULLS LAST`;
     sql += ` LIMIT ${limit} OFFSET ${(page - 1) * limit}`;
 
     const studentsResult = await query<StudentListRow>(sql, params);

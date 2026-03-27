@@ -19,15 +19,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const studentId = searchParams.get("studentId");
 
-    // Récupérer les reviews selon le rôle
-    let reviews;
-    if (user.role === "SUPER_ADMIN") {
-      // Super Admin voit tout
-      reviews = await adminReviewRepository.findAll(studentId || undefined);
-    } else {
-      // Admin ne voit que ses propres avis
-      reviews = await adminReviewRepository.findByAdminId(user.id, studentId || undefined);
-    }
+    // Tous les admins voient l'historique complet des avis pour un dossier
+    const reviews = await adminReviewRepository.findAll(studentId || undefined);
 
     // Transformer en camelCase pour le frontend
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
