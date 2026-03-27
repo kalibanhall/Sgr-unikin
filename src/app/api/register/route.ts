@@ -11,6 +11,15 @@ export async function POST(request: NextRequest) {
     
     // Validation des données
     const validatedData = registerSchema.parse(body);
+
+    // Vérifier si le type d'inscription est suspendu
+    const SUSPENDED_TYPES = ['INSCRIPTION_MASTER'];
+    if (SUSPENDED_TYPES.includes(validatedData.registrationType || '')) {
+      return NextResponse.json(
+        { error: "Les inscriptions en Master sont temporairement suspendues." },
+        { status: 400 }
+      );
+    }
     
     // Vérifier si l'email existe déjà
     const existingUser = await userRepository.findByEmail(validatedData.email);

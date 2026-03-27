@@ -17,13 +17,11 @@ const BackButton = forwardRef<HTMLButtonElement, BackButtonProps>(
     const router = useRouter();
 
     const handleBack = () => {
-      // Vérifier si on a un historique de navigation
-      if (typeof window !== "undefined" && window.history.length > 1) {
-        router.back();
-      } else if (fallbackUrl) {
+      if (fallbackUrl) {
         router.push(fallbackUrl);
+      } else if (typeof window !== "undefined" && window.history.length > 1) {
+        router.back();
       } else {
-        // Fallback par défaut vers le dashboard ou l'accueil
         router.push("/dashboard");
       }
     };

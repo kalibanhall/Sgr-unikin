@@ -37,10 +37,14 @@ export async function GET(
     const contentType = mimeTypes[ext] || "application/octet-stream";
     
     // Retourner le fichier avec les bons headers
+    const rawName = pathSegments[pathSegments.length - 1];
+    const safeName = rawName.replace(/[^\x20-\x7E]/g, '_');
+    const encodedName = encodeURIComponent(rawName);
+
     return new NextResponse(fileBuffer, {
       headers: {
         "Content-Type": contentType,
-        "Content-Disposition": `inline; filename="${pathSegments[pathSegments.length - 1]}"`,
+        "Content-Disposition": `inline; filename="${safeName}"; filename*=UTF-8''${encodedName}`,
         "Cache-Control": "public, max-age=31536000",
         "X-Frame-Options": "SAMEORIGIN",
       },
