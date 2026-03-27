@@ -157,6 +157,9 @@ export async function POST(
         isComplete: false,
         dossierStatus: "DRAFT",
       });
+
+      // Effacer les technical_validations pour permettre une re-validation après correction
+      await query(`DELETE FROM technical_validations WHERE student_id = $1`, [id]);
     } else if (status === "APPROVED") {
       const newStep = Math.min(Math.max(student.current_step, parseInt(step) + 1), student.max_steps - 1);
       const isComplete = parseInt(step) >= student.max_steps - 1;
