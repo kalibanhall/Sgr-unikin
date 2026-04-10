@@ -151,6 +151,7 @@ export const REGISTRATION_TYPES = [
     description: "Pour s'inscrire au programme de Doctorat (PhD)",
     studyLevel: "DOCTORAT",
     category: "inscription",
+    suspended: true, // Inscriptions fermées
     color: "blue",
     iconName: "GraduationCap"
   },
@@ -439,6 +440,12 @@ export const CERTIFICATE_TEMPLATES = {
 export const MASTER_SUSPENSION_ALERT = {
   title: "Les inscriptions en DEA/DES (Master) sont suspendu",
   message: `Les inscriptions en DEA/DES (Master) sont suspendu à l'université de Kinshasa conformément à l'article 30 de l'Arrêté ministériel n° 101/MINESU/CABMIN/MNB/BLB/2023 du 13 février 2023 modifiant et complétant l'Arrêté ministériel n° 175/MINESU/CABMIN/TMF/EBK-RK3 du 22/12/2015 portant normes d'opérationnalisation des enseignements du 3ème Cycle dans les établissements d'Enseignement Supérieur et Universitaire en République Démocratique du Congo, les inscriptions au DEA/DES ayant été arrêtées depuis l'année académique 2022-2023.`,
+};
+
+// Alerte pour Thèse
+export const THESE_SUSPENSION_ALERT = {
+  title: "Les inscriptions en Thèse de Doctorat sont temporairement fermées",
+  message: `Les inscriptions en Thèse de Doctorat à l'Université de Kinshasa sont temporairement fermées. Veuillez consulter régulièrement cette plateforme pour être informé de la réouverture des inscriptions.`,
 };
 
 // Liste plate pour compatibilité

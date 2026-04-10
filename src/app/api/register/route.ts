@@ -13,10 +13,10 @@ export async function POST(request: NextRequest) {
     const validatedData = registerSchema.parse(body);
 
     // Vérifier si le type d'inscription est suspendu
-    const SUSPENDED_TYPES = ['INSCRIPTION_MASTER'];
+    const SUSPENDED_TYPES = ['INSCRIPTION_MASTER', 'INSCRIPTION_THESE'];
     if (SUSPENDED_TYPES.includes(validatedData.registrationType || '')) {
       return NextResponse.json(
-        { error: "Les inscriptions en Master sont temporairement suspendues." },
+        { error: "Les inscriptions sont temporairement suspendues pour ce type de demande." },
         { status: 400 }
       );
     }

@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { registerSchema, RegisterInput } from "@/lib/validations";
-import { FACULTIES, REGISTRATION_TYPES, MASTER_SUSPENSION_ALERT, DEPARTMENTS } from "@/lib/constants";
+import { FACULTIES, REGISTRATION_TYPES, MASTER_SUSPENSION_ALERT, THESE_SUSPENSION_ALERT, DEPARTMENTS } from "@/lib/constants";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
 import { Loader2, AlertCircle, CheckCircle, ShieldAlert, FileCheck, ArrowLeft, Info, Eye, EyeOff } from "lucide-react";
@@ -245,9 +245,35 @@ function RegisterContent() {
                   Retour à l&apos;accueil
                 </Button>
               </Link>
-              <Link href="/register?type=these">
-                <Button className="w-full sm:w-auto">
-                  S&apos;inscrire en Doctorat
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Afficher l'alerte si inscription Thèse est demandée (suspendue)
+  if (typeFromUrl === "these") {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-blue-50 to-blue-100 py-12 px-4">
+        <Card className="w-full max-w-2xl">
+          <CardContent className="pt-6">
+            <div className="flex justify-center mb-4">
+              <div className="bg-amber-100 p-4 rounded-full">
+                <AlertCircle className="h-10 w-10 text-amber-600" />
+              </div>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">{THESE_SUSPENSION_ALERT.title}</h2>
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+              <p className="text-gray-700 text-sm leading-relaxed">
+                {THESE_SUSPENSION_ALERT.message}
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/">
+                <Button variant="outline" className="w-full sm:w-auto">
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Retour à l&apos;accueil
                 </Button>
               </Link>
             </div>
